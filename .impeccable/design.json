@@ -1,0 +1,131 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-20T00:00:00Z",
+  "title": "Design System: Factory Twins",
+  "extensions": {
+    "colorMeta": {
+      "accent": { "role": "primary", "displayName": "Berry Ink", "canonical": "oklch(0.48 0.17 355)", "tonalRamp": ["oklch(0.20 0.08 355)", "oklch(0.30 0.12 355)", "oklch(0.40 0.15 355)", "oklch(0.48 0.17 355)", "oklch(0.60 0.15 355)", "oklch(0.72 0.12 355)", "oklch(0.84 0.07 355)", "oklch(0.95 0.025 355)"] },
+      "bg": { "role": "neutral", "displayName": "Blush Paper", "canonical": "oklch(0.985 0.004 345)", "tonalRamp": ["oklch(0.17 0.012 345)", "oklch(0.24 0.016 345)", "oklch(0.36 0.018 345)", "oklch(0.46 0.02 345)", "oklch(0.60 0.016 345)", "oklch(0.79 0.012 345)", "oklch(0.905 0.01 345)", "oklch(0.985 0.004 345)"] },
+      "twin-a": { "role": "data", "displayName": "Teal Marker", "canonical": "oklch(0.52 0.12 192)" },
+      "twin-b": { "role": "data", "displayName": "Amber Marker", "canonical": "oklch(0.52 0.12 58)" },
+      "twin-c": { "role": "data", "displayName": "Lake Marker", "canonical": "oklch(0.52 0.11 240)" },
+      "twin-d": { "role": "data", "displayName": "Plum Marker", "canonical": "oklch(0.52 0.12 318)" },
+      "twin-e": { "role": "data", "displayName": "Fern Marker", "canonical": "oklch(0.52 0.12 140)" },
+      "twin-f": { "role": "data", "displayName": "Olive Marker", "canonical": "oklch(0.52 0.11 100)" },
+      "danger": { "role": "semantic", "displayName": "Brand-tax Red", "canonical": "oklch(0.54 0.19 27)" },
+      "pop": { "role": "illustration", "displayName": "Pop Yellow", "canonical": "oklch(0.90 0.10 100)" }
+    },
+    "typographyMeta": {
+      "display-hero": { "displayName": "Display hero", "purpose": "Landing H1 only, once per page." },
+      "title": { "displayName": "Title", "purpose": "Fold card header, Proof lens title, popup empty-state heading." },
+      "readout": { "displayName": "Readout", "purpose": "Proof lens percentage." },
+      "ui-compact": { "displayName": "UI compact", "purpose": "Default text on the store-page overlay and the popup." },
+      "price-lg": { "displayName": "Price large", "purpose": "Ladder rung prices, tabular numerals." }
+    },
+    "shadows": [
+      { "name": "e1", "value": "0 0 0 1px var(--border), 0 1px 2px oklch(0.25 0.02 345 / 0.04)", "purpose": "Fold card, inputs, popup cards." },
+      { "name": "e2", "value": "0 0 0 1px oklch(0.25 0.02 345 / 0.06), 0 1px 1px oklch(0.25 0.02 345 / 0.02), 0 2px 4px -1px oklch(0.25 0.02 345 / 0.06)", "purpose": "Fold ghosts in flight." },
+      { "name": "e3", "value": "0 0 0 1px oklch(0.25 0.02 345 / 0.06), 0 2px 4px -1px oklch(0.25 0.02 345 / 0.06), 0 8px 16px -4px oklch(0.25 0.02 345 / 0.12)", "purpose": "Summary pill, tooltips, toasts." },
+      { "name": "e4", "value": "0 0 0 1px oklch(0.25 0.02 345 / 0.06), 0 8px 16px -4px oklch(0.25 0.02 345 / 0.08), 0 24px 48px -12px oklch(0.25 0.02 345 / 0.22)", "purpose": "Proof lens dialog." },
+      { "name": "e1-dark", "value": "0 0 0 1px var(--border), inset 0 1px 0 oklch(1 0 0 / 0.05)", "purpose": "Dark elevation e1 to e3." },
+      { "name": "e4-dark", "value": "0 0 0 1px oklch(1 0 0 / 0.06), 0 24px 48px -12px oklch(0 0 0 / 0.6)", "purpose": "Dark modal." }
+    ],
+    "motion": [
+      { "name": "dur-0", "value": "0ms", "purpose": "Rings, popup open, keyboard actions." },
+      { "name": "dur-1", "value": "100ms", "purpose": "Hover, press." },
+      { "name": "dur-2", "value": "150ms", "purpose": "Tooltip, reduced-motion crossfades." },
+      { "name": "dur-3", "value": "200ms", "purpose": "Pill extension, popovers." },
+      { "name": "dur-5", "value": "300ms", "purpose": "UI ceiling." },
+      { "name": "ease-out", "value": "cubic-bezier(0.23, 1, 0.32, 1)", "purpose": "Default enter/exit." },
+      { "name": "ease-out-soft", "value": "cubic-bezier(0.25, 1, 0.5, 1)", "purpose": "Large surfaces (fold card growth)." },
+      { "name": "ease-in-out", "value": "cubic-bezier(0.77, 0, 0.175, 1)", "purpose": "On-screen moves (ghost travel, reflow FLIP)." },
+      { "name": "ease-scene", "value": "cubic-bezier(0.65, 0.05, 0, 1)", "purpose": "Landing only: marker circle draw, card stack." },
+      { "name": "spring-playful", "value": "linear(0, 0.157, 0.48, 0.79, 1.01, 1.11, 1.12, 1.08, 1.03, 0.99, 0.98, 0.99, 1)", "purpose": "Brand tax tag landing; signature moments only." }
+    ],
+    "breakpoints": [
+      { "name": "phone", "value": "375px" },
+      { "name": "tablet", "value": "768px" },
+      { "name": "hero-stack", "value": "960px" },
+      { "name": "desktop", "value": "1440px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "One filled Berry Ink action per view, with its keycap.",
+      "html": "<button class=\"ds-btn-primary\">Show twins on this page <kbd class=\"ds-keycap\">T</kbd></button>",
+      "css": ".ds-btn-primary{display:inline-flex;align-items:center;gap:8px;height:32px;padding:6px 12px;border:0;border-radius:12px;background:oklch(0.48 0.17 355);color:oklch(0.99 0.006 355);font:550 13px/20px 'Rethink Sans Variable',system-ui,sans-serif;transition:background-color 100ms,transform 100ms}.ds-btn-primary:hover{background:oklch(0.43 0.16 355)}.ds-btn-primary:active{transform:scale(.97)}.ds-btn-primary:focus-visible{outline:2px solid oklch(0.48 0.17 355);outline-offset:2px}.ds-keycap{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 5px;border-radius:8px;background:oklch(0.958 0.007 345);color:oklch(0.46 0.02 345);border:1px solid oklch(0.905 0.01 345);box-shadow:inset 0 -1px 0 oklch(0.905 0.01 345);font:600 11px/16px 'Rethink Sans Variable',system-ui,sans-serif}"
+    },
+    {
+      "name": "Summary Pill",
+      "kind": "custom",
+      "refersTo": "summary-pill",
+      "description": "Passive result on every search; click to show twins.",
+      "html": "<button class=\"ds-pill\"><span class=\"ds-pill-seg\"><b>60</b> listings → <b>37</b> products</span><span class=\"ds-pill-div\"></span><span class=\"ds-pill-seg\"><b>6</b> twin groups</span><span class=\"ds-pill-div\"></span><span class=\"ds-pill-seg\">up to <b>$18</b> brand tax</span></button>",
+      "css": ".ds-pill{display:inline-flex;align-items:center;gap:10px;height:40px;padding:0 14px;border:0;border-radius:9999px;background:#fff;color:oklch(0.46 0.02 345);font:400 13px/20px 'Rethink Sans Variable',system-ui,sans-serif;box-shadow:0 0 0 1px oklch(0.25 0.02 345/.06),0 2px 4px -1px oklch(0.25 0.02 345/.06),0 8px 16px -4px oklch(0.25 0.02 345/.12);transition:background-color 100ms}.ds-pill b{color:oklch(0.23 0.02 345);font-weight:600;font-variant-numeric:tabular-nums}.ds-pill-div{width:1px;height:16px;background:oklch(0.905 0.01 345)}.ds-pill:hover{background:oklch(0.958 0.007 345)}.ds-pill:focus-visible{outline:2px solid oklch(0.48 0.17 355);outline-offset:2px}"
+    },
+    {
+      "name": "Twin Badge",
+      "kind": "chip",
+      "refersTo": "twin-badge-a",
+      "description": "Group letter and count on a ringed tile.",
+      "html": "<span class=\"ds-twin-badge\">Twin A ×5</span>",
+      "css": ".ds-twin-badge{display:inline-flex;align-items:center;height:20px;padding:2px 8px;border-radius:9999px;background:oklch(0.52 0.12 192);color:oklch(0.99 0.006 355);font:600 11px/16px 'Rethink Sans Variable',system-ui,sans-serif;letter-spacing:.01em}"
+    },
+    {
+      "name": "Brand Tax Tag",
+      "kind": "chip",
+      "refersTo": "brand-tax-tag",
+      "description": "Highest minus lowest comparable price in a twin group.",
+      "html": "<span class=\"ds-tax\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" aria-hidden=\"true\"><path d=\"M4 2v20l3-2 3 2 3-2 3 2 3-2 1 1V2l-1 1-3-2-3 2-3-2-3 2-3-2z\"/></svg>Brand tax +$23.00</span>",
+      "css": ".ds-tax{display:inline-flex;align-items:center;gap:6px;height:28px;padding:4px 10px;border-radius:9999px;background:oklch(0.95 0.026 25);color:oklch(0.54 0.19 27);font:550 13px/20px 'Rethink Sans Variable',system-ui,sans-serif;font-variant-numeric:tabular-nums}"
+    },
+    {
+      "name": "Segmented Control",
+      "kind": "custom",
+      "refersTo": "segmented",
+      "description": "Proof lens mode switch.",
+      "html": "<div class=\"ds-seg\" role=\"radiogroup\"><button role=\"radio\" aria-checked=\"false\">Onion skin</button><button role=\"radio\" aria-checked=\"true\">Difference</button></div>",
+      "css": ".ds-seg{display:inline-flex;gap:2px;padding:2px;border-radius:12px;background:oklch(0.958 0.007 345)}.ds-seg button{height:28px;padding:0 10px;border:0;border-radius:8px;background:transparent;color:oklch(0.46 0.02 345);font:550 13px/20px 'Rethink Sans Variable',system-ui,sans-serif;transition:background-color 100ms,color 100ms}.ds-seg button[aria-checked=true]{background:#fff;color:oklch(0.23 0.02 345);box-shadow:0 0 0 1px oklch(0.905 0.01 345)}.ds-seg button:focus-visible{outline:2px solid oklch(0.48 0.17 355);outline-offset:2px}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Contact Sheet",
+    "overview": "A photographer's contact sheet is a grid of near-identical frames, and the photographer's tools are a china marker and a loupe: circle the frames that match, then lean in and check. Factory Twins hands the shopper the marker (rings in shared colours), a way to gather the circled frames onto one strip (the fold card's price ladder), and the loupe (the Proof lens). Quiet where the shopper works, loud where they discover.",
+    "keyCharacteristics": [
+      "Light-first blush-neutral paper with a berry-ink accent used as a signal.",
+      "Six equal-lightness twin colours, each with a letter and ring pattern.",
+      "Bricolage Grotesque only at discovery moments; Rethink Sans everywhere else.",
+      "Soft-plus radii; pills only for status objects; rectangular buttons.",
+      "Depth by tone and hairlines; shadow only on floating layers.",
+      "One choreographed fold; everything frequent is instant."
+    ],
+    "rules": [
+      { "name": "The Marker Belongs to the Shopper Rule", "body": "Twin colours mark the shopper's results and the landing blocks that tell their story. They never colour a button, a focus ring, a nav item or our logo.", "section": "colors" },
+      { "name": "The One Berry Rule", "body": "At most one filled Berry Ink button per view, and Berry Ink covers 5% or less of any screen's pixels.", "section": "colors" },
+      { "name": "The Pencil Floor Rule", "body": "text-subtle is for meta labels on bg or surface only; on surface-2 use text-muted.", "section": "colors" },
+      { "name": "The Three Places Rule", "body": "Bricolage appears in at most three places per screen, and on the store page only inside the fold card and the Proof lens.", "section": "typography" },
+      { "name": "The Never Shout Rule", "body": "No uppercase eyebrows, no letter-spaced labels, no weight above 700, no single coloured or italic word in a headline.", "section": "typography" },
+      { "name": "The Zero-Shift Rule", "body": "Nothing rendered before the shopper presses F changes the size or position of a store element.", "section": "layout" },
+      { "name": "The No Glass Rule", "body": "No backdrop-filter anywhere. Opaque surfaces only.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do write \"Same photo ×5\" and \"These 5 listings use the same photo\"; show ratings and review counts under every rung so the shopper decides.",
+      "Do keep one filled Berry Ink button per view, and put the keycap beside every action that has a key.",
+      "Do pair every twin colour with its letter and ring pattern, and every semantic colour with an icon.",
+      "Do render frequent actions (rings, popup, pill result) at 0 ms, and spend motion only on the fold and the cancel-to-black.",
+      "Do use the store's own thumbnail URLs for every photo we display on the store page; never inject data URLs or our own copies.",
+      "Do use one colour block per landing viewport, in a twin soft tint, with Blush Paper between blocks."
+    ],
+    "donts": [
+      "Don't write \"same item\", \"same product\", \"identical product\", \"dupe\" or \"knockoff\" anywhere.",
+      "Don't use Berry Ink for a ring, badge, ladder bar or price.",
+      "Don't shift, restyle or reorder the store's grid before the shopper folds, and don't leave anything behind after unfold.",
+      "Don't use backdrop-filter, gradients as decoration, uppercase eyebrows, middle-dot meta strings in UI text (draw dividers instead), emoji, or → appended to buttons (the pill's → is data: listings become products).",
+      "Don't use Bricolage on the pill, rings or badges, or above weight 700.",
+      "Don't show store logos or trade dress in demos, screenshots or the landing page; demo listings are made up and say so."
+    ]
+  }
+}

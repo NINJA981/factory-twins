@@ -1,0 +1,17 @@
+node_modules/
+.output/
+.wxt/
+dist/
+coverage/
+test-results/
+playwright-report/
+*.log
+.DS_Store
+Thumbs.db
+.env
+.env.*
+# Raw captured pages stay local (see docs/adr/0001-architecture.md, fixture strategy)
+tests/fixtures/_raw/
+.impeccable/config.local.json
+.impeccable/review/
+.impeccable/mocks/
