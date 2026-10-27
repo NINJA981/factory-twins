@@ -229,6 +229,7 @@ describe('tab summaries (popup, AC-F9.1)', () => {
   it('stores one summary per tab and forgets it', async () => {
     const { c } = setup();
     const summary = {
+      status: 'ready' as const,
       store: 'amazon-us' as const,
       listings: 60,
       products: 37,

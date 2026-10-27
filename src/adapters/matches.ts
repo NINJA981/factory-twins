@@ -1,7 +1,7 @@
 import type { StoreId } from '../core/types';
 
 /** Local fixture server used only by `--mode e2e` builds. */
-export const E2E_ORIGIN = 'http://localhost:4173';
+export const E2E_ORIGIN = 'http://localhost:4817';
 
 const RELEASE_MATCHES: Record<StoreId, string[]> = {
   'amazon-us': ['https://www.amazon.com/s*'],

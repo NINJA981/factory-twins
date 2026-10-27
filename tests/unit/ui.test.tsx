@@ -1,6 +1,7 @@
 // @vitest-environment happy-dom
 import { act, type ReactElement } from 'react';
 import { createRoot, type Root } from 'react-dom/client';
+import { MotionGlobalConfig } from 'motion/react';
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import { DEFAULT_SETTINGS, applySettingsPatch } from '../../src/core/settings';
 import type { ScanSummary } from '../../src/core/cluster/groups';
@@ -8,11 +9,14 @@ import type { Settings } from '../../src/core/types';
 import { emptyCounter, recordReads } from '../../src/core/net';
 import { Pill } from '../../src/overlay/Pill';
 import { fontCss, installFonts, FONT_STYLE_ID } from '../../src/overlay/fonts';
+import type { TabSummary } from '../../src/messaging/protocol';
 import type { PopupApi } from '../../src/ui/api';
 import { Options } from '../../src/ui/Options';
 import { Popup } from '../../src/ui/Popup';
 
 beforeAll(() => {
+  // happy-dom's Animation cancels with an AbortError; Motion's visual effects are not under test here.
+  MotionGlobalConfig.skipAnimations = true;
   (globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 });
 
@@ -52,6 +56,10 @@ function fakeApi(over: Partial<PopupApi> = {}) {
     getActiveTabSummary: async () => null,
     clearSessions: vi.fn(async () => ({ undoToken: 'tok' })),
     undoClearSessions: vi.fn(async () => true),
+    sendCommand: vi.fn(async () => true),
+    openShortcutsPage: vi.fn(async () => undefined),
+    openOptions: vi.fn(async () => undefined),
+    getVersion: () => '0.1.0',
     ...over,
   };
   return api;
@@ -75,7 +83,8 @@ describe('Popup (AC-F9.1 to AC-F9.3)', () => {
   it('shows this page counts when a supported page has reported (AC-F9.1)', async () => {
     const api = fakeApi({
       getActiveTabSummary: async () => ({
-        store: 'amazon-us',
+        status: 'ready' as const,
+        store: 'amazon-us' as const,
         listings: 60,
         products: 37,
         twinGroups: 6,
@@ -83,9 +92,12 @@ describe('Popup (AC-F9.1 to AC-F9.3)', () => {
       }),
     });
     const el = await mount(<Popup api={api} />);
-    expect(el.querySelector('[data-testid="page-counts"]')?.textContent).toContain(
-      '60 listings, 37 products, 6 twin groups',
-    );
+    const counts = el.querySelector('[data-testid="page-counts"]')?.textContent ?? '';
+    expect(counts).toContain('Listings60');
+    expect(counts).toContain('Products37');
+    expect(counts).toContain('Twin groups6');
+    expect(counts).toContain('Largest brand tax$18.00');
+    expect(el.textContent).toContain('On for Amazon');
     expect(el.textContent).not.toContain('Open a search page');
   });
 
@@ -132,6 +144,55 @@ describe('Popup (AC-F9.1 to AC-F9.3)', () => {
   });
 });
 
+describe('Popup page states (DESIGN.md, Popup)', () => {
+  const tab = (summary: TabSummary) => fakeApi({ getActiveTabSummary: async () => summary });
+
+  it('follows the scan: skeleton values, the live count, actions held back', async () => {
+    const el = await mount(
+      <Popup api={tab({ status: 'scanning', store: 'amazon-us', done: 24, total: 60 })} />,
+    );
+    expect(el.textContent).toContain('Checking photos… 24/60');
+    expect(el.querySelector('[data-testid="page-counts"]')).toBeNull();
+    const primary = [...el.querySelectorAll('button')].find((b) => b.textContent?.startsWith('Show twins'));
+    expect(primary?.hasAttribute('disabled')).toBe(true);
+    expect(primary?.getAttribute('title')).toBe('Available once the photos are checked.');
+  });
+
+  it('says what failed and offers the layout report, with no page content in it', async () => {
+    const el = await mount(<Popup api={tab({ status: 'error', store: 'walmart-us', adapterVersion: 1 })} />);
+    expect(el.querySelector('[role="alert"]')?.textContent).toContain("Couldn't read this page's listings.");
+    const link = [...el.querySelectorAll('a')].find((a) => a.textContent === 'Report layout');
+    expect(link?.getAttribute('href')).toContain('Store%3A+walmart-us');
+    expect(link?.getAttribute('rel')).toContain('noopener');
+    expect(el.querySelector('[data-testid="page-counts"]')).toBeNull();
+    // The store switch still works in this state.
+    expect(el.querySelectorAll('button[role="switch"]')).toHaveLength(1);
+  });
+
+  it('shows one row and a switch when the store is off, and no stats', async () => {
+    const api = fakeApi({
+      getActiveTabSummary: async () => ({ status: 'off' as const, store: 'amazon-us' as const }),
+      getSettings: async () => applySettingsPatch(DEFAULT_SETTINGS, { stores: { 'amazon-us': false } }),
+    });
+    const el = await mount(<Popup api={api} />);
+    expect(el.textContent).toContain('Off on Amazon');
+    expect(el.querySelectorAll('button[role="switch"]')).toHaveLength(1);
+    expect(el.querySelector('[data-testid="page-counts"]')).toBeNull();
+    expect([...el.querySelectorAll('button')].some((b) => b.textContent?.startsWith('Show twins'))).toBe(
+      false,
+    );
+  });
+
+  it('explains a missing pill when the store is on but the summary pill setting is off', async () => {
+    const api = fakeApi({
+      getActiveTabSummary: async () => ({ status: 'off' as const, store: 'amazon-us' as const }),
+      getSettings: async () => applySettingsPatch(DEFAULT_SETTINGS, { autoPill: false }),
+    });
+    const el = await mount(<Popup api={api} />);
+    expect(el.textContent).toContain('The summary pill is turned off in Settings');
+  });
+});
+
 describe('Options (AC-F10.1)', () => {
   it('lists every setting the spec names', async () => {
     const el = await mount(<Options api={fakeApi()} />);
@@ -153,12 +214,14 @@ describe('Options (AC-F10.1)', () => {
     const api = fakeApi();
     const el = await mount(<Options api={api} />);
     const state = [...el.querySelectorAll('label')].map((l) => [
-      l.textContent,
+      l.querySelector('span span')?.textContent,
       l.querySelector('button[role="switch"]')?.getAttribute('aria-checked'),
     ]);
     expect(state).toContainEqual(['Ring twins automatically', 'false']);
     expect(state).toContainEqual(['Remember twins across pages', 'true']);
-    const label = [...el.querySelectorAll('label')].find((l) => l.textContent === 'Ring twins automatically');
+    const label = [...el.querySelectorAll('label')].find((l) =>
+      l.textContent?.startsWith('Ring twins automatically'),
+    );
     await click(label?.querySelector('button[role="switch"]') ?? null);
     await flush();
     expect(api.setSettings).toHaveBeenCalledWith({ autoRings: true });
@@ -167,7 +230,7 @@ describe('Options (AC-F10.1)', () => {
   it('writes the matching strictness', async () => {
     const api = fakeApi();
     const el = await mount(<Options api={api} />);
-    const strict = [...el.querySelectorAll('input[type="radio"]')][1] as HTMLInputElement;
+    const strict = [...el.querySelectorAll('button[role="radio"]')][1] as HTMLElement;
     await click(strict);
     await flush();
     expect(api.setSettings).toHaveBeenCalledWith({ strictness: 'strict' });
@@ -188,9 +251,12 @@ describe('Pill (AC-F4.1, AC-F4.2, AC-F4.4)', () => {
   it('shows the result with drawn dividers and the spoken name', async () => {
     const el = await mount(<Pill {...base} state={{ kind: 'result', summary }} actions={actions()} />);
     const body = el.querySelector('.ft-pill-body');
-    expect(body?.textContent).toBe('60 listings → 37 products6 twin groupsup to $18 brand tax');
+    // The spoken name is the visible words with commas (AC-F4.1); the arrow and dividers are drawn.
     expect(body?.getAttribute('aria-label')).toBe(
-      '60 listings, 37 products, 6 twin groups, up to 18 dollars brand tax. Show twins.',
+      '60 listings, 37 products, 6 twin groups, up to $18 brand tax',
+    );
+    expect(body?.textContent?.replace(/\s+/g, ' ').trim()).toBe(
+      '60 listings 37 products 6 twin groups up to $18 brand tax',
     );
     expect(el.querySelectorAll('.ft-divider')).toHaveLength(2);
     expect(el.textContent).not.toContain('·');

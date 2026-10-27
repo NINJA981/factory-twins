@@ -99,9 +99,7 @@ describe('copy lint (AC-X.1, AC-F6.6)', () => {
       '6 twin groups',
       'up to $18 brand tax',
     ]);
-    expect(copy.pillAccessibleName(s)).toBe(
-      '60 listings, 37 products, 6 twin groups, up to 18 dollars brand tax. Show twins.',
-    );
+    expect(copy.pillAccessibleName(s)).toBe('60 listings, 37 products, 6 twin groups, up to $18 brand tax');
     expect(copy.pillSegments({ ...s, listings: 120, products: 71, twinGroups: 9, pages: [1, 2] })[0]).toBe(
       '120 listings across 2 pages → 71 products',
     );

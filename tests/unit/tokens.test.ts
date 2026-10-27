@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { converter, parse, wcagContrast } from 'culori';
@@ -45,12 +45,12 @@ describe('DESIGN.md tokens are wired into the CSS', () => {
   it('uses no hard-coded colour in overlay or app CSS or in components (off-token values)', () => {
     const files = [
       'src/styles/overlay.css',
+      'src/styles/overlay-base.css',
+      'src/styles/tile.css',
+      'src/styles/card.css',
       'src/styles/app.css',
-      'src/overlay/Pill.tsx',
-      'src/overlay/OverlayRoot.tsx',
-      'src/ui/Popup.tsx',
-      'src/ui/Options.tsx',
-      'src/ui/Switch.tsx',
+      ...readdirSync('src/overlay').map((f) => `src/overlay/${f}`),
+      ...readdirSync('src/ui').map((f) => `src/ui/${f}`),
     ];
     for (const f of files) {
       const text = read(f);

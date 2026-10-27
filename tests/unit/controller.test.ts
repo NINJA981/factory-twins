@@ -79,6 +79,7 @@ function setup(html = fixture.html, href = PAGE_1) {
     commitLetters: (data) => coordinator.commitLetters(data),
     getSettings: () => coordinator.getSettings(),
     reportSummary,
+    pixelDiff: (req) => coordinator.pixelDiff(req),
   };
   const controller = createController({
     adapter: amazonAdapter,
@@ -116,6 +117,7 @@ describe('content controller', () => {
     }).summary;
     expect(state.pill.kind === 'result' && state.pill.summary).toEqual(direct);
     expect(s.reportSummary).toHaveBeenCalledWith({
+      status: 'ready',
       store: 'amazon-us',
       listings: direct.listings,
       products: direct.products,
@@ -176,6 +178,31 @@ describe('content controller', () => {
     expect(s.controller.getState().pill).toEqual({ kind: 'error', reason: 'hasher-failed' });
   });
 
+  it('tells the popup each state it passes through: scanning, ready, off, error (DESIGN.md popup states)', async () => {
+    const ok = setup();
+    active = ok.controller;
+    await ok.controller.start();
+    const calls = ok.reportSummary.mock.calls as unknown as Array<[{ status: string }]>;
+    const statuses = calls.map((c) => c[0].status);
+    expect(statuses[0]).toBe('scanning');
+    expect(statuses[statuses.length - 1]).toBe('ready');
+    ok.controller.applySettings({
+      ...(await ok.coordinator.getSettings()),
+      stores: { 'amazon-us': false, 'walmart-us': true },
+    });
+    expect(calls[calls.length - 1]?.[0]).toEqual({ status: 'off', store: 'amazon-us' });
+    ok.controller.stop();
+
+    const bad = setup('<html><body><div id="search"><p>Totally new layout</p></div></body></html>');
+    active = bad.controller;
+    await bad.controller.start();
+    expect(bad.reportSummary).toHaveBeenCalledWith({
+      status: 'error',
+      store: 'amazon-us',
+      adapterVersion: amazonAdapter.version,
+    });
+  });
+
   it('picks up tiles that load later and hashes only the new photos (AC-F1.3)', async () => {
     const s = setup();
     active = s.controller;
@@ -213,6 +240,7 @@ describe('content controller', () => {
       commitLetters: (data) => one.coordinator.commitLetters(data),
       getSettings: () => one.coordinator.getSettings(),
       reportSummary: async () => undefined,
+      pixelDiff: (req) => one.coordinator.pixelDiff(req),
     };
     const two = createController({ adapter: amazonAdapter, doc: document, href: PAGE_2, client });
     active = two;

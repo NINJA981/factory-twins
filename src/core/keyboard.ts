@@ -6,6 +6,9 @@ export type KeyAction =
   | 'toggle-fold'
   | 'open-lens'
   | 'escape'
+  | 'toggle-cheatsheet'
+  | 'lens-onion'
+  | 'lens-difference'
   | 'lens-nudge-small-up'
   | 'lens-nudge-small-down'
   | 'lens-nudge-large-up'
@@ -38,6 +41,11 @@ export function resolveKey(e: KeyInput, ctx: KeyContext): KeyAction | null {
   if (e.key === 'Escape') return 'escape';
   if (ctx.lensOpen) {
     if (e.ctrlKey || e.metaKey || e.altKey) return null;
+    // Lens-scoped keys stay on even when the single-key shortcuts are off: the lens is already open.
+    if (!e.shiftKey && !e.repeat && !ctx.editableFocus) {
+      if (e.key.toLowerCase() === 'o') return 'lens-onion';
+      if (e.key.toLowerCase() === 'd') return 'lens-difference';
+    }
     if (e.key === 'ArrowRight' || e.key === 'ArrowUp') {
       return e.shiftKey ? 'lens-nudge-large-up' : 'lens-nudge-small-up';
     }
@@ -46,7 +54,9 @@ export function resolveKey(e: KeyInput, ctx: KeyContext): KeyAction | null {
     }
   }
   if (!ctx.singleKeys || ctx.editableFocus || e.repeat) return null;
-  if (e.ctrlKey || e.metaKey || e.altKey || e.shiftKey) return null;
+  if (e.ctrlKey || e.metaKey || e.altKey) return null;
+  if (e.key === '?') return 'toggle-cheatsheet';
+  if (e.shiftKey) return null;
   switch (e.key.toLowerCase()) {
     case 't':
       return 'toggle-rings';

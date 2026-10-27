@@ -12,7 +12,8 @@ export interface MountedOverlay {
 
 /**
  * Mounts the overlay in one top-level shadow root (SPEC AC-X.3): store styles cannot leak in, ours
- * cannot leak out. The host is fixed-position and zero-sized, so it never shifts store layout.
+ * cannot leak out. The host is fixed-position and ignores the pointer, so it never shifts store
+ * layout or blocks a click; only the controls inside it take events.
  */
 export function mountOverlay(doc: Document, controller: Controller, reportUrl: string): MountedOverlay {
   const host = doc.createElement(HOST_TAG);
@@ -20,11 +21,10 @@ export function mountOverlay(doc: Document, controller: Controller, reportUrl: s
   const style = doc.createElement('style');
   style.textContent = overlayCss;
   const mountPoint = doc.createElement('div');
-  mountPoint.className = 'ft-root';
   shadow.append(style, mountPoint);
   doc.documentElement.append(host);
   const root = createRoot(mountPoint);
-  root.render(<OverlayRoot controller={controller} reportUrl={reportUrl} />);
+  root.render(<OverlayRoot controller={controller} reportUrl={reportUrl} host={host} />);
   return {
     host,
     unmount() {

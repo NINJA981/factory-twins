@@ -1,0 +1,479 @@
+/* The fold card (F6): one shadow root per card, inserted as a full row of the store's grid. */
+@import './tokens.css';
+@import './overlay-base.css';
+
+:host {
+  display: block;
+  color-scheme: light dark;
+}
+
+:host([data-theme='light']) {
+  color-scheme: light;
+}
+
+:host([data-theme='dark']) {
+  color-scheme: dark;
+}
+
+.card {
+  position: relative;
+  container-type: inline-size;
+  margin: 0;
+  /* The surface sits on its own layer so the fold can grow it from the leader tile's rect. */
+}
+
+.card-bg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: 0 1px 2px color-mix(in oklab, var(--text) 5%, transparent);
+}
+
+.card-band {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--g);
+}
+
+.card-in {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  padding-top: 19px;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: 160px minmax(0, 1fr);
+  gap: var(--space-4);
+  align-items: start;
+}
+
+.rail {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.photo {
+  display: block;
+  width: 160px;
+  height: 160px;
+  object-fit: contain;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xs);
+  background: var(--photo-mat);
+}
+
+.rail .ft-btn {
+  justify-content: space-between;
+  width: 100%;
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-sm);
+  background: var(--g-soft);
+  color: var(--g-ink);
+}
+
+.head h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--text-title-size);
+  line-height: var(--text-title-leading);
+  font-weight: var(--text-title-weight);
+  letter-spacing: var(--text-title-tracking);
+  font-variation-settings: var(--text-title-variation);
+  text-wrap: balance;
+}
+
+.head h2:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+  border-radius: var(--radius-xs);
+}
+
+.badge-static {
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+  padding: 0 8px;
+  border-radius: var(--radius-full);
+  background: var(--g);
+  color: var(--on-accent);
+  font-size: var(--text-micro-size);
+  line-height: 1;
+  font-weight: var(--text-micro-weight);
+  letter-spacing: var(--text-micro-tracking);
+  white-space: nowrap;
+}
+
+.summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-3);
+  min-height: 28px;
+}
+
+.range {
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.range b {
+  color: var(--text);
+  font-size: var(--text-price-size);
+  font-weight: var(--text-price-weight);
+}
+
+.tax {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 28px;
+  padding: 4px 10px;
+  border-radius: var(--radius-full);
+  background: var(--danger-soft);
+  color: var(--danger);
+  font-size: var(--text-label-compact-size);
+  line-height: 1;
+  font-weight: var(--text-label-compact-weight);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* Price ladder ------------------------------------------------------------------------------- */
+.ladder {
+  display: grid;
+  grid-template-columns: minmax(0, max-content) auto;
+  justify-content: start;
+  gap: 0;
+  min-width: 0;
+}
+
+.scroller {
+  position: relative;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) transparent;
+}
+
+.rungs {
+  position: relative;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(104px, 176px);
+  grid-template-rows: auto;
+  column-gap: var(--space-2);
+  min-width: min-content;
+}
+
+/* Gridline from the top of the lowest bar, so the brand tax reads against the others. */
+.guide {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 0;
+  border-top: 1px dashed color-mix(in oklab, var(--danger) 55%, transparent);
+  pointer-events: none;
+}
+
+.rung {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+  padding: var(--space-2);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  text-decoration: none;
+  grid-row: 1;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .rung:hover {
+    background: var(--surface-2);
+  }
+}
+
+.rung:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: -2px;
+}
+
+.thumb {
+  display: block;
+  flex: none;
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--photo-mat);
+}
+
+/* Each rung's photo sits on top of its own bar, so the skyline of bars carries the photos with it. */
+.bars {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: var(--space-1);
+  height: 140px;
+}
+
+.bar {
+  position: relative;
+  width: 100%;
+  padding: 3px 6px;
+  border-top: 2px solid var(--g-ink);
+  border-radius: var(--radius-xs) var(--radius-xs) 0 0;
+  background: var(--g-soft);
+  color: var(--g-ink);
+  font-size: var(--text-caption-size);
+  line-height: var(--text-caption-leading);
+  font-weight: 550;
+  transform-origin: bottom;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.bar[data-none] {
+  border-top-color: var(--border-strong);
+  background: var(--surface-2);
+  border-top-style: dashed;
+}
+
+.price {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 4px;
+  font-size: var(--text-price-lg-size);
+  line-height: var(--text-price-lg-leading);
+  font-weight: var(--text-price-lg-weight);
+  letter-spacing: var(--text-price-lg-tracking);
+  font-variant-numeric: tabular-nums;
+  min-height: 24px;
+}
+
+.price small {
+  color: var(--text-muted);
+  font-size: var(--text-caption-size);
+  font-weight: var(--text-caption-weight);
+  letter-spacing: 0;
+}
+
+.price[data-none] {
+  color: var(--text-muted);
+  font-size: var(--text-caption-size);
+  font-weight: var(--text-caption-weight);
+  letter-spacing: 0;
+}
+
+.sub {
+  display: block;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-muted);
+  font-size: var(--text-caption-size);
+  line-height: var(--text-caption-leading);
+  font-weight: var(--text-caption-weight);
+  letter-spacing: var(--text-caption-tracking);
+  font-variant-numeric: tabular-nums;
+}
+
+.sub.brand {
+  color: var(--text);
+}
+
+.rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.rating svg {
+  color: var(--text-muted);
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  min-height: 20px;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+  padding: 0 8px;
+  border-radius: var(--radius-full);
+  background: var(--surface-2);
+  color: var(--text-muted);
+  font-size: var(--text-caption-size);
+  line-height: 1;
+  font-weight: var(--text-caption-weight);
+  white-space: nowrap;
+}
+
+.tag[data-strong] {
+  background: var(--g-soft);
+  color: var(--g-ink);
+  font-weight: 600;
+}
+
+.note {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin-top: var(--space-1);
+  padding: 6px 8px;
+  border-radius: var(--radius-xs);
+  background: var(--warning-soft);
+  color: var(--warning);
+  font-size: var(--text-caption-size);
+  line-height: var(--text-caption-leading);
+  font-weight: var(--text-caption-weight);
+  grid-row: auto;
+}
+
+.note svg {
+  flex: none;
+  margin-top: 1px;
+}
+
+.gone {
+  color: var(--text-muted);
+  font-size: var(--text-caption-size);
+}
+
+/* Brand tax bracket: a dimension line from the top of the Lowest bar to the top of the Highest. */
+.bracket {
+  position: relative;
+  width: 60px;
+  margin-top: 52px;
+  height: 96px;
+}
+
+.bracket-line {
+  position: absolute;
+  left: 8px;
+  width: 1.5px;
+  background: var(--danger);
+  transform-origin: bottom;
+}
+
+.bracket-tick {
+  position: absolute;
+  left: 0;
+  width: 12px;
+  height: 1.5px;
+  background: var(--danger);
+}
+
+.bracket-amount {
+  position: absolute;
+  left: 16px;
+  transform: translateY(-50%);
+  color: var(--danger);
+  font-size: var(--text-caption-size);
+  line-height: 1;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-4);
+}
+
+.foot p {
+  margin: 0;
+  color: var(--text-subtle);
+  font-size: var(--text-caption-size);
+  line-height: var(--text-caption-leading);
+  font-weight: var(--text-caption-weight);
+}
+
+.seen {
+  display: block;
+  margin: 0;
+  color: var(--text-muted);
+  font-size: var(--text-caption-size);
+  line-height: var(--text-caption-leading);
+  text-wrap: pretty;
+}
+
+/* Narrow results columns: smaller photo, stacked rail. */
+@container (max-width: 720px) {
+  .card-grid {
+    grid-template-columns: 120px minmax(0, 1fr);
+  }
+  .photo {
+    width: 120px;
+    height: 120px;
+  }
+}
+
+@container (max-width: 520px) {
+  .card-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  /* Photo at the left, its two actions stacked beside it. */
+  .rail {
+    display: grid;
+    grid-template-columns: 120px minmax(0, 1fr);
+    grid-auto-rows: min-content;
+    align-content: start;
+    gap: var(--space-2) var(--space-3);
+  }
+  .rail .photo {
+    grid-row: 1 / span 3;
+  }
+  .rail .seen {
+    grid-column: 2;
+  }
+  .bracket {
+    width: 48px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rung {
+    transition: none;
+  }
+}

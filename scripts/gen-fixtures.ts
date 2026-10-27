@@ -270,7 +270,7 @@ async function writeDemo(): Promise<void> {
   const dir = join(fixtures, 'demo', 'laptop-stand');
   rmSync(join(dir, 'img'), { recursive: true, force: true });
   for (const [imageId, jpeg] of images) write(join(dir, 'img', `${imageId}.jpg`), jpeg);
-  const html = renderAmazonPage(spec, (l) => `http://localhost:4173/img/${l.imageId}.jpg`).replace(
+  const html = renderAmazonPage(spec, (l) => `http://localhost:4817/img/${l.imageId}.jpg`).replace(
     '<body>',
     '<body><div style="position:fixed;top:8px;left:8px;z-index:5;padding:2px 8px;background:#fff;border:1px solid #888;font:12px sans-serif">Demo page with made-up listings</div>',
   );

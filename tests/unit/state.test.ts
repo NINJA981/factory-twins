@@ -168,12 +168,19 @@ describe('overlay reducer (F5, F6, F7)', () => {
       { type: 'open-lens', letter: 'B' },
     );
     const after = run(open, { type: 'groups-changed' }, [group('A', ['a1', 'a2'])]);
-    expect(after).toEqual({ rings: true, folded: true, lens: null, focusedLetter: null });
+    expect(after).toEqual({
+      rings: true,
+      folded: true,
+      lens: null,
+      focusedLetter: null,
+      cheatsheet: false,
+    });
     expect(run(open, { type: 'groups-changed' }, [])).toEqual({
       rings: false,
       folded: false,
       lens: null,
       focusedLetter: null,
+      cheatsheet: false,
     });
     expect(run(open, { type: 'groups-changed' }).lens).toEqual(open.lens);
   });

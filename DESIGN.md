@@ -20,6 +20,8 @@ colors:
   on-accent: "oklch(0.99 0.006 355)"
   ring: "oklch(0.48 0.17 355)"
   scrim: "oklch(0.12 0.01 345 / 0.45)"
+  # The white every marketplace photo is shot on. Never themed: a photo mat stays white in dark mode.
+  photo-mat: "oklch(1 0 0)"
   # Role tokens, dark theme
   bg-dark: "oklch(0.17 0.012 345)"
   surface-dark: "oklch(0.205 0.014 345)"
@@ -664,6 +666,7 @@ Groups beyond F cycle the palette and patterns with their own letter (G reuses A
 - **Blush Paper** (`bg`): page background of popup, options and landing.
 - **Sheet White** (`surface`): cards, pill, dialog, fold card.
 - **Proof Grey** (`surface-2`, `surface-3`): segmented track, keycaps, privacy panel, hovered rows. One step = +0.035 L in dark mode.
+- **Photo Mat** (`photo-mat`, pure white in both themes): the square behind every product photo we display (fold card, Proof lens, ghosts). Marketplace photos are shot on white, so the mat is never themed.
 - **Hairline** (`border`) and **Edge** (`border-strong`, 3.8:1): 1px dividers; input and switch-off borders.
 - **Ink** (`text`, 16.3:1), **Graphite** (`text-muted`, 6.9:1), **Pencil** (`text-subtle`, 4.7:1 on bg).
 - **Pop Yellow** (`pop`, `oklch(0.90 0.10 100)`): landing illustration and empty-state motif only. Deviation from the bible's D4 pop `oklch(0.86 0.15 92)`, which measured ΔE_OK 0.024 from Miro's signature yellow; ours measures 0.075.

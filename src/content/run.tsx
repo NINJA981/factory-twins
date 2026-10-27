@@ -6,20 +6,12 @@ import type { StoreId } from '../core/types';
 import { backgroundMessenger, tabMessenger } from '../messaging/messengers';
 import { installFonts } from '../overlay/fonts';
 import { mountOverlay } from '../overlay/mount';
+import { layoutReportUrl } from '../copy/links';
 import { createController, type ControllerClient } from './controller';
 
 // Shared body of both store content scripts: wire the controller to the background over typed
 // messages, mount the overlay, listen for keys and tab messages. Everything is torn down when the
 // extension context is invalidated (update, reload).
-
-/** Prefilled issue link for the "Report layout" action. Carries the store and adapter version only. */
-export function layoutReportUrl(store: StoreId, adapterVersion: number): string {
-  const params = new URLSearchParams({
-    title: `Layout changed on ${store}`,
-    body: `Store: ${store}\nAdapter version: ${adapterVersion}\nPage type: search results\n\n(No page content is included in this link.)`,
-  });
-  return `https://github.com/factory-twins/factory-twins/issues/new?${params.toString()}`;
-}
 
 const client: ControllerClient = {
   hashImages: (req) => backgroundMessenger.sendMessage('hashImages', req),
@@ -27,6 +19,7 @@ const client: ControllerClient = {
   commitLetters: (data) => backgroundMessenger.sendMessage('commitLetters', data),
   getSettings: () => backgroundMessenger.sendMessage('getSettings', undefined),
   reportSummary: (summary) => backgroundMessenger.sendMessage('reportTabSummary', summary),
+  pixelDiff: (req) => backgroundMessenger.sendMessage('pixelDiff', req),
 };
 
 export async function runContentScript(store: StoreId, ctx: ContentScriptContext): Promise<void> {
@@ -38,7 +31,11 @@ export async function runContentScript(store: StoreId, ctx: ContentScriptContext
   const overlay = mountOverlay(document, controller, layoutReportUrl(store, adapter.version));
 
   const onKeydown = (e: KeyboardEvent) => {
-    if (controller.handleKeydown(e)) e.stopPropagation();
+    if (controller.handleKeydown(e)) {
+      // Handled here, so the page (and a focused slider's own arrow-key step) must not act on it too.
+      e.stopPropagation();
+      e.preventDefault();
+    }
   };
   document.addEventListener('keydown', onKeydown, true);
 

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import type { PopupApi } from './api';
 import type { SettingsPatch } from '../core/settings';
 import type { NetworkCounter, Settings } from '../core/types';
@@ -35,17 +35,38 @@ export function useSettings(api: PopupApi) {
   const [saveFailed, setSaveFailed] = useState(false);
   const settings = override ?? value;
   const update = useCallback(
-    async (patch: SettingsPatch) => {
+    async (patch: SettingsPatch): Promise<boolean> => {
       setSaveFailed(false);
       try {
         setOverride(await api.setSettings(patch));
+        return true;
       } catch {
+        // The control keeps its old value because only a saved result is ever shown.
         setSaveFailed(true);
+        return false;
       }
     },
     [api],
   );
   return { settings, failed, saveFailed, update };
+}
+
+/** A flag that is true for `ms` after `flash()` is called: "Saved" beside a section title. */
+export function useFlash(ms: number): [boolean, () => void] {
+  const [on, setOn] = useState(false);
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const flash = useCallback(() => {
+    setOn(true);
+    if (timer.current) clearTimeout(timer.current);
+    timer.current = setTimeout(() => setOn(false), ms);
+  }, [ms]);
+  useEffect(
+    () => () => {
+      if (timer.current) clearTimeout(timer.current);
+    },
+    [],
+  );
+  return [on, flash];
 }
 
 export function useCounter(api: PopupApi): NetworkCounter | null {

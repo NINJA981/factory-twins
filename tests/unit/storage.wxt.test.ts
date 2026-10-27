@@ -41,6 +41,7 @@ describe('wxtArea over chrome.storage', () => {
     const c = createCoordinator({ session: wxtArea('session'), local: wxtArea('local'), hasher: noHasher });
     await c.setSettings({ autoRings: true });
     await c.reportTabSummary(3, {
+      status: 'ready',
       store: 'amazon-us',
       listings: 1,
       products: 1,

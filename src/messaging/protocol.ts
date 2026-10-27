@@ -15,14 +15,23 @@ export type HashImagesResult = Record<
 
 export type PixelDiffReply = { ok: true; result: PixelDiffResult } | { ok: false; error: ReadError };
 
-/** What the popup shows for the active tab (SPEC AC-F9.1). */
-export interface TabSummary {
-  store: StoreId;
-  listings: number;
-  products: number;
-  twinGroups: number;
-  maxBrandTaxDollars: number | null;
-}
+/**
+ * What the popup shows for the active tab (SPEC AC-F9.1, DESIGN.md popup states). The content script
+ * reports each state it passes through, so the popup can say "Checking photos", "Off on Amazon" or
+ * "Couldn't read this page" instead of guessing from silence.
+ */
+export type TabSummary =
+  | {
+      status: 'ready';
+      store: StoreId;
+      listings: number;
+      products: number;
+      twinGroups: number;
+      maxBrandTaxDollars: number | null;
+    }
+  | { status: 'scanning'; store: StoreId; done: number; total: number }
+  | { status: 'error'; store: StoreId; adapterVersion: number }
+  | { status: 'off'; store: StoreId };
 
 /** Content script, popup and options → background. */
 export interface BackgroundProtocol {

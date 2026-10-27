@@ -9,8 +9,8 @@ import {
   type OverlayState,
 } from '../core/state/overlay';
 import { INITIAL_PILL, pillReducer, type PillEvent, type PillState } from '../core/state/pill';
-import type { QuerySession, Settings } from '../core/types';
-import type { TabSummary } from '../messaging/protocol';
+import type { Listing, QuerySession, Settings } from '../core/types';
+import type { PixelDiffReply, TabSummary } from '../messaging/protocol';
 import { deepActiveElement, isEditableTarget, watchNewTiles } from './dom';
 import { scanDocument, type ScanClient } from './scan';
 
@@ -20,6 +20,8 @@ import { scanDocument, type ScanClient } from './scan';
 export interface ControllerClient extends ScanClient {
   getSettings(): Promise<Settings>;
   reportSummary(summary: TabSummary): Promise<void>;
+  /** Proof lens measurement of two photos (SPEC AC-F7.4), computed in the hasher context. */
+  pixelDiff(req: { store: Listing['store']; a: string; b: string }): Promise<PixelDiffReply>;
 }
 
 export interface ControllerState {
@@ -34,6 +36,8 @@ export interface ControllerState {
 }
 
 export interface Controller {
+  /** The store adapter, for the overlay's pill placement and fold insertion points. */
+  readonly adapter: StoreAdapter;
   getState(): ControllerState;
   subscribe(listener: () => void): () => void;
   start(): Promise<void>;
@@ -46,6 +50,8 @@ export interface Controller {
   /** Manifest command or pill button. */
   runAction(action: KeyAction): void;
   runCommand(command: string): void;
+  /** Measures how many pixels differ between two listings' photos. */
+  measure(topId: string, bottomId: string): Promise<PixelDiffReply>;
   handleKeydown(e: KeyboardEvent): boolean;
 }
 
@@ -86,6 +92,10 @@ export function createController(opts: ControllerOptions): Controller {
   };
   const groupsOf = (s: ControllerState) => s.result?.groups ?? [];
 
+  const tell = (summary: TabSummary) => {
+    void client.reportSummary(summary).catch(() => undefined);
+  };
+  let lastProgressAt = 0;
   const pill = (event: PillEvent) => set({ pill: pillReducer(state.pill, event) });
   const dispatch = (action: OverlayAction) =>
     set({ overlay: overlayReducer(state.overlay, action, groupsOf(state)) });
@@ -110,12 +120,26 @@ export function createController(opts: ControllerOptions): Controller {
         client,
         settings,
         localLetters,
-        onStart: (total) => pill({ type: 'scan-start', total }),
-        onProgress: (done) => pill({ type: 'scan-progress', done }),
+        onStart: (total) => {
+          pill({ type: 'scan-start', total });
+          // A re-scan for lazy tiles keeps the last result, so the popup keeps it too.
+          if (state.pill.kind === 'scanning')
+            tell({ status: 'scanning', store: adapter.store, done: 0, total });
+        },
+        onProgress: (done) => {
+          pill({ type: 'scan-progress', done });
+          const now = Date.now();
+          if (state.pill.kind === 'scanning' && now - lastProgressAt >= 200) {
+            lastProgressAt = now;
+            tell({ status: 'scanning', store: adapter.store, done, total: state.pill.total });
+          }
+        },
       });
       if (stopped) return;
       if (!outcome.ok) {
         pill({ type: 'scan-failed', reason: outcome.reason });
+        if (state.pill.kind === 'error')
+          tell({ status: 'error', store: adapter.store, adapterVersion: adapter.version });
         return;
       }
       Object.assign(localLetters, outcome.result.letters);
@@ -136,6 +160,7 @@ export function createController(opts: ControllerOptions): Controller {
       const s = outcome.result.summary;
       await client
         .reportSummary({
+          status: 'ready',
           store: adapter.store,
           listings: s.listings,
           products: s.products,
@@ -190,12 +215,19 @@ export function createController(opts: ControllerOptions): Controller {
         return dispatch({ type: 'open-lens' });
       case 'escape':
         return dispatch({ type: 'escape' });
+      case 'toggle-cheatsheet':
+        return dispatch({ type: 'toggle-cheatsheet' });
+      case 'lens-onion':
+        return dispatch({ type: 'lens-mode', mode: 'onion' });
+      case 'lens-difference':
+        return dispatch({ type: 'lens-mode', mode: 'difference' });
       default:
         return dispatch({ type: 'lens-nudge', delta: lensNudgeDelta(action) });
     }
   }
 
   return {
+    adapter,
     getState: () => state,
     subscribe(listener) {
       listeners.add(listener);
@@ -209,6 +241,7 @@ export function createController(opts: ControllerOptions): Controller {
       set({ settings });
       if (!enabled(settings)) {
         pill({ type: 'pause' });
+        tell({ status: 'off', store: adapter.store });
         return;
       }
       startWatching();
@@ -229,6 +262,7 @@ export function createController(opts: ControllerOptions): Controller {
       if (!enabled(settings)) {
         pill({ type: 'pause' });
         set({ overlay: INITIAL_OVERLAY });
+        tell({ status: 'off', store: adapter.store });
       } else if (!wasEnabled) {
         pill({ type: 'resume' });
         startWatching();
@@ -242,6 +276,17 @@ export function createController(opts: ControllerOptions): Controller {
       const action = commandAction(command);
       if (action) runAction(action);
     },
+    async measure(topId, bottomId) {
+      const listings = state.session?.listings ?? {};
+      const a = listings[topId]?.imageUrl;
+      const b = listings[bottomId]?.imageUrl;
+      if (!a || !b) return { ok: false, error: 'invalid-url' };
+      try {
+        return await client.pixelDiff({ store: adapter.store, a, b });
+      } catch {
+        return { ok: false, error: 'network' };
+      }
+    },
     handleKeydown(e) {
       const action = resolveKey(e, {
         singleKeys: state.settings?.singleKeys ?? false,
@@ -250,8 +295,8 @@ export function createController(opts: ControllerOptions): Controller {
         lensOpen: state.overlay.lens != null,
       });
       if (!action) return false;
-      // Esc only belongs to us while the lens is open; otherwise the store keeps it.
-      if (action === 'escape' && !state.overlay.lens) return false;
+      // Esc only belongs to us while the lens or the cheatsheet is open; otherwise the store keeps it.
+      if (action === 'escape' && !state.overlay.lens && !state.overlay.cheatsheet) return false;
       runAction(action);
       return true;
     },

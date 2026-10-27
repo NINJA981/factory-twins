@@ -5,7 +5,7 @@ import { E2E_ORIGIN, contentScriptMatches, originPattern } from './src/adapters/
 
 // One codebase, two targets: Chrome MV3 (offscreen hasher) and Firefox MV3 (background-page hasher).
 // `--mode e2e` builds a test-only variant that also runs on the local fixture server
-// (http://localhost:4173). scripts/check-release-manifest.mjs asserts that a release build
+// (http://localhost:4817). scripts/check-release-manifest.mjs asserts that a release build
 // never contains that origin.
 export default defineConfig({
   // Firefox defaults to MV2 in WXT; the product targets MV3 on both (SPEC section 11).

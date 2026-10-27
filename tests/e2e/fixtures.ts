@@ -7,7 +7,7 @@ import { chromium, test as base, type BrowserContext, type Page } from '@playwri
 // full browser, so this uses the `chromium` channel (new headless) rather than the headless shell.
 
 export const EXTENSION_DIR = resolve('.output', 'chrome-mv3-e2e');
-export const ORIGIN = 'http://localhost:4173';
+export const ORIGIN = 'http://localhost:4817';
 export const DEMO_URL = `${ORIGIN}/s?k=laptop+stand`;
 export const DEMO_PAGE_2 = `${ORIGIN}/s?k=laptop+stand&page=2`;
 

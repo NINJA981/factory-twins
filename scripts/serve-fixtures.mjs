@@ -1,4 +1,4 @@
-// Local static server for the e2e tests: http://localhost:4173. Serves the demo results page in an
+// Local static server for the e2e tests: http://localhost:4817. Serves the demo results page in an
 // Amazon-shaped URL (/s?k=laptop+stand&page=N) plus its synthetic images. Nothing here leaves the
 // machine, and the e2e extension build is the only thing that matches this origin.
 import { createReadStream, existsSync, readFileSync } from 'node:fs';
@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const demo = join(root, 'tests', 'fixtures', 'demo', 'laptop-stand');
-const PORT = Number(process.env.FT_FIXTURE_PORT ?? 4173);
+const PORT = Number(process.env.FT_FIXTURE_PORT ?? 4817);
 
 function send(res, status, type, body) {
   res.writeHead(status, { 'content-type': type, 'cache-control': 'no-store' });
@@ -23,7 +23,18 @@ const server = createServer((req, res) => {
     const page = url.searchParams.get('page') === '2' ? 'page2.html' : 'page.html';
     const file = join(demo, page);
     if (!existsSync(file)) return send(res, 404, 'text/plain', `missing ${page}; run pnpm fixtures`);
-    return send(res, 200, 'text/html; charset=utf-8', readFileSync(file));
+    // Give the made-up listings a store-like layout (never part of the extension); ?theme=dark darkens the page.
+    let html = readFileSync(file, 'utf8');
+    html = html.replace(
+      '</head>',
+      '<meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="/store.css"></head>',
+    );
+    if (url.searchParams.get('theme') === 'dark') html = html.replace('<body>', '<body class="dark">');
+    return send(res, 200, 'text/html; charset=utf-8', html);
+  }
+
+  if (url.pathname === '/store.css') {
+    return send(res, 200, 'text/css', readFileSync(join(root, 'scripts', 'fixture-store.css')));
   }
 
   if (url.pathname.startsWith('/img/')) {

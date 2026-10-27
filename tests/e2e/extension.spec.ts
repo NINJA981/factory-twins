@@ -12,9 +12,9 @@ test.describe('summary pill on the demo results page', () => {
     await expect(body).toContainText('60 listings');
     await expect(body).toContainText('6 twin groups');
     await expect(body).toContainText('up to $23 brand tax');
-    await expect(body).toHaveAttribute(
-      'aria-label',
-      /60 listings, \d+ products, 6 twin groups, up to 23 dollars brand tax\. Show twins\./,
+    // The spoken name is the visible words (WCAG 2.5.3) with commas for screen readers (AC-F4.1).
+    await expect(body).toHaveAccessibleName(
+      /^60 listings, \d+ products, 6 twin groups, up to \$23 brand tax$/,
     );
   });
 
@@ -97,7 +97,7 @@ test.describe('popup and options', () => {
     const popup = await context.newPage();
     await popup.goto(`chrome-extension://${extensionId}/popup.html`);
     const reads = popup.getByTestId('reads');
-    await expect(reads).toContainText('image reads this session, all from localhost:4173. 0 to anyone else.');
+    await expect(reads).toContainText('image reads this session, all from localhost:4817. 0 to anyone else.');
     const n = Number(/^(\d+) image reads/.exec((await reads.textContent()) ?? '')?.[1]);
     expect(n).toBe(60);
     await expect(
@@ -136,13 +136,7 @@ test.describe('popup and options', () => {
   test('the pill passes an automated accessibility check', async ({ page }) => {
     await page.goto(DEMO_URL);
     await expect(resultBody(page)).toBeVisible({ timeout: 20_000 });
-    // label-content-name-mismatch is left out on purpose: SPEC AC-F4.1 fixes the spoken name ("60 listings,
-    // 37 products, ...") while the visible text carries an arrow and drawn dividers. The two cannot both be
-    // true; the UI stage decides which one changes (HANDOFF.md, known issues).
-    const results = await new AxeBuilder({ page })
-      .include('factory-twins-overlay')
-      .disableRules(['label-content-name-mismatch'])
-      .analyze();
+    const results = await new AxeBuilder({ page }).include('factory-twins-overlay').analyze();
     expect(results.violations.map((v) => `${v.id} (${v.nodes.length})`)).toEqual([]);
   });
 });

@@ -60,7 +60,7 @@ describe('the e2e demo page', () => {
       groups: string[][];
       tiles: number;
     };
-    const href = 'http://localhost:4173/s?k=laptop+stand';
+    const href = 'http://localhost:4817/s?k=laptop+stand';
     const win = new Window({ url: href });
     win.document.documentElement.innerHTML = html.replace(/^<!doctype html>/i, '');
     const read = readPage(ADAPTERS['amazon-us'], win.document as unknown as Document, href);

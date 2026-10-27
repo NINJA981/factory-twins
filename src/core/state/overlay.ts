@@ -19,6 +19,8 @@ export interface OverlayState {
   lens: LensState | null;
   /** Letter of the group whose badge or fold card has focus (target of `P`). */
   focusedLetter: string | null;
+  /** The `?` shortcut list above the pill. */
+  cheatsheet: boolean;
 }
 
 export type OverlayAction =
@@ -35,9 +37,16 @@ export type OverlayAction =
   | { type: 'lens-nudge'; delta: number }
   /** The set of groups changed (re-scan, new page); drop references to groups that are gone. */
   | { type: 'groups-changed' }
+  | { type: 'toggle-cheatsheet' }
   | { type: 'escape' };
 
-export const INITIAL_OVERLAY: OverlayState = { rings: false, folded: false, lens: null, focusedLetter: null };
+export const INITIAL_OVERLAY: OverlayState = {
+  rings: false,
+  folded: false,
+  lens: null,
+  focusedLetter: null,
+  cheatsheet: false,
+};
 
 /** Proof lens defaults (SPEC AC-F7.1): cheapest and priciest rung, else the first two members. */
 export function defaultLensPair(group: TwinGroup): { top: string; bottom: string } | null {
@@ -74,8 +83,13 @@ export function overlayReducer(
       return { ...state, lens: { letter: group.letter, ...pair, mode: 'onion', blend: 50 } };
     }
     case 'close-lens':
-    case 'escape':
       return state.lens ? { ...state, lens: null } : state;
+    case 'escape':
+      // Esc closes the lens first, then the cheatsheet (SPEC AC-F12.1).
+      if (state.lens) return { ...state, lens: null };
+      return state.cheatsheet ? { ...state, cheatsheet: false } : state;
+    case 'toggle-cheatsheet':
+      return { ...state, cheatsheet: !state.cheatsheet };
     case 'lens-pick': {
       const lens = state.lens;
       const group = byLetter(lens?.letter);
@@ -110,6 +124,7 @@ export function overlayReducer(
         folded: state.folded && groups.length > 0,
         lens: lensOk ? lens : null,
         focusedLetter: byLetter(state.focusedLetter) ? state.focusedLetter : null,
+        cheatsheet: state.cheatsheet,
       };
     }
   }

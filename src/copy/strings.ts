@@ -47,20 +47,38 @@ export function pillSegments(s: ScanSummary): string[] {
   return segments;
 }
 
-/** Accessible name of the pill (SPEC AC-F4.1): spoken numbers, no arrow, dollars spelled out. */
-export function pillAccessibleName(s: ScanSummary): string {
-  const parts = [
-    s.pages.length > 1
-      ? `${plural(s.listings, 'listing', 'listings')} across ${s.pages.length} pages`
-      : plural(s.listings, 'listing', 'listings'),
-    plural(s.products, 'product', 'products'),
-    plural(s.twinGroups, 'twin group', 'twin groups'),
-  ];
-  if (s.maxBrandTaxDollars != null && s.maxBrandTaxDollars > 0) {
-    parts.push(`up to ${plural(s.maxBrandTaxDollars, 'dollar', 'dollars')} brand tax`);
-  }
-  return `${parts.join(', ')}. Show twins.`;
+/**
+ * Pieces of the result pill, so the UI can draw the arrow and dividers itself. The spoken name is
+ * the visible text with commas between the pieces (WCAG 2.5.3: the name contains the visible label).
+ */
+export function pillParts(s: ScanSummary): {
+  listings: string;
+  products: string;
+  groups: string;
+  tax: string | null;
+} {
+  return {
+    listings:
+      s.pages.length > 1
+        ? `${plural(s.listings, 'listing', 'listings')} across ${s.pages.length} pages`
+        : plural(s.listings, 'listing', 'listings'),
+    products: plural(s.products, 'product', 'products'),
+    groups: plural(s.twinGroups, 'twin group', 'twin groups'),
+    tax:
+      s.maxBrandTaxDollars != null && s.maxBrandTaxDollars > 0
+        ? `up to ${formatWholeDollars(s.maxBrandTaxDollars)} brand tax`
+        : null,
+  };
 }
+
+/** Accessible name of the pill (SPEC AC-F4.1): the visible words, spoken with commas, no arrow. */
+export function pillAccessibleName(s: ScanSummary): string {
+  const p = pillParts(s);
+  return [p.listings, p.products, p.groups, p.tax].filter((x): x is string => x != null).join(', ');
+}
+
+/** Read after the name, as a description (not part of the name). */
+export const PILL_HINT = 'Shows rings on the twins. Shortcut T.';
 
 export function pillScanning(done: number, total: number): string {
   return `Checking ${plural(total, 'photo', 'photos')}… ${formatCount(done)}/${formatCount(total)}`;
@@ -190,6 +208,13 @@ export function onForStore(store: StoreId): string {
   return `On for ${STORE_NAMES[store]}`;
 }
 
+export const POPUP_ERROR = "Couldn't read this page's listings.";
+export const POPUP_PILL_OFF = 'The summary pill is turned off in Settings, so there is nothing to show here.';
+export const POPUP_WAIT_SCANNING = 'Available once the photos are checked.';
+export function popupScanning(done: number, total: number): string {
+  return `Checking photos… ${formatCount(done)}/${formatCount(total)}`;
+}
+
 export function offOnStore(store: StoreId): string {
   return `Off on ${STORE_NAMES[store]}`;
 }
@@ -209,3 +234,74 @@ export const EXAMPLE_SEARCHES: Record<StoreId, string> = {
   'amazon-us': 'https://www.amazon.com/s?k=laptop+stand',
   'walmart-us': 'https://www.walmart.com/search?q=laptop+stand',
 };
+
+// Overlay on the store page
+export const GROUP_PHOTO_ALT = 'The photo these listings share';
+export const CHECK_PIXELS = 'Check the pixels';
+export const UNFOLD_LABEL = 'Unfold';
+export const CLOSE = 'Close';
+export const SHORTCUTS_TITLE = 'Shortcuts';
+export const SHORTCUT_ROWS: ReadonlyArray<{ keys: string[]; label: string }> = [
+  { keys: ['T'], label: 'Show or hide twin rings' },
+  { keys: ['F'], label: 'Fold or unfold twins' },
+  { keys: ['P'], label: 'Check the pixels of a group' },
+  { keys: ['O', 'D'], label: 'Onion skin or Difference in the lens' },
+  { keys: ['←', '→'], label: 'Move the blend slider (Shift for bigger steps)' },
+  { keys: ['Esc'], label: 'Close the lens, then this list' },
+  { keys: ['?'], label: 'Show or hide this list' },
+];
+
+export function foldDetail(letter: string, members: number, low: number | null, high: number | null): string {
+  const head = `Twin ${letter}: ${members} listings use the same photo`;
+  return low != null && high != null && high > low
+    ? `${head}, ${formatPrice(low)} to ${formatPrice(high)}.`
+    : `${head}.`;
+}
+
+export const UNFOLDED = "Unfolded. The listings are back in the store's grid.";
+export const LENS_MODE_LABEL = 'View';
+export const LENS_BLEND = 'Blend';
+export const LENS_BLEND_HINT = 'Left and right arrows move 5%. Shift moves 25%.';
+export const LENS_IDENTICAL_WORD = 'identical';
+export const NO_PRICE_SHORT = 'No price';
+export const NO_BRAND = 'No brand shown';
+
+// Popup and options additions
+export const STAT_LISTINGS = 'Listings';
+export const STAT_PRODUCTS = 'Products';
+export const STAT_GROUPS = 'Twin groups';
+export const STAT_TAX = 'Largest brand tax';
+export const STATUS_NOT_SEARCH = 'Not a search page';
+export const ACTION_SHOW_TWINS = 'Show twins on this page';
+export const ACTION_FOLD = 'Fold twins';
+export const SETTINGS_LINK = 'Settings';
+export const SHORTCUTS_LINK = 'Shortcuts';
+export const CHECKING_PHOTOS = 'Checking photos…';
+export const COMMAND_FAILED = "Couldn't reach this page. Reload it and try again.";
+export const MATCHING_HELP = {
+  standard: 'Groups listings whose photos match closely. Catches re-uploads and small crops.',
+  strict: 'Groups only near-identical files. Fewer groups, fewer surprises.',
+} as const;
+export const BEHAVIOUR_HELP = {
+  autoPill: 'A small pill with the counts appears after each search.',
+  autoRings: 'Draw the rings as soon as a page is read.',
+  sessionMemory: 'Page 2 and 3 of a search join the groups found on page 1. Cleared when the browser closes.',
+  singleKeys: 'T, F and P work on search pages when no text field has focus.',
+} as const;
+export const STORES_HELP = 'Factory Twins only runs on these search pages.';
+export const CHANGE_SHORTCUTS = 'Change browser shortcuts';
+export const SHORTCUTS_HELP = 'Alt+Shift+T and Alt+Shift+F also work from the browser. You can rebind them.';
+export const ABOUT_LICENCE = 'MIT licence';
+export const ABOUT_SOURCE = 'Source code';
+export const ABOUT_LINE = 'Factory Twins compares photos, not products. It runs on your device.';
+export const RELOAD = 'Reload';
+export const LOAD_FAILED_DEFAULTS = "Couldn't load settings. Defaults are shown.";
+export const SESSION_CLEARED_NOTE = 'Session cleared';
+export const SECTION = {
+  stores: 'Stores',
+  behaviour: 'Behaviour',
+  matching: 'Matching',
+  shortcuts: 'Shortcuts',
+  privacy: 'Privacy',
+  about: 'About',
+} as const;

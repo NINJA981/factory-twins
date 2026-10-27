@@ -1,0 +1,188 @@
+/* One small shadow root inside each store tile: the ring and the badge. The host is absolutely
+   positioned over the tile (inset 0), so rings follow tiles through scroll, resize and lazy
+   loading with no page-level layer to keep in sync (SPEC AC-F5.3). */
+@import './tokens.css';
+@import './overlay-base.css';
+
+:host {
+  color-scheme: light dark;
+}
+
+:host([data-theme='light']) {
+  color-scheme: light;
+}
+
+:host([data-theme='dark']) {
+  color-scheme: dark;
+}
+
+.tile {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* Ring: 3 px in the group colour, 4 px off the tile, hugging the store's own corner radius. */
+.ring {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--tile-radius, 0px);
+  outline: 3px solid var(--g);
+  outline-offset: 4px;
+  transition: outline-width var(--dur-1) var(--ease-out);
+}
+
+.ring[data-pattern='dashed'] {
+  outline-style: dashed;
+}
+
+.ring[data-pattern='dotted'] {
+  outline-style: dotted;
+}
+
+.ring[data-pattern='double'] {
+  outline-style: double;
+  outline-width: 4px;
+}
+
+.ring[data-active] {
+  outline-width: 4px;
+}
+
+.ring[data-pattern='double'][data-active] {
+  outline-width: 5px;
+}
+
+/* Groups E and F carry a corner notch as a second non-colour channel. */
+.ring[data-notch]::after {
+  content: '';
+  position: absolute;
+  top: -7px;
+  right: -7px;
+  width: 16px;
+  height: 16px;
+  background: var(--g);
+  clip-path: polygon(0 0, 100% 0, 100% 100%);
+}
+
+/* Badge: a full-radius chip at the tile's top-left, with a hairline halo so it reads on any photo. */
+.badge-wrap {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 1;
+  pointer-events: auto;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: var(--g);
+  color: var(--on-accent);
+  box-shadow: 0 0 0 2px var(--surface);
+  font-family: var(--font-sans);
+  font-size: var(--text-micro-size);
+  line-height: 1;
+  font-weight: var(--text-micro-weight);
+  letter-spacing: var(--text-micro-tracking);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.badge:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 3px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  height: 20px;
+  padding: 0 8px;
+  border-radius: var(--radius-full);
+  background: var(--surface-2);
+  color: var(--text-muted);
+  box-shadow: 0 0 0 2px var(--surface);
+  font-family: var(--font-sans);
+  font-size: var(--text-micro-size);
+  line-height: 1;
+  font-weight: var(--text-micro-weight);
+  letter-spacing: var(--text-micro-tracking);
+  white-space: nowrap;
+}
+
+.tip {
+  position: absolute;
+  top: 30px;
+  left: 0;
+  width: max-content;
+  max-width: 220px;
+  padding: 6px 10px;
+  border-radius: var(--radius-xs);
+  background: var(--text);
+  color: var(--bg);
+  box-shadow: var(--elev-e3);
+  font-family: var(--font-sans);
+  font-size: var(--text-caption-size);
+  line-height: var(--text-caption-leading);
+  font-weight: var(--text-caption-weight);
+  pointer-events: none;
+  opacity: 0;
+  transform: scale(0.97);
+  transform-origin: 12px 0;
+  transition:
+    opacity 125ms var(--ease-out),
+    transform 125ms var(--ease-out);
+}
+
+.tip p {
+  margin: 0;
+}
+
+.tip .hint {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  opacity: 0.85;
+}
+
+.tip .hint kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  border-radius: 6px;
+  background: color-mix(in oklab, var(--bg) 22%, transparent);
+  font: inherit;
+  font-size: var(--text-micro-size);
+  font-weight: var(--text-micro-weight);
+}
+
+.badge-wrap:focus-within .tip,
+.badge-wrap[data-open] .tip {
+  opacity: 1;
+  transform: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .badge-wrap:hover .tip {
+    opacity: 1;
+    transform: none;
+    transition-delay: 500ms;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ring,
+  .tip {
+    transition: none;
+  }
+}
