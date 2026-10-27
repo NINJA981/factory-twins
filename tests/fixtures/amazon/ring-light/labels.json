@@ -1,0 +1,25 @@
+{
+ "store": "amazon-us",
+ "query": "ring light",
+ "page": 1,
+ "tiles": 40,
+ "withPrice": 39,
+ "widgets": 4,
+ "groups": [
+  [
+   "B0ZE54AFNE",
+   "B0659UZDEK",
+   "B0YQ9VXH9X"
+  ],
+  [
+   "B0WNXQW8G2",
+   "B09983K5PQ"
+  ]
+ ],
+ "variantFamilies": [
+  [
+   "B0LBS6X16C",
+   "B0TCFG3964"
+  ]
+ ]
+}

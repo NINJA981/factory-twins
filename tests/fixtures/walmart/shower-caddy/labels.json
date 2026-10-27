@@ -1,0 +1,16 @@
+{
+ "store": "walmart-us",
+ "query": "shower caddy",
+ "page": 1,
+ "tiles": 32,
+ "withPrice": 31,
+ "widgets": 4,
+ "groups": [],
+ "variantFamilies": [
+  [
+   "615608468",
+   "926222798",
+   "193513012"
+  ]
+ ]
+}

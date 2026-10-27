@@ -1,0 +1,37 @@
+{
+ "store": "amazon-us",
+ "query": "phone tripod",
+ "page": 1,
+ "tiles": 52,
+ "withPrice": 51,
+ "widgets": 4,
+ "groups": [
+  [
+   "B0XQ3MF8XS",
+   "B0W3FV8RRV",
+   "B0R1K59Q95",
+   "B029ESDPYE"
+  ],
+  [
+   "B05HVDGTJ5",
+   "B0Q08KF54S",
+   "B0FXV4PYDU"
+  ],
+  [
+   "B0KVEU03TJ",
+   "B011KVW199",
+   "B0CZ9G70PV"
+  ],
+  [
+   "B0L4DQVHG5",
+   "B03BX96JRA"
+  ]
+ ],
+ "variantFamilies": [
+  [
+   "B0S1JLE9LX",
+   "B0TYMRSCQ4",
+   "B05MQH2QNT"
+  ]
+ ]
+}

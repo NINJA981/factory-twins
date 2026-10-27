@@ -1,0 +1,28 @@
+{
+ "store": "amazon-us",
+ "query": "dog poop bags",
+ "page": 1,
+ "tiles": 44,
+ "withPrice": 43,
+ "widgets": 4,
+ "groups": [
+  [
+   "B0KNLUB9Y5",
+   "B0YSWTA669",
+   "B00BS75TAD",
+   "B0BYNM5ZF5",
+   "B05DEKQQ22"
+  ],
+  [
+   "B00K4MA5AQ",
+   "B0U2S4D96T"
+  ]
+ ],
+ "variantFamilies": [
+  [
+   "B0FM1UGFCR",
+   "B0A5P79FMF",
+   "B06SJ6WKLR"
+  ]
+ ]
+}

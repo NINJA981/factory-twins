@@ -15,3 +15,6 @@ tests/fixtures/_raw/
 .impeccable/config.local.json
 .impeccable/review/
 .impeccable/mocks/
+.web-ext/
+web-ext-artifacts/
+*.tsbuildinfo

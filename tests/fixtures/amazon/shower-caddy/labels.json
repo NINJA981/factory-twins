@@ -1,0 +1,30 @@
+{
+ "store": "amazon-us",
+ "query": "shower caddy",
+ "page": 1,
+ "tiles": 54,
+ "withPrice": 50,
+ "widgets": 4,
+ "groups": [
+  [
+   "B00UL7EWZU",
+   "B02BARRWL0",
+   "B0ECAR4HZ8",
+   "B0A0BQSEWZ"
+  ],
+  [
+   "B04LWHVQCU",
+   "B0R635SPTX"
+  ],
+  [
+   "B0SF5LWEA1",
+   "B09VN8ET0E"
+  ]
+ ],
+ "variantFamilies": [
+  [
+   "B0GL4ZG9P7",
+   "B0BQ6KZ8YY"
+  ]
+ ]
+}

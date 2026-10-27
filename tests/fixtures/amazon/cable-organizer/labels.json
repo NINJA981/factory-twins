@@ -1,0 +1,45 @@
+{
+ "store": "amazon-us",
+ "query": "cable organizer",
+ "page": 1,
+ "tiles": 60,
+ "withPrice": 59,
+ "widgets": 4,
+ "groups": [
+  [
+   "B0KQKPXNYM",
+   "B05NE2R8T3",
+   "B0ULKMHV8R",
+   "B06WFBVE4Q"
+  ],
+  [
+   "B0C30AJW14",
+   "B0WJHYZ0GY",
+   "B055J6DD09",
+   "B0BCRCNX63"
+  ],
+  [
+   "B0F4AWKEFW",
+   "B0VW9LS2RE",
+   "B0M8Q0NKJQ"
+  ],
+  [
+   "B08WG1SVNR",
+   "B0H2NP70UM"
+  ],
+  [
+   "B0K6D0D999",
+   "B0WJU0HFFU"
+  ]
+ ],
+ "variantFamilies": [
+  [
+   "B02TYF4G70",
+   "B0F0ALB3PY"
+  ],
+  [
+   "B04Y3HUGHJ",
+   "B0EM5C8BLC"
+  ]
+ ]
+}

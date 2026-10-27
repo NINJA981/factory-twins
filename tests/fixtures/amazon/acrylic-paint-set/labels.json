@@ -1,0 +1,35 @@
+{
+ "store": "amazon-us",
+ "query": "acrylic paint set",
+ "page": 1,
+ "tiles": 50,
+ "withPrice": 47,
+ "widgets": 4,
+ "groups": [
+  [
+   "B07F7BW96Q",
+   "B0WGJ3U2N4",
+   "B0XAEVYJ7J"
+  ],
+  [
+   "B02HA8NMFU",
+   "B0K3GR6NUZ",
+   "B0ARTNL67X"
+  ],
+  [
+   "B0VM26BM6Q",
+   "B0NWEX3FGW"
+  ]
+ ],
+ "variantFamilies": [
+  [
+   "B09Y1HBKHF",
+   "B05NKXWEGU",
+   "B0FHC46TCY"
+  ],
+  [
+   "B06UD6M6WE",
+   "B0UXR75YWL"
+  ]
+ ]
+}

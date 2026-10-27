@@ -1,0 +1,51 @@
+{
+ "store": "amazon-us",
+ "query": "laptop stand",
+ "page": 1,
+ "tiles": 60,
+ "withPrice": 53,
+ "widgets": 4,
+ "groups": [
+  [
+   "B0B801U970",
+   "B08VNBTN5G",
+   "B0JFZYMEHH",
+   "B09KGCR1KP",
+   "B0EUB336ZT"
+  ],
+  [
+   "B0KSED0B9K",
+   "B0BKA1JHBX",
+   "B0CANPLX4D",
+   "B0JSNK6YRS"
+  ],
+  [
+   "B04PDWKE92",
+   "B0ZJFDZ47L",
+   "B0XKPH8DRQ"
+  ],
+  [
+   "B0JCGPKZM8",
+   "B0ZWQV94WR",
+   "B0NJNTN51C"
+  ],
+  [
+   "B0Z39M1FUC",
+   "B0W71HF7TW"
+  ],
+  [
+   "B0Z3594HK6",
+   "B0CGBEDTL9"
+  ]
+ ],
+ "variantFamilies": [
+  [
+   "B0DKJ00AFT",
+   "B0S3AQTAMS"
+  ],
+  [
+   "B09Q001R78",
+   "B0136NFEB3"
+  ]
+ ]
+}

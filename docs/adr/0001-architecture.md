@@ -276,3 +276,26 @@ Mapped to SPEC acceptance criteria; the test-engineer stage completes the mappin
 5. [ ] Hasher (Chrome offscreen, Firefox background), allowlist, counters.
 6. [ ] Overlay UI, popup, options per DESIGN.md.
 7. [ ] Font subsetting script; size-limit budgets; release-manifest assertion (no `FT_E2E` hosts).
+
+## Stage 2 notes: what the scaffold changed or measured (2026-10-27)
+
+**Spike F0, partial.** The hashing path (service worker, offscreen document, `fetch` with `credentials: 'omit'`, `createImageBitmap(blob)`, `OffscreenCanvas`) was run end to end in Playwright with the real built extension in Chromium (Chrome for Testing 156) against synthetic images served from `http://localhost:4173` (`pnpm test:e2e`). Results: the demo page's 60 thumbnails produced the six expected twin groups (so they decoded and hashed; a tainted canvas or CORS failure would have thrown), and the popup's counter showed 60 reads, all from the one host. **Not done:** the same run against real amazon.com and walmart.com pages (AC-F0.1, AC-F0.3 cache-hit rate, AC-F0.5), the p95 timing on 60 real thumbnails (AC-F0.2), and the Firefox background-page path in a real Firefox (AC-F0.4). The `fromCache` figure is `null` (unknown) for cross-origin images that send no `Timing-Allow-Origin`; the popup counts those separately instead of claiming a cache hit. The Decision 3 status therefore stays *Proposed* until a maintainer runs the spike on live pages.
+
+**Deviations from the stage 1 text, all deliberate:**
+
+| Topic | Was | Now | Why |
+|---|---|---|---|
+| `ImageHashes.color` | `Uint8Array` | 96-character hex string | Hashes cross `runtime` messaging and `storage.session`, which serialise to JSON and would turn a typed array into a plain object. |
+| dHash bit | left brighter than right | left brighter than right by more than a dead zone of 4 luma levels | On white backgrounds JPEG noise flipped bits in flat areas. The dead zone cut false misses on the synthetic corpus from 24 to 16 of 300 re-uploads. |
+| White-margin trim before hashing | not specified | tried, rejected | A hard threshold made the bounding box jump with a 5% brightness change (62 of 300 re-uploads failed, worse than 16). Not shipped. |
+| Overlay styling | Tailwind v4 in the overlay | plain CSS over the token variables in the overlay; Tailwind in popup and options | Tailwind v4 utilities that use `--tw-*` variables rely on `@property`, which Chromium ignores inside shadow roots. |
+| Firefox target | MV3 | MV3 via `manifestVersion: 3` in `wxt.config.ts` | WXT builds Firefox as MV2 unless told otherwise. |
+| `data_collection_permissions` | not mentioned | `{ required: ['none'] }` under `gecko` | AMO asks new extensions to declare it. web-ext lint then warns that `strict_min_version` 128 predates Firefox 140, which introduced the key; older versions ignore it. |
+| Fixture corpus | sanitised captures of real pages | seeded synthetic reconstructions | See `tests/fixtures/README.md`. Real captures still need a maintainer with `scripts/capture-fixture.ts`, which is not written yet. |
+
+**Measured, not assumed:**
+
+- Bundle sizes (gzip, release build): content script 84.2 kB (budget 110), background 10.8 kB (30), offscreen 3.2 kB (15), popup and options JS 80.0 kB (150). `pnpm size` enforces them.
+- Bricolage Grotesque instance is 53.2 kB, over the 20 kB target in the performance budget; Rethink Sans is 35.7 kB as planned.
+- Clustering 200 listings: about 8 ms standalone (budget 50 ms).
+- pHash within 6 for re-uploads (JPEG q 60 to 95, 0.5x to 2x, crop up to 3%, brightness about 5%): 93.75% on 192 synthetic re-uploads (SPEC asks 98%). Different synthetic photos beyond pHash 6: 100% of 1,128 pairs (SPEC asks 99%). The misses are almost all crops of 2% or more.

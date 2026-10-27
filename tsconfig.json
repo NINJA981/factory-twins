@@ -1,0 +1,18 @@
+{
+  "extends": "./.wxt/tsconfig.json",
+  "compilerOptions": {
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "noFallthroughCasesInSwitch": true,
+    "exactOptionalPropertyTypes": false,
+    "verbatimModuleSyntax": true,
+    "allowImportingTsExtensions": true,
+    "jsx": "react-jsx",
+    "types": ["node", "vitest/globals"],
+    "noEmit": true,
+    "skipLibCheck": true
+  },
+  "include": [".wxt/wxt.d.ts", "entrypoints", "src", "tests", "scripts", "*.ts"],
+  "exclude": ["node_modules", ".output", "tests/fixtures/_raw"]
+}

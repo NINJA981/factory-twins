@@ -1,0 +1,41 @@
+{
+ "store": "amazon-us",
+ "query": "usb c hub",
+ "page": 1,
+ "tiles": 58,
+ "withPrice": 56,
+ "widgets": 4,
+ "groups": [
+  [
+   "B0F42S08NT",
+   "B05P5KKP41",
+   "B0ZTVVC5W0",
+   "B0XVZB7056",
+   "B0W0DGQMSA"
+  ],
+  [
+   "B0QJXW1BSS",
+   "B0H68BTV32",
+   "B0SHCUCBH8"
+  ],
+  [
+   "B0SVSHFSUJ",
+   "B072URNKNR"
+  ],
+  [
+   "B0J27RC0UY",
+   "B0RRRCHAM1"
+  ]
+ ],
+ "variantFamilies": [
+  [
+   "B0YRR5ZF0H",
+   "B0KCG2XTF6"
+  ],
+  [
+   "B07HN38MKZ",
+   "B0W7RW7VJ3",
+   "B0WSUU2ZHZ"
+  ]
+ ]
+}

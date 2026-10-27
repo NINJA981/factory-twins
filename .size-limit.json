@@ -1,0 +1,27 @@
+[
+  {
+    "name": "Amazon content script",
+    "path": ".output/chrome-mv3/content-scripts/amazon.js",
+    "gzip": true,
+    "limit": "110 kB"
+  },
+  {
+    "name": "Walmart content script",
+    "path": ".output/chrome-mv3/content-scripts/walmart.js",
+    "gzip": true,
+    "limit": "110 kB"
+  },
+  {
+    "name": "Offscreen hasher",
+    "path": ".output/chrome-mv3/chunks/offscreen-*.js",
+    "gzip": true,
+    "limit": "15 kB"
+  },
+  { "name": "Background", "path": ".output/chrome-mv3/background.js", "gzip": true, "limit": "30 kB" },
+  {
+    "name": "Popup and options JS",
+    "path": ".output/chrome-mv3/chunks/*.js",
+    "gzip": true,
+    "limit": "150 kB"
+  }
+]

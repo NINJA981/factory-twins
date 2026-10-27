@@ -1,0 +1,136 @@
+/* Overlay shadow roots on the store page. Plain CSS over the DESIGN.md tokens: Tailwind utilities
+   rely on @property, which Chromium ignores inside shadow roots, so the overlay does not use them. */
+@import './tokens.css';
+
+:host {
+  all: initial;
+  color-scheme: light dark;
+  font-family: var(--font-sans, 'Rethink Sans Variable', system-ui, sans-serif);
+  font-synthesis: none;
+  color: var(--text);
+}
+
+.ft-root {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 2147483000;
+  max-width: min(560px, calc(100vw - 32px));
+  font-size: 13px;
+  line-height: 1.54;
+}
+
+.ft-pill {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 40px;
+  padding: 0 6px 0 12px;
+  overflow: hidden;
+  border-radius: var(--radius-full);
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--elev-e3);
+}
+
+.ft-pill-body {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 40px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.ft-segment {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.ft-divider {
+  width: 1px;
+  height: 16px;
+  background: var(--border);
+}
+
+.ft-muted {
+  color: var(--text-muted);
+}
+
+.ft-link {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+.ft-icon-button,
+.ft-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  border: 0;
+  background: none;
+  color: var(--text-muted);
+  font: inherit;
+  cursor: pointer;
+}
+
+.ft-icon-button {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-full);
+  font-size: 18px;
+  line-height: 1;
+}
+
+.ft-secondary {
+  padding: 0 var(--space-3);
+  min-height: 28px;
+  border-radius: var(--radius-sm);
+  color: var(--text);
+}
+
+.ft-secondary kbd {
+  padding: 0 var(--space-1);
+  border-radius: var(--radius-xs);
+  background: var(--surface-3);
+  font: inherit;
+  font-size: 11px;
+}
+
+.ft-icon-button:hover,
+.ft-secondary:hover {
+  background: var(--surface-2);
+}
+
+.ft-pill-body:focus-visible,
+.ft-icon-button:focus-visible,
+.ft-secondary:focus-visible,
+.ft-link:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.ft-progress {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  background: var(--accent);
+}
+
+@media (max-width: 480px) {
+  .ft-pill {
+    flex-wrap: wrap;
+    border-radius: var(--radius-md);
+    padding-block: var(--space-2);
+  }
+}

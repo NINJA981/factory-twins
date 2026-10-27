@@ -1,0 +1,35 @@
+{
+ "store": "amazon-us",
+ "query": "silicone spatula set",
+ "page": 1,
+ "tiles": 48,
+ "withPrice": 48,
+ "widgets": 4,
+ "groups": [
+  [
+   "B0TW9W0DEN",
+   "B0U7ANV90S",
+   "B02SD1ZGUM"
+  ],
+  [
+   "B08281VMXL",
+   "B04LWL5PUU"
+  ],
+  [
+   "B0HKFHU5VR",
+   "B05AXQNJHM"
+  ]
+ ],
+ "variantFamilies": [
+  [
+   "B03QQKPC4C",
+   "B0VVZCCCW5",
+   "B06TW8D6ES"
+  ],
+  [
+   "B0TJCVAHDF",
+   "B0LKRHW2PW",
+   "B0TVRFQKZ8"
+  ]
+ ]
+}

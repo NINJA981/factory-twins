@@ -1,0 +1,35 @@
+/* Self-hosted fonts (from Fontsource, built by scripts/subset-fonts.ts into public/fonts).
+   Extension pages (popup, options) load them from the extension origin. The overlay declares the
+   same families in the store page's document head with runtime URLs (src/overlay/fonts.ts), because
+   @font-face inside a shadow root is ignored by Chromium. */
+@font-face {
+  font-family: 'Rethink Sans Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400 800;
+  src: url('/fonts/rethink-sans-latin-wght.woff2') format('woff2-variations');
+}
+
+@font-face {
+  font-family: 'Bricolage Grotesque Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 600 700;
+  font-stretch: 85%;
+  src: url('/fonts/bricolage-grotesque-wdth85-latin.woff2') format('woff2-variations');
+}
+
+/* Metric-matched fallbacks (DESIGN.md › Typography). Final overrides are measured in the UI stage. */
+@font-face {
+  font-family: 'Bricolage Fallback';
+  src: local('Arial');
+  size-adjust: 96%;
+  ascent-override: 92%;
+}
+
+@font-face {
+  font-family: 'Rethink Fallback';
+  src: local('Arial');
+  size-adjust: 100%;
+  ascent-override: 94%;
+}

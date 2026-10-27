@@ -1,0 +1,45 @@
+{
+ "store": "amazon-us",
+ "query": "led strip lights",
+ "page": 1,
+ "tiles": 56,
+ "withPrice": 55,
+ "widgets": 4,
+ "groups": [
+  [
+   "B09VUEADZV",
+   "B0X82BWHZ2",
+   "B0XR7GM2ER",
+   "B0F5TW3A47",
+   "B0SRAXRDT8",
+   "B0FW9FBBYC"
+  ],
+  [
+   "B03N3X2TT2",
+   "B0MCJ9H8N5",
+   "B0JKT1UFH4",
+   "B0354RUW5T"
+  ],
+  [
+   "B022MXTQZY",
+   "B00E7ZA7QL",
+   "B03BF77GZ4"
+  ],
+  [
+   "B0SKQK366H",
+   "B0QYF1DVHU"
+  ]
+ ],
+ "variantFamilies": [
+  [
+   "B0LDHEZ2Z7",
+   "B0XKF88PGJ",
+   "B07HY6A8L5"
+  ],
+  [
+   "B00LLTF3C7",
+   "B01B7Q8J0A",
+   "B0SDUZGZ8M"
+  ]
+ ]
+}

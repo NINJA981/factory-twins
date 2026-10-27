@@ -1,0 +1,20 @@
+{
+ "store": "amazon-us",
+ "query": "plant pots",
+ "page": 1,
+ "tiles": 36,
+ "withPrice": 35,
+ "widgets": 4,
+ "groups": [
+  [
+   "B00Z22AZA8",
+   "B0E62HEWP7"
+  ]
+ ],
+ "variantFamilies": [
+  [
+   "B0J2N8YGND",
+   "B0ZATTTBA6"
+  ]
+ ]
+}

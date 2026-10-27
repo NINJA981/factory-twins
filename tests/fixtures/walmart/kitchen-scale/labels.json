@@ -1,0 +1,25 @@
+{
+ "store": "walmart-us",
+ "query": "kitchen scale",
+ "page": 1,
+ "tiles": 40,
+ "withPrice": 40,
+ "widgets": 4,
+ "groups": [
+  [
+   "261655829",
+   "163677575"
+  ],
+  [
+   "661702565",
+   "514033501"
+  ]
+ ],
+ "variantFamilies": [
+  [
+   "513037401",
+   "602293582",
+   "276439049"
+  ]
+ ]
+}
