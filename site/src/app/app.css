@@ -1,0 +1,402 @@
+/* Web app (/app): mobile-first at 375, then 768 and 1440. Comfortable density: 44 px targets. */
+.app-wrap {
+  --gutter: 16px;
+  width: 100%;
+  max-width: calc(1120px + var(--gutter) * 2);
+  margin-inline: auto;
+  padding-inline: max(var(--gutter), env(safe-area-inset-left)) max(var(--gutter), env(safe-area-inset-right));
+}
+@media (min-width: 768px) {
+  .app-wrap {
+    --gutter: 24px;
+  }
+}
+@media (min-width: 1440px) {
+  .app-wrap {
+    --gutter: 32px;
+  }
+}
+
+.app-bar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  padding-top: env(safe-area-inset-top);
+}
+.app-bar-in {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  min-height: 56px;
+}
+.wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: 19px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  font-variation-settings: 'wdth' 90, 'opsz' 24;
+  text-decoration: none;
+}
+.wordmark:hover {
+  color: var(--text);
+}
+.bar-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding-inline: var(--space-3);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-size: var(--text-ui-size);
+  text-decoration: none;
+}
+@media (hover: hover) {
+  .bar-link:hover {
+    background: var(--surface-2);
+    color: var(--text);
+  }
+}
+
+.app-main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  padding-block: var(--space-8) var(--space-16);
+}
+.intro {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.intro-lead {
+  color: var(--text-muted);
+}
+.privacy-line {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  align-self: flex-start;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--surface-2);
+  color: var(--text);
+  font-size: var(--text-label-compact-size);
+  font-weight: var(--text-label-compact-weight);
+  line-height: var(--text-label-compact-leading);
+}
+.privacy-line .icon {
+  margin-top: 2px;
+  color: var(--success);
+}
+
+.intake {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.intake-actions {
+  display: grid;
+  gap: var(--space-3);
+}
+@media (min-width: 640px) {
+  .intake-actions {
+    grid-template-columns: repeat(3, max-content);
+  }
+}
+.intake-hint {
+  max-width: 60ch;
+}
+
+.notice {
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-sm);
+  background: var(--warning-soft);
+  color: var(--warning);
+  font-size: var(--text-ui-compact-size);
+  line-height: var(--text-ui-compact-leading);
+}
+.notice[hidden] {
+  display: none;
+}
+
+/* States */
+.state {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+.state[hidden],
+.results[hidden] {
+  display: none;
+}
+.state-empty {
+  padding: var(--space-8) var(--space-5);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: var(--elev-e1);
+  max-width: 720px;
+}
+.empty-art {
+  width: 132px;
+  height: auto;
+}
+.state-error {
+  padding: var(--space-5);
+  border-radius: var(--radius-md);
+  background: var(--danger-soft);
+  max-width: 720px;
+}
+.error-title {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  color: var(--danger);
+  font-weight: 600;
+}
+.error-title .icon {
+  margin-top: 3px;
+}
+.error-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.loading-line {
+  font-size: var(--text-ui-size);
+  color: var(--text-muted);
+  min-height: 1.5em;
+}
+.skeleton-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--cols, 2), minmax(0, 1fr));
+  gap: var(--space-5) var(--space-3);
+  width: 100%;
+}
+.sk-tile {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.sk-media {
+  aspect-ratio: 1;
+  border-radius: var(--radius-xs);
+  background: var(--surface-2);
+}
+.sk-line {
+  height: 16px;
+  width: 60%;
+  border-radius: var(--radius-xs);
+  background: var(--surface-2);
+}
+.sk-line + .sk-line {
+  width: 40%;
+}
+
+/* Results */
+.results {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.toolbar-status {
+  font-size: var(--text-ui-size);
+  color: var(--text-muted);
+  min-height: 1.5em;
+}
+.toolbar-status b {
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+.toolbar-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
+}
+.toolbar-actions [data-app='clear'] {
+  grid-column: 1 / -1;
+  justify-self: start;
+}
+@media (min-width: 640px) {
+  .toolbar {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .toolbar-actions {
+    display: flex;
+  }
+  .toolbar-actions [data-app='clear'] {
+    grid-column: auto;
+  }
+}
+.results-note {
+  max-width: 68ch;
+}
+
+.app-stage {
+  --cols: 2;
+  --stage-pad: var(--space-3);
+  background: var(--bg);
+  box-shadow: none;
+  padding: 0;
+}
+@media (min-width: 640px) {
+  .app-stage {
+    --cols: 3;
+  }
+}
+@media (min-width: 1024px) {
+  .app-stage {
+    --cols: 4;
+  }
+}
+@media (min-width: 1440px) {
+  .app-stage {
+    --cols: 5;
+  }
+}
+.app-stage .tile {
+  padding: 0;
+}
+.app-stage .tile-media {
+  background: var(--surface-2);
+}
+.app-stage[data-rings='true'] .tile[data-pattern$='notch']::after {
+  background: var(--bg);
+}
+.skeleton-grid {
+  --cols: 2;
+}
+@media (min-width: 640px) {
+  .skeleton-grid {
+    --cols: 3;
+  }
+}
+@media (min-width: 1024px) {
+  .skeleton-grid {
+    --cols: 4;
+  }
+}
+
+/* Photo tiles: price and brand fields, remove button. */
+.mode-photos .tile-price {
+  display: none;
+}
+.tile-edit {
+  display: grid;
+  gap: var(--space-1);
+}
+.tile-edit .input {
+  min-height: 44px;
+  padding: 8px 10px;
+  font-size: var(--text-ui-size);
+}
+.tile-name {
+  font-size: var(--text-caption-size);
+  line-height: var(--text-caption-leading);
+  color: var(--text-subtle);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tile-remove {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+}
+.tile-remove span {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-full);
+  background: var(--surface);
+  box-shadow: var(--elev-e2);
+}
+@media (hover: hover) {
+  .tile-remove:hover span {
+    background: var(--surface-2);
+  }
+}
+.app-stage .pill-dock {
+  bottom: max(var(--space-4), env(safe-area-inset-bottom));
+  justify-content: center;
+}
+@media (min-width: 768px) {
+  .app-stage .pill-dock {
+    justify-content: flex-end;
+  }
+}
+
+.app-foot {
+  border-top: 1px solid var(--border);
+  padding-block: var(--space-6) max(var(--space-8), env(safe-area-inset-bottom));
+  color: var(--text-muted);
+  font-size: var(--text-ui-compact-size);
+}
+.app-foot-in {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.drop-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  background: var(--scrim);
+  color: var(--bg);
+  font-family: var(--font-display);
+  font-size: var(--text-headline-size);
+  font-weight: var(--text-headline-weight);
+  font-variation-settings: var(--text-headline-variation);
+}
+.drop-overlay[hidden] {
+  display: none;
+}
+.drop-overlay p {
+  padding: var(--space-8);
+  border: 3px dashed var(--bg);
+  border-radius: var(--radius-lg);
+}
+
+/* Installed as an app: no browser chrome, so the bar owns the top inset. */
+@media (display-mode: standalone) {
+  .bar-link {
+    display: none;
+  }
+}
+
+/* On a phone the toolbar already carries "Fold twins"; the pill keeps to the summary. */
+@media (max-width: 639px) {
+  .app-stage .pill-extra {
+    display: none;
+  }
+}

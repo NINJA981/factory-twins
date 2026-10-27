@@ -174,6 +174,26 @@ Opens from the toolbar icon (360 × up to 520 px).
 - **AC-F12.2** Manifest `commands`: `Alt+Shift+T` rings, `Alt+Shift+F` folds (user-rebindable in the browser's shortcut settings).
 - **AC-F12.3** Every overlay control is reachable with Tab inside the shadow root, with a visible focus ring.
 
+### Web app (`site/`, route `/app/`)
+
+A separate static package that lets people on a phone (where extensions cannot run) try the same engine from a link. It imports the engine from `src/core/index.ts` through a Vite alias and adds only browser glue (image decoding, file picking, a service worker). It is not part of the extension bundle and does not change the extension's non-goals (no mobile browser support for the extension itself).
+
+- **AC-W.1** The landing page's hero has a link "Try it in your browser, no install" that opens `/app/`. The page also links to it from the nav, the privacy section and the install section.
+- **AC-W.2** The app shows the line "Runs entirely in your browser. Nothing is uploaded." in every state. A Playwright test records every request on the empty, sample, photo-picking and error flows and asserts that each one goes to the app's own origin (or is a `blob:`/`data:` URL); nothing is sent anywhere else. There is no analytics code, no account and no server.
+- **AC-W.3** The app imports the engine only through the `@engine` alias (`src/core/index.ts`). A unit test fails if any file under `site/src` defines its own hashing, clustering, brand-tax or pixel-diff function, or imports from `src/` by a relative path. Any code that touches a browser API the engine leaves to its caller (decoding an image to RGBA, fetching a bundled file) lives in `site/src/shared/measure.ts` and is listed in `site/HANDOFF.md`.
+- **AC-W.4** Four ways in: pick photos (camera roll or desktop files, several at once), drop files, paste an image from the clipboard, or open the bundled sample results page. Up to 60 photos are checked at a time; more are skipped with a notice.
+- **AC-W.5** The sample is a bundled made-up Amazon-style results page of 60 listings. It is read by the real Amazon adapter and `scanDocument`, with images hashed by the engine, and yields exactly 6 twin groups (unit test, headless).
+- **AC-W.6** Picked photos: a resized, re-compressed copy of a photo groups with its original and a different photo does not (unit and e2e tests). Price and brand are optional fields under each photo; with two prices in one group the fold card shows the brand tax and the price ladder (e2e: $34.99 and $11.99 gives "+$23.00").
+- **AC-W.7** Every state exists and is tested: empty (explains itself, "Try a sample" button), loading (skeleton and the engine's "Checking N listings" wording), error (what went wrong, "Nothing was uploaded.", a way forward), and success (summary pill, status line, rings, fold, ladder).
+- **AC-W.8** The Proof lens opens from a fold card ("Check the pixels") with onion-skin and difference modes and a readout measured by the engine's `pixelDiff`. On a 375 px touch viewport, dragging a finger across the photo changes the blend (e2e with real touch events).
+- **AC-W.9** Mobile first: designed at 375 px, then 768 and 1440. No horizontal page scroll at any of the three widths, with results shown and folded (e2e). Every button, link and field is at least 44 x 44 px at 375 px (e2e measures them).
+- **AC-W.10** Installable and offline: a valid manifest (`display: standalone`, 192, 512 and maskable icons) and a service worker that precaches every file the app needs, including the sample page and its images. After one online visit, with the network switched off, a reload still shows the app and the sample still loads and groups (e2e `setOffline`). The service worker has no fetch of its own.
+- **AC-W.11** Same tokens as the extension: all colour, type, spacing and motion values come from the generated `tokens.css` (no hex literals in `site/src` styles). Light and dark follow `prefers-color-scheme`; motion follows `prefers-reduced-motion`.
+- **AC-W.12** Budget (bible 11.3): initial JS of the landing page and of the app each at most 120 KB gzip (checked by `site/scripts/check-dist.mjs`, actual about 25 KB); no WebGL; the landing hero poster at most 80 KB AVIF. On Chrome with 4x CPU slowdown and Fast 4G emulation at 375 px, LCP at most 2.0 s and CLS at most 0.01 for both pages (DevTools performance trace). Lighthouse accessibility, best practices and SEO at least 95 on both pages.
+- **AC-W.13** Truth: all listings, brands, prices, ratings and review counts in the sample and on the landing page are made up and labelled "made up" where they appear. No store logo or trade dress, no testimonial, no star or install count.
+
+Run: `cd site && pnpm build && pnpm test && pnpm test:e2e` (the e2e suite serves `dist/` with `vite preview` on port 4180).
+
 ### Cross-cutting
 
 - **AC-X.1** Copy lint: a unit test scans all user-facing strings (`src/copy/*.ts`) for banned phrases (§1, AC-F6.6) and for lorem ipsum.

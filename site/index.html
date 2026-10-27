@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Factory Twins: five brands, one photo</title>
+    <meta
+      name="description"
+      content="Factory Twins rings the listings on your Amazon or Walmart search that use the same product photo and folds them into one price ladder. Open source. Runs on your device."
+    />
+    <meta name="theme-color" content="#fbf9fa" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#1b1319" media="(prefers-color-scheme: dark)" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="icon" href="/icons/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Factory Twins: five brands, one photo" />
+    <meta
+      property="og:description"
+      content="Rings the listings on a store search that use the same product photo, folds them into a price ladder, and lets you check the pixels. On your device."
+    />
+    <meta property="og:image" content="__SITE_URL__landing/og.png" />
+    <meta name="twitter:image" content="__SITE_URL__landing/og.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/rethink-sans-latin-wght.woff2" crossorigin />
+    <script>
+      // Runs before first paint: marks JS as available, and boots the demo unfolded unless the visitor
+      // prefers reduced motion (then it starts in its folded end state, as the static HTML is).
+      (function () {
+        var d = document.documentElement;
+        d.classList.add('js');
+        try {
+          if (!matchMedia('(prefers-reduced-motion: reduce)').matches) d.classList.add('demo-idle');
+        } catch (e) {}
+      })();
+    </script>
+    <script type="module" src="/src/landing/main.ts"></script>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+
+    <header class="nav" data-nav>
+      <div class="wrap nav-in">
+        <a class="wordmark" href="#top" aria-label="Factory Twins, top of page">
+          <svg class="glyph" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="2.5" width="13" height="13" rx="3" /><rect x="8.5" y="8.5" width="13" height="13" rx="3" fill="var(--bg)" /></svg>
+          <span>Factory Twins</span>
+        </a>
+        <nav class="nav-links" aria-label="Page">
+          <a href="#how">How it works</a>
+          <a href="#privacy">Privacy</a>
+          <a href="#source">Source</a>
+          <a href="app/">Web app</a>
+        </nav>
+        <a class="btn btn-secondary nav-cta" href="#install">Add to Chrome</a>
+      </div>
+    </header>
+
+    <main id="main">
+      <!-- Beat 1: the hook. The H1 is the LCP element; the demo reserves its squares. -->
+      <section class="hero wrap" id="top">
+        <div class="hero-copy">
+          <h1 class="t-display-hero">Five brands. One photo.</h1>
+          <p class="t-lead hero-lead">
+            Factory Twins circles the listings on your Amazon or Walmart search that use the same product
+            photo, then folds them into one price ladder so you can see what the name on the box costs.
+          </p>
+          <div class="hero-actions">
+            <a class="btn btn-primary btn-chrome" href="#install">Add to Chrome</a>
+            <a class="btn btn-secondary btn-firefox" href="#install">Get it for Firefox</a>
+            <a class="btn btn-secondary btn-web" href="app/">Try it in your browser, no install</a>
+          </div>
+          <p class="t-caption hero-caption">
+            For desktop Chrome and Firefox, on Amazon.com and Walmart.com search pages. No account. Nothing
+            leaves your device. Not in the extension stores yet, so you install it from source (below).
+          </p>
+        </div>
+
+        <div class="hero-demo">
+          <div class="stage demo" id="demo" data-rings="false">
+            <div class="stage-label">
+              <span>Demo listings, made up for this page.</span>
+              <span class="stage-hint">Press <kbd class="keycap">F</kbd> to fold</span>
+            </div>
+            <div class="grid" data-state="folded" data-boot><!--@grid--></div>
+            <svg class="marker" aria-hidden="true" focusable="false"><path d="" /></svg>
+            <div class="pill-dock" data-pill-dock><!--@pill--></div>
+            <p class="sr-only" data-live aria-live="polite"></p>
+          </div>
+          <div class="demo-actions">
+            <button type="button" class="btn btn-secondary" data-demo="fold">
+              <span data-demo-label>Fold twins</span><kbd class="keycap">F</kbd>
+            </button>
+            <button type="button" class="btn btn-ghost" data-demo="lens">Check the pixels<kbd class="keycap">P</kbd></button>
+          </div>
+          <noscript>
+            <p class="t-caption">JavaScript is off, so the demo shows the folded result. The page works without it.</p>
+          </noscript>
+        </div>
+      </section>
+
+      <!-- Beat 2: the real product in motion (Twin A, teal) -->
+      <section class="beat wrap" aria-labelledby="h-same">
+        <div class="block twin-a">
+          <div class="block-copy">
+            <h2 class="t-display" id="h-same">Same photo ×5.</h2>
+            <p class="t-body">
+              Search for "laptop stand" and page 1 can show the same factory photo again and again under
+              names you've never heard of. Factory Twins hashes every thumbnail on the page and rings the
+              ones that match in a shared colour. Press F and each group folds into one card: every price,
+              rating and review count lined up under the same photo.
+            </p>
+            <p class="t-caption block-caption">
+              It compares photos, not products. A group can hold the original and a copy that borrowed its
+              picture, so the reviews sit right under each price.
+            </p>
+          </div>
+          <figure class="loop" data-loop>
+            <video
+              muted
+              loop
+              playsinline
+              preload="none"
+              width="720"
+              height="937"
+              poster="landing/loop-poster.avif"
+              aria-label="Recording of the demo above: the pill appears, rings circle five tiles, press F and they fold into one price ladder."
+            >
+              <source src="landing/loop.mp4" type="video/mp4" />
+            </video>
+            <button type="button" class="btn btn-secondary loop-toggle" data-loop-toggle aria-pressed="false">
+              Play the recording
+            </button>
+            <figcaption class="t-caption">Recorded from the demo on this page, 8 seconds, no sound.</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <!-- Beat 3a: brand tax (Twin B, amber) -->
+      <section class="beat wrap" aria-labelledby="h-tax">
+        <div class="block twin-b">
+          <div class="block-copy">
+            <h2 class="t-display" id="h-tax">See what the name costs.</h2>
+            <p class="t-body">
+              The fold card puts the cheapest and the priciest listing with the same photo side by side and
+              shows the gap as a brand tax. Multi-packs are compared per unit, so a 3-pack never looks like a
+              markup.
+            </p>
+            <p class="t-caption block-caption">
+              The listing with the most reviews is marked "Most established". A listing with almost no
+              reviews that borrows a well-reviewed photo gets a note saying so. Demo listings, made up for
+              this page.
+            </p>
+          </div>
+          <div class="card-crop"><!--@cardB--></div>
+        </div>
+      </section>
+
+      <!-- Beat 3b: check the pixels (Twin C, lake). CSS 3D only: cards in space, then they cancel to black. -->
+      <section class="beat wrap" aria-labelledby="h-proof" id="proof">
+        <div class="block twin-c">
+          <div class="block-copy">
+            <h2 class="t-display" id="h-proof">Don't take our word for it.</h2>
+            <p class="t-body">
+              Open the Proof lens on any group. Slide one photo over the other, or switch to Difference: where
+              the pixels match, the frame turns black. The number underneath is measured, not guessed.
+            </p>
+            <div class="proof-actions">
+              <button type="button" class="btn btn-primary" data-stack="stack" aria-pressed="false">Stack them</button>
+              <button type="button" class="btn btn-secondary" data-stack="different" aria-pressed="false">
+                Try two different photos
+              </button>
+            </div>
+            <div class="proof-readout" aria-live="polite" data-stack-readout>
+              <!--@readoutTwin--><!--@readoutDifferent-->
+            </div>
+            <p class="t-caption block-caption">
+              Demo photos are generated for this page. The five twins are re-saved, resized and slightly
+              cropped copies of one image, so they are close to identical, not byte for byte equal, and the
+              number says exactly how close. On a real store page, the lens uses the store's own thumbnails.
+            </p>
+          </div>
+          <div class="stack-wrap" data-stack-wrap><!--@stack--></div>
+        </div>
+      </section>
+
+      <!-- Beat 3c: useful even when you don't click (blush paper, no block) -->
+      <section class="beat wrap pill-beat" aria-labelledby="h-pill">
+        <div class="pill-beat-copy">
+          <h2 class="t-headline" id="h-pill">Useful even when you don't click.</h2>
+          <p class="t-body">
+            After every search a small pill says what the page really holds: listings, distinct products,
+            twin groups, and the biggest brand tax on the page. When nothing repeats, it says that too. Go to
+            page 2 and it remembers page 1, so a photo that shows up on several pages is counted once.
+          </p>
+        </div>
+        <div class="pill-crops">
+          <figure>
+            <div class="pill-crop"><!--@pillPage--></div>
+            <figcaption class="t-caption">A 60-listing demo page, counted by the real engine.</figcaption>
+          </figure>
+          <figure>
+            <div class="pill-crop"><!--@pillQuiet--></div>
+            <figcaption class="t-caption">Eight listings with no shared photos.</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <!-- Beat 4: how it works -->
+      <section class="beat wrap how" id="how" aria-labelledby="h-how">
+        <h2 class="t-headline" id="h-how">How it works</h2>
+        <ol class="steps" role="list">
+          <li>
+            <h3 class="t-title">The decision</h3>
+            <p>Compare the photos the page already shows, on your machine, and claim only what the pixels prove.</p>
+          </li>
+          <li>
+            <h3 class="t-title">The naive version</h3>
+            <p>
+              Drawing store thumbnails onto a canvas from the page fails: the browser blocks reading pixels
+              from another site's images.
+            </p>
+          </li>
+          <li>
+            <h3 class="t-title">The trick</h3>
+            <p>
+              The extension re-reads each thumbnail from the store's own image server, inside an extension
+              page that has permission for that one host, then hashes it locally: a 64-bit difference hash, a
+              64-bit DCT hash and a small colour signature. Two photos are twins only when all three agree
+              and the titles name the same kind of thing.
+            </p>
+          </li>
+          <li>
+            <h3 class="t-title">How it degrades</h3>
+            <p>
+              If a store changes its page layout, the pill says it couldn't read the listings and offers a
+              one-click layout report; nothing else breaks. Reduced motion turns the fold into a crossfade.
+            </p>
+          </li>
+          <li>
+            <h3 class="t-title">Stack and licence</h3>
+            <p>
+              WXT, TypeScript and React; MIT licence; no backend, no analytics, no account. Grouping 200
+              listings took about 8 ms in the stage-2 benchmark on the development laptop.
+            </p>
+          </li>
+        </ol>
+      </section>
+
+      <!-- Privacy proof -->
+      <section class="beat wrap privacy" id="privacy" aria-labelledby="h-privacy">
+        <div class="privacy-copy">
+          <h2 class="t-headline" id="h-privacy">Nothing leaves your device.</h2>
+          <p class="t-body">
+            There is no Factory Twins server to send anything to. The extension re-reads thumbnails from the
+            store you are already on, compares them locally, and forgets the pixels right after hashing. The
+            popup counts every image read by host, so you can check that each one went to that store.
+          </p>
+          <div class="proof-panel" data-net aria-live="polite">
+            <p class="proof-panel-title"><span data-net-icon></span>Check this page</p>
+            <p class="proof-panel-body" data-net-body>
+              Open your browser's network tab: every request this page makes goes to this site.
+            </p>
+          </div>
+        </div>
+        <figure class="diagram" tabindex="0" aria-label="Diagram: where the data goes">
+          <svg viewBox="0 0 690 340" role="img" aria-labelledby="dg-t dg-d">
+            <title id="dg-t">Where the data goes</title>
+            <desc id="dg-d">
+              Your browser contains the store's search page and Factory Twins. An arrow runs from Factory
+              Twins to the store's image server, labelled "re-reads the thumbnails already on the page". A
+              struck-through box reads "Factory Twins server: doesn't exist".
+            </desc>
+            <rect class="dg-browser" x="12" y="12" width="400" height="316" rx="24" />
+            <text class="dg-cap" x="36" y="44">Your browser</text>
+            <rect class="dg-box" x="40" y="68" width="344" height="84" rx="16" />
+            <text class="dg-label" x="60" y="104">Store search page</text>
+            <text class="dg-sub" x="60" y="128">60 thumbnails, already loaded</text>
+            <rect class="dg-box dg-ours" x="40" y="196" width="344" height="100" rx="16" />
+            <text class="dg-label" x="60" y="232">Factory Twins</text>
+            <text class="dg-sub" x="60" y="256">hashes locally, then drops the pixels</text>
+            <text class="dg-sub" x="60" y="278">keeps hashes in session storage only</text>
+            <path class="dg-arrow" d="M384 246 H452 Q468 246 468 230 V116 Q468 100 484 100 H540" />
+            <path class="dg-arrowhead" d="M532 92 L546 100 L532 108" />
+            <rect class="dg-box" x="548" y="68" width="120" height="64" rx="14" />
+            <text class="dg-label" x="608" y="96" text-anchor="middle">Store image</text>
+            <text class="dg-label" x="608" y="116" text-anchor="middle">server</text>
+            <text class="dg-sub" x="608" y="156" text-anchor="middle">re-reads the thumbnails</text>
+            <text class="dg-sub" x="608" y="174" text-anchor="middle">already on the page</text>
+            <rect class="dg-box dg-none" x="548" y="204" width="120" height="100" rx="14" />
+            <text class="dg-sub" x="608" y="240" text-anchor="middle">Factory Twins</text>
+            <text class="dg-sub" x="608" y="258" text-anchor="middle">server</text>
+            <line class="dg-strike" x1="560" y1="294" x2="656" y2="214" />
+            <text class="dg-sub" x="608" y="326" text-anchor="middle">doesn't exist</text>
+          </svg>
+        </figure>
+        <p class="privacy-web t-body">
+          The <a href="app/">web app</a> follows the same rule: it runs entirely in your browser and nothing
+          is uploaded. Once it has loaded, it works offline.
+        </p>
+      </section>
+
+      <!-- Beat 5: install -->
+      <section class="beat wrap install" id="install" aria-labelledby="h-install">
+        <h2 class="t-headline" id="h-install">Try it on your next search.</h2>
+        <p class="t-body">
+          Factory Twins is not in the Chrome or Firefox stores yet, so for now you load it from source. It
+          takes about two minutes.
+        </p>
+        <div class="island">
+          <div class="island-block">
+            <p class="island-title">Chrome and Chromium</p>
+            <div class="cmd"><code id="cmd-chrome">pnpm install &amp;&amp; pnpm build</code><button type="button" class="btn btn-ghost cmd-copy" data-copy="#cmd-chrome" aria-label="Copy the Chrome build command"></button></div>
+            <p class="island-steps">
+              Then open <code>chrome://extensions</code>, switch on Developer mode, choose Load unpacked and
+              pick <code>.output/chrome-mv3</code>.
+            </p>
+          </div>
+          <div class="island-block">
+            <p class="island-title">Firefox 128 and up</p>
+            <div class="cmd"><code id="cmd-firefox">pnpm install &amp;&amp; pnpm build:firefox</code><button type="button" class="btn btn-ghost cmd-copy" data-copy="#cmd-firefox" aria-label="Copy the Firefox build command"></button></div>
+            <p class="island-steps">
+              Then open <code>about:debugging</code>, choose This Firefox, then Load Temporary Add-on and pick
+              the manifest inside <code>.output/firefox-mv3</code>.
+            </p>
+          </div>
+          <p class="island-note" data-copy-status role="status"></p>
+        </div>
+        <p class="t-body platforms">
+          Works on desktop Chrome and Chromium browsers, and desktop Firefox 128 and up, on Amazon.com and
+          Walmart.com search pages. It cannot run on phones or in the store apps. On a phone, use the
+          <a href="app/">web app</a>.
+        </p>
+      </section>
+
+      <!-- Open-source call to action -->
+      <section class="beat wrap oss" id="source" aria-labelledby="h-oss">
+        <div class="oss-copy">
+          <h2 class="t-headline" id="h-oss">Open source, MIT.</h2>
+          <p class="t-body">
+            The engine is pure functions, each store is one adapter file, and a test fails if the engine
+            ever touches a browser-extension API. You can read all of it in an afternoon. Three things would
+            help most:
+          </p>
+          <ul class="oss-list" role="list">
+            <li>
+              <strong>Run the spike on live pages.</strong> Hashing is proven against fixtures and a local
+              server, not yet against real amazon.com or walmart.com, or in real Firefox.
+            </li>
+            <li>
+              <strong>Check the selectors.</strong> The store adapters were written from the public page
+              structure and tested on made-up fixtures. A capture of a real results page would show whether
+              they hold.
+            </li>
+            <li>
+              <strong>Add a store.</strong> A new store is one adapter module with its own fixtures; nothing
+              else changes.
+            </li>
+          </ul>
+        </div>
+        <div class="oss-actions">
+          <a class="btn btn-primary" href="__REPO_URL__" data-repo rel="noopener">View the source</a>
+          <a class="btn btn-secondary" href="__REPO_URL__/issues" data-repo-issues rel="noopener">Report a layout or a bug</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="wrap footer-in">
+        <p><strong>Factory Twins</strong>. MIT licence.</p>
+        <p>No analytics on this page. Not affiliated with Amazon or Walmart.</p>
+        <p class="t-caption">All listings, prices and ratings shown on this page are made up for the demo.</p>
+      </div>
+    </footer>
+  </body>
+</html>

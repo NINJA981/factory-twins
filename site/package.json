@@ -1,0 +1,38 @@
+{
+  "name": "factory-twins-site",
+  "description": "Factory Twins landing page and in-browser web app (/app). Static Vite build; imports the real engine from ../src/core.",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "packageManager": "pnpm@10.34.6",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "assets": "tsx scripts/prepare-assets.ts",
+    "dev": "vite",
+    "build": "vite build && node scripts/check-dist.mjs",
+    "serve": "node scripts/serve-dist.mjs",
+    "preview": "vite preview --host 127.0.0.1 --port 4180 --strictPort",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "tsx --test tests/*.test.ts",
+    "loop": "tsx scripts/capture-loop.ts",
+    "test:e2e": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.64.1",
+    "@types/node": "24.19.2",
+    "happy-dom": "21.0.3",
+    "sharp": "0.35.5",
+    "tsx": "4.23.15",
+    "typescript": "6.0.3",
+    "vite": "8.3.5"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "sharp"
+    ]
+  }
+}

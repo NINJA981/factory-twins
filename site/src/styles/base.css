@@ -1,0 +1,327 @@
+/* Base: tokens (generated from DESIGN.md by the extension's `pnpm tokens`), fonts, reset, type, buttons.
+   Every colour, radius, space step and duration below is a DESIGN.md token. */
+@import '@tokens/tokens.css';
+
+@font-face {
+  font-family: 'Rethink Sans Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400 800;
+  src: url('/fonts/rethink-sans-latin-wght.woff2') format('woff2-variations');
+}
+@font-face {
+  font-family: 'Bricolage Grotesque Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 200 800;
+  font-stretch: 75% 100%;
+  src: url('/fonts/bricolage-grotesque-latin-wdth.woff2') format('woff2-variations');
+}
+/* Metric-matched fallbacks (DESIGN.md, Typography) so the swap does not move anything. size-adjust is
+   measured: width of the page's own copy in the real face divided by the same text in the fallback
+   (Rethink 400 was 1.044 wide at 100%; Bricolage 700 at 85% width was 0.98 of the 96% fallback). */
+@font-face {
+  font-family: 'Bricolage Fallback';
+  src: local('Arial');
+  size-adjust: 94%;
+  ascent-override: 92%;
+  line-gap-override: 0%;
+}
+@font-face {
+  font-family: 'Rethink Fallback';
+  src: local('Arial');
+  size-adjust: 104%;
+  ascent-override: 94%;
+  line-gap-override: 0%;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  font-synthesis: none;
+  font-optical-sizing: auto;
+  scroll-padding-top: var(--space-16);
+  accent-color: var(--accent);
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: var(--text-body-weight) var(--text-body-size) / var(--text-body-leading) var(--font-sans);
+  letter-spacing: var(--text-body-tracking);
+  min-height: 100dvh;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3,
+p,
+ul,
+ol,
+figure {
+  margin: 0;
+}
+ul[role='list'],
+ol[role='list'] {
+  list-style: none;
+  padding: 0;
+}
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+img {
+  height: auto;
+}
+button,
+input,
+select {
+  font: inherit;
+  color: inherit;
+  letter-spacing: inherit;
+}
+a {
+  color: var(--accent);
+  text-underline-offset: 0.18em;
+  text-decoration-thickness: 1px;
+}
+a:hover {
+  color: var(--accent-hover);
+}
+
+/* Browser surfaces themed from the palette. */
+::selection {
+  background: var(--accent-soft);
+  color: var(--text);
+}
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+  border-radius: var(--radius-xs);
+}
+:focus:not(:focus-visible) {
+  outline: none;
+}
+html {
+  scrollbar-color: var(--border-strong) transparent;
+  caret-color: var(--accent);
+}
+::placeholder {
+  color: var(--text-subtle);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip {
+  position: absolute;
+  left: var(--space-4);
+  top: -100px;
+  z-index: 70;
+  background: var(--surface);
+  color: var(--text);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--elev-e3);
+}
+.skip:focus {
+  top: var(--space-3);
+}
+
+/* Type roles. Bricolage only on discovery moments (headlines, readouts); Rethink everywhere else. */
+.t-display-hero,
+.t-display,
+.t-headline,
+.t-title,
+.readout-num {
+  font-family: var(--font-display);
+  text-wrap: balance;
+  margin: 0;
+}
+.t-display-hero {
+  font-size: clamp(3.25rem, 1.4rem + 4.6vw, 6rem);
+  font-weight: var(--text-display-hero-weight);
+  line-height: var(--text-display-hero-leading);
+  letter-spacing: var(--text-display-hero-tracking);
+  font-variation-settings: var(--text-display-hero-variation);
+}
+.t-display {
+  font-size: clamp(2.25rem, 1.5rem + 3.2vw, var(--text-display-size));
+  font-weight: var(--text-display-weight);
+  line-height: var(--text-display-leading);
+  letter-spacing: var(--text-display-tracking);
+  font-variation-settings: var(--text-display-variation);
+}
+.t-headline {
+  font-size: clamp(1.75rem, 1.3rem + 1.8vw, var(--text-headline-size));
+  font-weight: var(--text-headline-weight);
+  line-height: var(--text-headline-leading);
+  letter-spacing: var(--text-headline-tracking);
+  font-variation-settings: var(--text-headline-variation);
+}
+.t-title {
+  font-size: var(--text-title-size);
+  font-weight: var(--text-title-weight);
+  line-height: var(--text-title-leading);
+  letter-spacing: var(--text-title-tracking);
+  font-variation-settings: var(--text-title-variation);
+}
+.t-lead {
+  font-size: var(--text-lead-size);
+  line-height: var(--text-lead-leading);
+  letter-spacing: var(--text-lead-tracking);
+  max-width: 56ch;
+  text-wrap: pretty;
+}
+.t-body {
+  max-width: 68ch;
+  text-wrap: pretty;
+}
+.t-caption {
+  font-size: var(--text-caption-size);
+  line-height: var(--text-caption-leading);
+  letter-spacing: var(--text-caption-tracking);
+  font-weight: var(--text-caption-weight);
+  color: var(--text-subtle);
+}
+.t-muted {
+  color: var(--text-muted);
+}
+
+.icon {
+  flex: none;
+  stroke-width: 1.5;
+}
+.glyph {
+  flex: none;
+  color: var(--accent);
+}
+
+/* Buttons: one grammar, rectangles at radius sm. 44 px tall so every target meets the touch floor. */
+.btn {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  padding: 10px 16px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text);
+  font-size: var(--text-ui-size);
+  font-weight: var(--text-ui-weight);
+  line-height: var(--text-ui-leading);
+  letter-spacing: var(--text-ui-tracking);
+  text-decoration: none;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color var(--dur-1) ease-out,
+    color var(--dur-1) ease-out,
+    transform var(--dur-1) var(--ease-out);
+}
+.btn:active {
+  transform: scale(0.97);
+}
+.btn[disabled],
+.btn[aria-disabled='true'] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.btn-primary {
+  background: var(--accent);
+  color: var(--on-accent);
+  font-weight: 550;
+}
+.btn-secondary {
+  background: var(--surface);
+  border-color: var(--border);
+  box-shadow: var(--elev-e1);
+}
+.btn-ghost {
+  color: var(--text-muted);
+  padding-inline: 10px;
+}
+.btn-icon {
+  min-width: 44px;
+  padding-inline: 0;
+}
+.btn[aria-busy='true'] {
+  pointer-events: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .btn-primary:hover {
+    background: var(--accent-hover);
+    color: var(--on-accent);
+  }
+  .btn-secondary:hover,
+  .btn-ghost:hover {
+    background: var(--surface-2);
+    color: var(--text);
+  }
+}
+
+.keycap {
+  display: inline-grid;
+  place-items: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border-radius: var(--radius-xs);
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text-muted);
+  font: var(--text-micro-weight) var(--text-micro-size) / 1 var(--font-sans);
+  letter-spacing: var(--text-micro-tracking);
+  box-shadow: inset 0 -1px 0 var(--border);
+}
+@media (hover: none) {
+  .keycap {
+    display: none;
+  }
+}
+
+.spinner {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  animation: spin 700ms linear infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+  }
+  .spinner {
+    animation-duration: 2s;
+  }
+}

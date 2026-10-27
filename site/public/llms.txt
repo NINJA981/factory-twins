@@ -1,0 +1,14 @@
+# Factory Twins
+
+> A free, open-source browser extension (Chrome and Firefox, desktop) that circles the listings on an Amazon.com or Walmart.com search page that use the same product photo, folds each group into one price ladder, and lets you check the pixels. It runs entirely on your device: no server, no account, no analytics.
+
+Factory Twins compares photos, not products. It does not claim two listings are the same item.
+
+## Pages
+
+- [Landing page](./): what it does, how it works, and how to install it from source.
+- [Web app](./app/): try the same photo-matching engine in any browser, including phones. Pick photos, paste an image or open a sample results page. Nothing is uploaded; it works offline after the first load.
+
+## Source
+
+- MIT licence. Source and issue tracker are linked from the landing page footer.
