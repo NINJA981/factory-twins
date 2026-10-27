@@ -92,18 +92,32 @@ export function Switch({
   checked,
   label,
   hint,
+  density = 'compact',
   onChange,
 }: {
   checked: boolean;
   label: string;
   hint?: string;
+  /** Compact in the popup (32 px rows), comfortable on the options page (44 px rows, UI type). */
+  density?: 'compact' | 'comfortable';
   onChange(on: boolean): void;
 }) {
+  const comfortable = density === 'comfortable';
   return (
-    <label className="flex min-h-8 items-center justify-between gap-4 text-ui-compact text-text">
-      <span className="flex min-w-0 flex-col">
-        <span className="text-label-compact">{label}</span>
-        {hint && <span className="text-caption text-text-subtle">{hint}</span>}
+    <label
+      className={`flex items-center justify-between gap-4 text-text ${
+        comfortable ? 'min-h-11 py-3 text-ui' : 'min-h-8 text-ui-compact'
+      }`}
+    >
+      <span className={`flex min-w-0 flex-col ${comfortable ? 'gap-0.5' : ''}`}>
+        <span className={comfortable ? 'text-ui font-[550]' : 'text-label-compact'}>{label}</span>
+        {hint && (
+          <span
+            className={`text-text-muted [text-wrap:pretty] ${comfortable ? 'text-ui-compact' : 'text-caption'}`}
+          >
+            {hint}
+          </span>
+        )}
       </span>
       <RadixSwitch.Root
         checked={checked}

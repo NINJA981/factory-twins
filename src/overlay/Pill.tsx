@@ -112,20 +112,32 @@ function ResultPill({
           <span className="ft-glyph">
             <TwinGlyph />
           </span>
+          {/* Each later segment carries its divider at its own leading edge; the row is pulled left by one
+              divider slot and clipped, so a segment that wraps to a new line loses its divider instead of
+              leaving one dangling at either end of a line. */}
           <span className="ft-pill-text">
-            <span className="ft-segment">
-              {emphasize(listings)}{' '}
-              <span className="ft-arrow">
-                <IconArrow />
+            <span className="ft-pill-row">
+              <span className="ft-segment">
+                {emphasize(listings)}{' '}
+                <span className="ft-arrow">
+                  <IconArrow />
+                </span>{' '}
+                {emphasize(products)}
               </span>{' '}
-              {emphasize(products)}
+              <span className="ft-segment">
+                <Divider />
+                {emphasize(p.groups)}
+              </span>
+              {p.tax && (
+                <>
+                  {' '}
+                  <span className="ft-segment">
+                    <Divider />
+                    {emphasize(p.tax)}
+                  </span>
+                </>
+              )}
             </span>
-            <Divider /> <span className="ft-segment">{emphasize(p.groups)}</span>
-            {p.tax && (
-              <>
-                <Divider /> <span className="ft-segment">{emphasize(p.tax)}</span>
-              </>
-            )}
           </span>
         </button>
         <span id="ft-pill-hint" className="ft-sr">

@@ -109,10 +109,15 @@
   text-wrap: balance;
 }
 
-.head h2:focus-visible {
+/* After a keyboard fold, focus lands on the title (DESIGN.md, t = 980 ms). The ring goes around the
+   whole header band, concentric with it, rather than hugging the letters. */
+.head h2:focus {
+  outline: none;
+}
+
+.head:has(h2:focus-visible) {
   outline: 2px solid var(--ring);
   outline-offset: 2px;
-  border-radius: var(--radius-xs);
 }
 
 .badge-static {
@@ -167,31 +172,55 @@
 }
 
 /* Price ladder ------------------------------------------------------------------------------- */
+/* Rungs take their natural width (96 to 220 px each); the measure column takes the rest of the row, so
+   the bracket and its amount sit at the card's right edge on every card, one column the eye can scan
+   down. Without a bracket the rungs fill the row. */
 .ladder {
   display: grid;
-  grid-template-columns: minmax(0, max-content) auto;
-  justify-content: start;
-  gap: 0;
+  grid-template-columns: minmax(0, 1fr);
   min-width: 0;
+}
+
+.ladder[data-measure] {
+  grid-template-columns: minmax(0, max-content) minmax(88px, 1fr);
 }
 
 .scroller {
   position: relative;
   min-width: 0;
   overflow-x: auto;
-  scrollbar-gutter: stable;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+  scroll-padding-inline: var(--space-2);
   scrollbar-width: thin;
   scrollbar-color: var(--border-strong) transparent;
+}
+
+/* Edge fades only while rungs are hidden past that edge (useEdgeFades sets data-fade). */
+.scroller[data-fade='end'] {
+  mask-image: linear-gradient(to right, black calc(100% - 40px), transparent);
+}
+
+.scroller[data-fade='start'] {
+  mask-image: linear-gradient(to right, transparent, black 40px);
+}
+
+.scroller[data-fade='start end'] {
+  mask-image: linear-gradient(to right, transparent, black 40px, black calc(100% - 40px), transparent);
 }
 
 .rungs {
   position: relative;
   display: grid;
   grid-auto-flow: column;
-  grid-auto-columns: minmax(104px, 176px);
+  grid-auto-columns: minmax(96px, 1fr);
   grid-template-rows: auto;
   column-gap: var(--space-2);
   min-width: min-content;
+}
+
+.ladder[data-measure] .rungs {
+  grid-auto-columns: minmax(96px, 220px);
 }
 
 /* Gridline from the top of the lowest bar, so the brand tax reads against the others. */
@@ -206,6 +235,7 @@
 
 .rung {
   position: relative;
+  scroll-snap-align: start;
   display: flex;
   flex-direction: column;
   gap: var(--space-1);
@@ -378,35 +408,54 @@
 }
 
 /* Brand tax bracket: a dimension line from the top of the Lowest bar to the top of the Highest. */
+/* Brand tax bracket: a dimension line at the right edge of the card, between extension lines drawn from
+   the top of the Highest bar and the top of the Lowest bar. Same 52 px offset as the bars (rung padding
+   8 + thumbnail 40 + gap 4), 96 px tall like the tallest bar. */
 .bracket {
   position: relative;
-  width: 60px;
+  min-width: 0;
   margin-top: 52px;
   height: 96px;
 }
 
+.bracket-ext {
+  position: absolute;
+  left: 0;
+  right: 6px;
+  height: 0;
+  border-top: 1px dashed color-mix(in oklab, var(--danger) 55%, transparent);
+  transform-origin: left center;
+}
+
+.bracket-dim {
+  position: absolute;
+  inset: 0;
+}
+
 .bracket-line {
   position: absolute;
-  left: 8px;
+  right: 6px;
   width: 1.5px;
   background: var(--danger);
-  transform-origin: bottom;
 }
 
 .bracket-tick {
   position: absolute;
-  left: 0;
+  right: 0;
   width: 12px;
   height: 1.5px;
+  translate: 0 -0.75px;
   background: var(--danger);
 }
 
 .bracket-amount {
   position: absolute;
-  left: 16px;
+  right: 16px;
   transform: translateY(-50%);
+  padding: 2px 0 2px 6px;
+  background: var(--surface);
   color: var(--danger);
-  font-size: var(--text-caption-size);
+  font-size: var(--text-label-compact-size);
   line-height: 1;
   font-weight: 600;
   font-variant-numeric: tabular-nums;
@@ -467,8 +516,19 @@
   .rail .seen {
     grid-column: 2;
   }
+}
+
+/* Phone-width cards: the bracket is decorative and repeats the brand-tax tag, so it gives its column
+   back and three rungs fit without scrolling. Longer ladders scroll with edge fades. */
+@container (max-width: 440px) {
+  .ladder[data-measure] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .ladder[data-measure] .rungs {
+    grid-auto-columns: minmax(96px, 1fr);
+  }
   .bracket {
-    width: 48px;
+    display: none;
   }
 }
 

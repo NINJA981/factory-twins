@@ -1,4 +1,4 @@
-import type { CSSProperties } from 'react';
+import { useEffect, useRef, type CSSProperties, type RefObject } from 'react';
 import {
   CHECK_PIXELS,
   FROM,
@@ -45,6 +45,34 @@ export function barHeights(rungs: readonly Pick<Rung, 'comparable'>[]): (number 
     if (max === min) return Math.round((BAR_MIN + BAR_MAX) / 2);
     return Math.round(BAR_MIN + ((r.comparable - min) / (max - min)) * (BAR_MAX - BAR_MIN));
   });
+}
+
+/**
+ * Marks which edges of a sideways-scrolling ladder hide rungs (`data-fade="start end"`), so card.css
+ * can fade those edges. Written straight to the element: scrolling must not re-render the card.
+ */
+export function useEdgeFades(ref: RefObject<HTMLElement | null>) {
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const update = () => {
+      const max = el.scrollWidth - el.clientWidth;
+      const edges = [el.scrollLeft > 1 ? 'start' : '', el.scrollLeft < max - 1 ? 'end' : '']
+        .filter(Boolean)
+        .join(' ');
+      if (edges) el.setAttribute('data-fade', edges);
+      else el.removeAttribute('data-fade');
+    };
+    update();
+    el.addEventListener('scroll', update, { passive: true });
+    const ro = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(update);
+    ro?.observe(el);
+    if (el.firstElementChild) ro?.observe(el.firstElementChild);
+    return () => {
+      el.removeEventListener('scroll', update);
+      ro?.disconnect();
+    };
+  }, [ref]);
 }
 
 function priceText(
@@ -155,6 +183,8 @@ export function FoldCard({ view, goneIds, onCheckPixels, onUnfold, onFocusGroup 
   const priced = view.rungs.filter((r) => r.comparable != null);
   const notes = view.rungs.map((r, i) => ({ r, i })).filter(({ r }) => r.fewReviewsReference != null);
   const pages = view.pagesSeen.length;
+  const scroller = useRef<HTMLDivElement>(null);
+  useEdgeFades(scroller);
 
   return (
     <section
@@ -206,8 +236,8 @@ export function FoldCard({ view, goneIds, onCheckPixels, onUnfold, onFocusGroup 
                 </span>
               )}
             </div>
-            <div className="ladder">
-              <div className="scroller">
+            <div className="ladder" data-measure={showBracket ? '' : undefined}>
+              <div className="scroller" ref={scroller}>
                 <div className="rungs" style={{ ['--n' as string]: n }}>
                   {showBracket && (
                     <div className="guide" aria-hidden="true" style={{ top: BRACKET_TOP + yLow }} />
@@ -236,12 +266,21 @@ export function FoldCard({ view, goneIds, onCheckPixels, onUnfold, onFocusGroup 
                 </div>
               </div>
               {showBracket && view.brandTax && (
-                <div className="bracket" aria-hidden="true" data-a="bracket">
-                  <span className="bracket-tick" style={{ top: yHigh }} />
-                  <span className="bracket-tick" style={{ top: yLow }} />
-                  <span className="bracket-line" style={{ top: yHigh, height: Math.max(0, yLow - yHigh) }} />
-                  <span className="bracket-amount" style={{ top: (yHigh + yLow) / 2 }}>
-                    +{formatPrice(view.brandTax.amount)}
+                <div className="bracket" aria-hidden="true">
+                  {/* Extension lines carry the tops of the Highest and Lowest bars across to the
+                      dimension line, so every card's brand tax sits in the same column at the right. */}
+                  <span className="bracket-ext" data-a="ext" style={{ top: yHigh }} />
+                  <span className="bracket-ext" data-a="ext" style={{ top: yLow }} />
+                  <span className="bracket-dim" data-a="bracket">
+                    <span className="bracket-tick" style={{ top: yHigh }} />
+                    <span className="bracket-tick" style={{ top: yLow }} />
+                    <span
+                      className="bracket-line"
+                      style={{ top: yHigh, height: Math.max(0, yLow - yHigh) }}
+                    />
+                    <span className="bracket-amount" style={{ top: (yHigh + yLow) / 2 }}>
+                      +{formatPrice(view.brandTax.amount)}
+                    </span>
                   </span>
                 </div>
               )}

@@ -1,6 +1,6 @@
 # HANDOFF: Factory Twins
 
-Last updated: 2026-10-28, end of **Stage 4: Test engineer** (on top of Stage 3a: Product UI, Stage 3b: landing page and web app, Stage 2: Scaffold + Core). The web app lives in `site/` and has its own notes in `site/HANDOFF.md`.
+Last updated: 2026-10-28, **Stage 3a rerun** (QA round 1 fixes to the extension UI, see "Stage 3a rerun" below), after **Stage 4: Test engineer** (on top of Stage 3a: Product UI, Stage 3b: landing page and web app, Stage 2: Scaffold + Core). The web app lives in `site/` and has its own notes in `site/HANDOFF.md`.
 
 ## What's done
 
@@ -69,7 +69,20 @@ Playwright uses the full Chromium in `X:\DevCache\ms-playwright` (extensions do 
 - **Zero layout shift:** nothing we render moves a store element (grid snapshot test). The pill itself grows when "Checking photos" becomes the result; the layout-shift API counts that as 0.004 (limit 0.05, test threshold 0.01).
 - **Not built, on purpose:** a toast on the store page (DESIGN.md lists one; nothing on the page needs it yet, the Undo toast lives in the popup and options), edge fades on the horizontally scrolling ladder at 375 px, a command palette (written deviation in DESIGN.md).
 - **Not done:** `.impeccable/design.json` is still older than DESIGN.md; no Lighthouse run (an extension has no page to audit; axe runs on the popup, options, pill, tiles, fold cards and lens); Firefox was not opened (the Firefox build passes `web-ext lint` and the release-manifest check only).
-- **Rubric (DESIGN_BIBLE section 9), my own scoring, not an independent critic:** about 9 on identity, typography, colour, hierarchy, component craft, states and responsive fit; about 8.5 on system states (no store-page toast) and motion (frames checked, but only on the synthetic page and a fast machine). Known visual weakness: with two or three rungs the ladder sits at the left of a very wide card, leaving empty space at 1440 px.
+- **Rubric (DESIGN_BIBLE section 9), my own scoring, not an independent critic:** about 9 on identity, typography, colour, hierarchy, component craft, states and responsive fit; about 8.5 on system states (no store-page toast) and motion (frames checked, but only on the synthetic page and a fast machine). Known visual weakness: with two or three rungs the ladder sat at the left of a very wide card, leaving empty space at 1440 px (addressed in the Stage 3a rerun).
+
+## Stage 3a rerun: fixes from QA round 1 (2026-10-28)
+
+The extension items from the QA round 1 critic are fixed. Nothing under `site/` was touched, so the site items (the diagonal bracket in the site's fold card, the lens readout below the fold at 375 px) are still open for the site owner.
+
+- **Ladder no longer clusters at the left** (`src/overlay/FoldCard.tsx`, `src/styles/card.css`). Rungs take 96 to 220 px each. A measure column takes the rest of the row and holds the brand-tax bracket at the card's right edge, with dashed extension lines from the tops of the Highest and Lowest bars. Every card's brand-tax amount now sits in one column at the right. Without a bracket, rungs fill the row. The extension lines draw in the fold at 600 to 720 ms (`foldMotion.ts`). Reduced motion keeps them static, like the rest of the bracket.
+- **375 px ladder no longer clips sideways.** Below a 440 px card width the bracket is hidden (it is decorative and repeats the tag), and rungs fill the row, so three rungs fit. Longer ladders scroll with scroll-snap and edge fades. `useEdgeFades` sets `data-fade="start|end"` only while rungs are hidden past that edge, and `card.css` masks those edges.
+- **No dangling dividers when the pill wraps** (`Pill.tsx`, `overlay.css`). Each later segment carries its divider at its own leading edge. The row is shifted left by one divider slot and clipped, so the first segment on any line loses its divider. This works at any width, with or without the Fold button, and in the session wording.
+- **Focus after a keyboard fold** now rings the whole header band (concentric, 2 px Berry Ink, offset 2). It used to hug the title's letters.
+- **Options page rows** use the comfortable density from DESIGN.md: 44 px rows, UI 15 px labels, hairline dividers between rows, and padded shortcut rows. `Switch` takes `density="comfortable"`; the popup keeps compact rows.
+- **Checks run on the final tree:** `pnpm lint`, `pnpm typecheck`, `pnpm test` (477), `pnpm build`, `pnpm build:firefox`, `pnpm size` (content script 106.3 kB of 110, pages 137.0 kB of 150), and the extension Playwright suite (45 passed, 10 screenshot tests skipped without `FT_SHOTS`). I ran Playwright directly after `wxt build --mode e2e` against the existing `site/dist`, without rebuilding the site, because another agent is working in `site/`.
+- **Screenshots** in `docs/screenshots/` (including `fold-frames/`) are regenerated from this build. `docs/screenshots/qa-r1/` holds the earlier critic set, for comparison.
+- **Rubric (my own scoring, not an independent critic):** about 9 on every criterion except system states (8.5: there is still no store-page toast). On a 1440 px full-width demo grid with two or three rungs, the measure column is wide. It is deliberate space now, but a critic may still read it as empty. Real Amazon and Walmart results columns are narrower because of their filter sidebars.
 
 ## Stage 4 notes (test engineer)
 

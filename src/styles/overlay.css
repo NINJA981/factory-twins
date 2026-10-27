@@ -80,22 +80,39 @@
   color: var(--accent);
 }
 
+/* Divider slot: 8 px gap, 1 px rule, 8 px gap. Every segment reserves one at its leading edge; the row
+   is shifted left by one slot and clipped, so the first segment of every line hides its divider. */
 .ft-pill-text {
+  --ft-slot: 17px;
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.ft-pill-row {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  column-gap: var(--space-2);
-  row-gap: 0;
+  margin-left: calc(-1 * var(--ft-slot));
   font-variant-numeric: tabular-nums;
   line-height: 20px;
 }
 
 .ft-segment {
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: var(--space-1);
+  padding-left: var(--ft-slot);
   color: var(--text-muted);
   white-space: nowrap;
+}
+
+.ft-segment > .ft-divider {
+  position: absolute;
+  left: var(--space-2);
+  top: 50%;
+  translate: 0 -50%;
 }
 
 .ft-segment b {

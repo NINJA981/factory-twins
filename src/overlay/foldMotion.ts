@@ -170,6 +170,16 @@ export function playFold(input: FoldInput): Handle {
         easing: EASE.out,
       }),
     );
+    // Extension lines run out from the bars to the dimension line, then the dimension line opens.
+    for (const el of q<HTMLElement>(card.root, '[data-a="ext"]'))
+      add(
+        el,
+        [
+          { transform: 'scaleX(0)', opacity: 0 },
+          { transform: 'scaleX(1)', opacity: 1 },
+        ],
+        { duration: 120, delay: 600, easing: EASE.out },
+      );
     for (const el of q<HTMLElement>(card.root, '[data-a="bracket"]'))
       add(
         el,

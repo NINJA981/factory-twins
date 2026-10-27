@@ -89,7 +89,11 @@ function Section({
 }
 
 function Card({ children }: { children: ReactNode }) {
-  return <div className="flex flex-col gap-1 rounded-md bg-surface px-4 py-2 shadow-e1">{children}</div>;
+  return (
+    <div className="flex flex-col divide-y divide-border rounded-md bg-surface px-4 py-1 shadow-e1">
+      {children}
+    </div>
+  );
 }
 
 export function Options({ api = extensionApi }: { api?: PopupApi }) {
@@ -143,6 +147,7 @@ export function Options({ api = extensionApi }: { api?: PopupApi }) {
                 key={id}
                 checked={settings.stores[id]}
                 label={STORE_NAMES[id]}
+                density="comfortable"
                 onChange={(on) => void save('stores', { stores: { [id]: on } })}
               />
             ))}
@@ -157,6 +162,7 @@ export function Options({ api = extensionApi }: { api?: PopupApi }) {
                 checked={settings[key]}
                 label={SETTING_LABELS[key]}
                 hint={BEHAVIOUR_HELP[key]}
+                density="comfortable"
                 onChange={(on) => void save('behaviour', { [key]: on })}
               />
             ))}
@@ -181,7 +187,7 @@ export function Options({ api = extensionApi }: { api?: PopupApi }) {
               {SHORTCUT_ROWS.map((row) => (
                 <li
                   key={row.label}
-                  className="flex min-h-9 items-center gap-4 border-b border-border text-ui-compact text-text-muted last:border-b-0"
+                  className="flex min-h-11 items-center gap-4 border-b border-border py-2 text-ui text-text last:border-b-0"
                 >
                   <span className="flex w-20 shrink-0 gap-1">
                     {row.keys.map((k) => (
