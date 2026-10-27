@@ -4,6 +4,7 @@ import './landing.css';
 import type { ClusterResult, Listing } from '@engine';
 import demo from '../demo/demo.json';
 import { $, $$, esc, prefersReducedMotion } from '../shared/dom';
+import { edgeFades } from '../shared/fades';
 import { icon } from '../shared/icons';
 import { measurePair } from '../shared/measure';
 import { mountStage } from '../shared/stage';
@@ -168,30 +169,9 @@ if (block && stackEl) {
   }
 }
 
-// ---- Recorded loop: lazy, muted, with a visible pause control -------------------------------------
-const loop = $('[data-loop]');
-if (loop) {
-  const video = $<HTMLVideoElement>('video', loop);
-  const toggle = $<HTMLButtonElement>('[data-loop-toggle]', loop);
-  if (video && toggle) {
-    toggle.addEventListener('click', () => {
-      if (video.paused) {
-        video.preload = 'auto';
-        void video.play();
-      } else video.pause();
-    });
-    const sync = () => {
-      toggle.textContent = video.paused ? 'Play the recording' : 'Pause the recording';
-      toggle.setAttribute('aria-pressed', String(!video.paused));
-    };
-    video.addEventListener('play', sync);
-    video.addEventListener('pause', sync);
-    video.addEventListener('error', () => {
-      // The recording is optional: without it the poster stays and the button explains itself.
-      toggle.hidden = true;
-    });
-  }
-}
+// ---- Edge fades on the brand-tax beat's ladder (the hero's stage has its own) ---------------------
+const crop = $('.card-crop');
+if (crop) edgeFades(crop);
 
 // ---- Sticky nav hairline ----------------------------------------------------------------------------
 const nav = $('[data-nav]');

@@ -8,6 +8,16 @@ import { photo, press, trio } from './helpers';
 const WCAG = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice'];
 
 async function scan(page: Page) {
+  // Let finite animations land first: axe measures contrast on the frame it sees, and a number rolling in
+  // from opacity 0 (the Proof stack readout, 400 ms) is not a contrast failure once it has arrived.
+  await page.evaluate(() =>
+    Promise.all(
+      document
+        .getAnimations()
+        .filter((a) => Number.isFinite(Number(a.effect?.getComputedTiming().endTime)))
+        .map((a) => a.finished.catch(() => undefined)),
+    ),
+  );
   const results = await new AxeBuilder({ page }).withTags(WCAG).analyze();
   return results.violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(' ')).join(' | ')}`);
 }

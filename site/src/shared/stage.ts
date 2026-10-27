@@ -29,6 +29,7 @@ import {
   pillScanning,
 } from '@copy';
 import { editableFocus, esc, prefersReducedMotion } from './dom';
+import { edgeFades } from './fades';
 import { createFolder, type Folder } from './fold';
 import { glyph, icon } from './icons';
 import { createLens, type Lens } from './lens';
@@ -81,6 +82,7 @@ export function mountStage(opts: StageOptions): Stage {
   const reduced = () => prefersReducedMotion();
 
   const folder = createFolder(grid, { reduced, onSettled: (folded) => settled(folded) });
+  const fades = edgeFades(grid);
   const byId = () => Object.fromEntries(data.listings.map((l) => [l.id, l])) as Record<string, Listing>;
 
   const lens: Lens = createLens({
@@ -137,6 +139,7 @@ export function mountStage(opts: StageOptions): Stage {
   }
 
   function settled(folded: boolean) {
+    fades.refresh();
     if (!folded) {
       live.textContent = 'Unfolded.';
       return;
@@ -241,6 +244,7 @@ export function mountStage(opts: StageOptions): Stage {
   function render(o?: Parameters<Stage['setData']>[1]) {
     grid.innerHTML = gridHtml(data, o);
     grid.dataset.state = 'idle';
+    fades.refresh();
   }
 
   if (!opts.hydrate) {
@@ -287,6 +291,7 @@ export function mountStage(opts: StageOptions): Stage {
       document.removeEventListener('keydown', onKey);
       io?.disconnect();
       folder.destroy();
+      fades.destroy();
       lens.destroy();
     },
   };

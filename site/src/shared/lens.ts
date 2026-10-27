@@ -52,26 +52,28 @@ export function createLens(hooks: LensHooks): Lens {
   const dlg = document.createElement('dialog');
   dlg.className = 'lens';
   dlg.setAttribute('aria-labelledby', 'lens-title');
-  dlg.innerHTML = `<div class="lens-grid">
-<div class="lens-viewcol"><div class="lens-view" role="img" data-mode="onion">
-</div></div>
+  // Same layout as the extension's ProofLens: a header row; the photo and the two pickers on the left;
+  // the readout, the view switch, the blend slider and Swap on the right. On a phone it is one column in
+  // the order photo, number, controls, picks (the o2 to o5 classes), so the number is above the fold.
+  dlg.innerHTML = `<div class="lens-in">
+<div class="lens-head"><h2 id="lens-title" class="lens-title">${esc(LENS_TITLE)}</h2><button type="button" class="btn btn-ghost lens-close" data-lens="close">${icon('x', 18)}<span>${esc(CLOSE)}</span><kbd class="keycap">Esc</kbd></button></div>
+<div class="lens-grid">
 <div class="lens-side">
-<div class="lens-head"><h2 id="lens-title" class="lens-title">${esc(LENS_TITLE)}</h2><button type="button" class="btn btn-ghost btn-icon" data-lens="close" aria-label="${esc(CLOSE)}">${icon('x', 20)}</button></div>
-<div class="lens-pickers">
-<label class="field"><span>${esc(LENS_TOP)}</span><select data-lens="top"></select></label>
-<label class="field"><span>${esc(LENS_BOTTOM)}</span><select data-lens="bottom"></select></label>
-<button type="button" class="btn btn-ghost lens-swap" data-lens="swap">${icon('swap')}<span>${esc(LENS_SWAP)}</span></button>
+<div class="lens-view" role="img" data-mode="onion"></div>
+<div class="lens-pick o4" role="group" aria-label="${esc(LENS_TOP)}"><span class="field-label" aria-hidden="true">${esc(LENS_TOP)}</span><div class="lens-chips" data-chips="top"></div></div>
+<div class="lens-pick o4" role="group" aria-label="${esc(LENS_BOTTOM)}"><span class="field-label" aria-hidden="true">${esc(LENS_BOTTOM)}</span><div class="lens-chips" data-chips="bottom"></div></div>
 </div>
-<div class="lens-modes"><span class="field-label" id="lens-mode-label">${esc(LENS_MODE_LABEL)}</span>
+<div class="lens-side">
+<div class="lens-readout o2" aria-live="polite" aria-atomic="true"></div>
+<div class="lens-modes o3"><span class="field-label" id="lens-mode-label">${esc(LENS_MODE_LABEL)}</span>
 <div class="segmented" role="radiogroup" aria-labelledby="lens-mode-label">
 <button type="button" role="radio" data-lens="onion" aria-checked="true">${esc(LENS_ONION)}<kbd class="keycap">O</kbd></button>
 <button type="button" role="radio" data-lens="difference" aria-checked="false">${esc(LENS_DIFFERENCE)}<kbd class="keycap">D</kbd></button>
 </div></div>
-<label class="field lens-blend"><span>${esc(LENS_BLEND)}</span><input type="range" min="0" max="100" step="5" value="50" data-lens="blend" aria-describedby="lens-hint"></label>
-<p class="hint" id="lens-hint">${esc(LENS_BLEND_HINT)}</p>
-<div class="lens-readout" aria-live="polite" aria-atomic="true"></div>
-<p class="hint lens-method">${esc(LENS_METHOD)}</p>
-</div></div>`;
+<div class="lens-blend o3"><div class="lens-blend-row"><label for="lens-blend">${esc(LENS_BLEND)}</label><span data-blend-value>50%</span></div><input id="lens-blend" type="range" min="0" max="100" step="5" value="50" data-lens="blend" aria-describedby="lens-hint" style="--fill:50%"><p class="hint" id="lens-hint">${esc(LENS_BLEND_HINT)}</p></div>
+<div class="o3"><button type="button" class="btn btn-secondary lens-swap" data-lens="swap">${icon('swap')}<span>${esc(LENS_SWAP)}</span></button></div>
+<p class="hint lens-method o5">${esc(LENS_METHOD)}</p>
+</div></div></div>`;
   document.body.append(dlg);
 
   const q = <T extends HTMLElement>(sel: string) => dlg.querySelector(sel) as T;
@@ -88,8 +90,9 @@ export function createLens(hooks: LensHooks): Lens {
   const imgBottom = mkImg('lens-bottom');
   const imgTop = mkImg('lens-top');
   const imgDiff = mkImg('lens-diff');
-  const selTop = q<HTMLSelectElement>('[data-lens="top"]');
-  const selBottom = q<HTMLSelectElement>('[data-lens="bottom"]');
+  const chipsTop = q<HTMLDivElement>('[data-chips="top"]');
+  const chipsBottom = q<HTMLDivElement>('[data-chips="bottom"]');
+  const blendValue = q<HTMLSpanElement>('[data-blend-value]');
   const slider = q<HTMLInputElement>('[data-lens="blend"]');
   const readout = q<HTMLDivElement>('.lens-readout');
   const btnOnion = q<HTMLButtonElement>('[data-lens="onion"]');
@@ -116,6 +119,12 @@ export function createLens(hooks: LensHooks): Lens {
         return hooks.dispatch({ type: 'lens-mode', mode: 'onion' });
       case 'difference':
         return hooks.dispatch({ type: 'lens-mode', mode: 'difference' });
+      case 'pick':
+        return hooks.dispatch({
+          type: 'lens-pick',
+          side: t.dataset.side === 'bottom' ? 'bottom' : 'top',
+          id: t.dataset.id ?? '',
+        });
       case 'retry':
         pairKey = '';
         return current ? run(current) : undefined;
@@ -125,12 +134,6 @@ export function createLens(hooks: LensHooks): Lens {
     e.preventDefault();
     hooks.dispatch({ type: 'escape' });
   });
-  selTop.addEventListener('change', () =>
-    hooks.dispatch({ type: 'lens-pick', side: 'top', id: selTop.value }),
-  );
-  selBottom.addEventListener('change', () =>
-    hooks.dispatch({ type: 'lens-pick', side: 'bottom', id: selBottom.value }),
-  );
   slider.addEventListener('input', () => hooks.dispatch({ type: 'lens-blend', value: Number(slider.value) }));
 
   // Touch and mouse drag on the photo scrubs the onion-skin blend horizontally (pointer events,
@@ -157,15 +160,20 @@ export function createLens(hooks: LensHooks): Lens {
   view.addEventListener('pointerup', end);
   view.addEventListener('pointercancel', end);
 
-  function fillSelect(sel: HTMLSelectElement, opts: LensOption[], value: string) {
+  /** Thumbnail chips, one per listing in the group (price and brand), as in the extension. */
+  function fillChips(box: HTMLDivElement, side: 'top' | 'bottom', opts: LensOption[], value: string) {
     const sig = opts.map((o) => o.id).join(',');
-    if (sel.dataset.sig !== sig) {
-      sel.dataset.sig = sig;
-      sel.innerHTML = opts
-        .map((o) => `<option value="${esc(o.id)}">${esc(`${o.price}  ${o.brand}`)}</option>`)
+    if (box.dataset.sig !== sig) {
+      box.dataset.sig = sig;
+      box.innerHTML = opts
+        .map(
+          (o) =>
+            `<button type="button" class="lens-chip" data-lens="pick" data-side="${side}" data-id="${esc(o.id)}" aria-pressed="false"><img src="${esc(o.imageUrl)}" alt="" width="28" height="28" decoding="async"><span class="lens-chip-text"><b>${esc(o.price)}</b><span>${esc(o.brand)}</span></span></button>`,
+        )
         .join('');
     }
-    sel.value = value;
+    for (const el of box.querySelectorAll<HTMLButtonElement>('.lens-chip'))
+      el.setAttribute('aria-pressed', String(el.dataset.id === value));
   }
 
   function showReadout(res: PixelDiffResult, key: string) {
@@ -237,8 +245,8 @@ export function createLens(hooks: LensHooks): Lens {
       const top = opts.find((o) => o.id === state.top);
       const bottom = opts.find((o) => o.id === state.bottom);
       if (!top || !bottom) return;
-      fillSelect(selTop, opts, state.top);
-      fillSelect(selBottom, opts, state.bottom);
+      fillChips(chipsTop, 'top', opts, state.top);
+      fillChips(chipsBottom, 'bottom', opts, state.bottom);
       if (imgTop.getAttribute('src') !== top.imageUrl) imgTop.src = top.imageUrl;
       if (imgDiff.getAttribute('src') !== top.imageUrl) imgDiff.src = top.imageUrl;
       if (imgBottom.getAttribute('src') !== bottom.imageUrl) imgBottom.src = bottom.imageUrl;
@@ -248,6 +256,8 @@ export function createLens(hooks: LensHooks): Lens {
       btnOnion.setAttribute('aria-checked', String(!diff));
       btnDiff.setAttribute('aria-checked', String(diff));
       slider.value = String(state.blend);
+      slider.style.setProperty('--fill', `${state.blend}%`);
+      blendValue.textContent = `${state.blend}%`;
       slider.disabled = diff;
       view.setAttribute(
         'aria-label',

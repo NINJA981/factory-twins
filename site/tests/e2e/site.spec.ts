@@ -74,7 +74,60 @@ test.describe('landing page', () => {
     await ctx.close();
   });
 
-  test('the recording and its poster exist and are within budget', async ({ request }) => {
+  test('fold cards lay out like the extension: ladder fits, bracket at the right edge or dropped', async ({
+    browser,
+  }) => {
+    for (const [w, h, bracket] of [
+      [1440, 900, true],
+      [768, 900, true],
+      [375, 812, false],
+    ] as const) {
+      const ctx = await browser.newContext({ viewport: { width: w, height: h }, reducedMotion: 'reduce' });
+      const page = await ctx.newPage();
+      await page.goto('/', { waitUntil: 'networkidle' });
+      // Reduced motion boots the demo folded: the five-rung hero card and the four-rung brand-tax card.
+      for (const sel of ['#demo .fold-card', '.card-crop .fold-card']) {
+        const m = await page
+          .locator(sel)
+          .first()
+          .evaluate((el) => {
+            const sc = el.querySelector('.ladder-scroll') as HTMLElement;
+            const br = el.querySelector<HTMLElement>('.bracket');
+            const card = el.getBoundingClientRect();
+            const b = br?.getBoundingClientRect();
+            return {
+              overflow: sc.scrollWidth - sc.clientWidth,
+              bracket: !!br && getComputedStyle(br).display !== 'none' && (b?.width ?? 0) > 0,
+              gap: b ? card.right - b.right : null,
+            };
+          });
+        expect(m.bracket, `${sel} at ${w}`).toBe(bracket);
+        // Wide enough for the bracket means wide enough for every rung too.
+        if (bracket) {
+          expect(m.overflow, `${sel} at ${w}`).toBeLessThanOrEqual(0);
+          expect(m.gap!, `${sel} at ${w}`).toBeLessThan(40);
+        }
+      }
+      await ctx.close();
+    }
+  });
+
+  test('the real product beat shows the extension screenshot, light or dark', async ({ browser }) => {
+    for (const colorScheme of ['light', 'dark'] as const) {
+      const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, colorScheme });
+      const page = await ctx.newPage();
+      await page.goto('/');
+      const img = page.locator('.real-shot img');
+      await img.scrollIntoViewIfNeeded();
+      await expect.poll(() => img.evaluate((i: HTMLImageElement) => i.complete && i.naturalWidth)).toBe(736);
+      expect(await img.evaluate((i: HTMLImageElement) => i.currentSrc)).toContain(
+        `landing/real/card-768-${colorScheme}.avif`,
+      );
+      await ctx.close();
+    }
+  });
+
+  test('the social recording and its poster exist and are within budget', async ({ request }) => {
     const poster = await request.get('/landing/loop-poster.avif');
     expect(poster.ok()).toBe(true);
     expect((await poster.body()).length).toBeLessThanOrEqual(80 * 1024);

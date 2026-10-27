@@ -13,8 +13,10 @@ import {
   type TwinGroup,
 } from '@engine';
 import {
+  CHECK_PIXELS,
   FOLD_FOOTNOTE,
   FOLD_TWINS,
+  GROUP_PHOTO_ALT,
   HIDE_FOR_PAGE,
   HIGHEST,
   LOWEST,
@@ -27,6 +29,7 @@ import {
   brandTaxTag,
   fewReviewsNote,
   foldHeader,
+  formatCount,
   formatPrice,
   pageChip,
   pillNoTwins,
@@ -34,6 +37,7 @@ import {
   reviewsLabel,
   sameAsOthers,
   seenAcrossPages,
+  UNFOLD_LABEL,
   UNFOLD_TWINS,
 } from '@copy';
 import { esc } from './dom';
@@ -85,86 +89,116 @@ export function tileHtml(l: Listing, o: TileOpts = {}): string {
 <div class="tile-body">${meta}<p class="tile-price">${esc(priceText(l))}</p>${o.extra ?? ''}</div>${badge}</article>`;
 }
 
-function barHeights(rungs: readonly Rung[]): Map<string, number> {
+// Bar geometry shared with stage.css and the extension's FoldCard: bars run 24 to 96 px, a rung with no
+// comparable price gets a dashed 24 px stub, and the tallest bar's top sits 52 px below the rung's top
+// (padding 8 + thumbnail 40 + gap 4), which is where the bracket column starts.
+const BAR_MIN = 24;
+const BAR_MAX = 96;
+const BAR_NONE = 24;
+const BRACKET_TOP = 52;
+
+function barHeights(rungs: readonly Rung[]): (number | null)[] {
   const vals = rungs.map((r) => r.comparable).filter((v): v is number => v != null);
+  if (vals.length === 0) return rungs.map(() => null);
   const min = Math.min(...vals);
   const max = Math.max(...vals);
-  const out = new Map<string, number>();
-  for (const r of rungs) {
-    if (r.comparable == null) continue;
-    out.set(r.id, max === min ? 56 : Math.round(24 + (72 * (r.comparable - min)) / (max - min)));
-  }
-  return out;
+  return rungs.map((r) => {
+    if (r.comparable == null) return null;
+    if (max === min) return Math.round((BAR_MIN + BAR_MAX) / 2);
+    return Math.round(BAR_MIN + ((r.comparable - min) / (max - min)) * (BAR_MAX - BAR_MIN));
+  });
 }
 
-function rungHtml(r: Rung, view: FoldCardView, h: number | undefined): string {
+/** Same rule as the extension: per-unit cards show the comparable price, others the listed one. */
+function rungPrice(r: Rung, perUnit: boolean): string {
+  if (perUnit && r.comparable != null)
+    return `<p class="rung-price"><span>${esc(formatPrice(r.comparable))}</span><small>${esc(PER_UNIT)}</small></p>`;
+  if (!r.price) return `<p class="rung-price rung-noprice">${esc(NO_PRICE)}</p>`;
+  return `<p class="rung-price">${r.price.isFromRange ? `<small>${esc(FROM)}</small>` : ''}<span>${esc(formatPrice(r.price.amount))}</span></p>`;
+}
+
+function rungHtml(r: Rung, view: FoldCardView, h: number | null): string {
   const tags: string[] = [];
+  if (r.mostEstablished) tags.push(`<span class="chip chip-established">${esc(MOST_ESTABLISHED)}</span>`);
   if (r.sponsored) tags.push(`<span class="chip">${esc(SPONSORED)}</span>`);
   if (r.otherPage != null) tags.push(`<span class="chip">${esc(pageChip(r.otherPage))}</span>`);
-  if (r.mostEstablished) tags.push(`<span class="chip chip-established">${esc(MOST_ESTABLISHED)}</span>`);
   const label = r.isLowest ? LOWEST : r.isHighest ? HIGHEST : '';
-  const price = r.price
-    ? `<p class="rung-price">${r.price.isFromRange ? `<span class="rung-from">${esc(FROM)} </span>` : ''}${esc(formatPrice(r.price.amount))}</p>${view.perUnit ? `<p class="rung-unit">${esc(PER_UNIT)}</p>` : ''}`
-    : `<p class="rung-price rung-noprice">${esc(NO_PRICE)}</p>`;
-  const brand = r.brand
-    ? `<p class="rung-brand">${esc(r.brand)}</p>`
-    : `<p class="rung-brand rung-muted">Brand not shown</p>`;
+  // Empty lines keep a space, so every rung's rows line up across the ladder.
+  const brand = `<p class="rung-sub rung-brand">${r.brand ? esc(r.brand) : '&nbsp;'}</p>`;
   const rating =
     r.rating != null
-      ? `<p class="rung-rating">${icon('star', 12)}<span>${esc(r.rating.toFixed(1))}</span></p>`
-      : '';
-  const reviews =
-    r.reviewCount != null ? `<p class="rung-reviews">${esc(reviewsLabel(r.reviewCount))}</p>` : '';
+      ? `<p class="rung-sub rung-rating">${icon('star', 12)}<span>${esc(r.rating.toFixed(1))}</span><span class="sr-only"> out of 5 stars</span></p>`
+      : '<p class="rung-sub">&nbsp;</p>';
+  const reviews = `<p class="rung-sub rung-reviews">${r.reviewCount != null ? esc(reviewsLabel(r.reviewCount)) : '&nbsp;'}</p>`;
   const few =
     r.fewReviewsReference != null
       ? `<p class="few-note">${icon('alert', 14)}<span>${esc(fewReviewsNote(r.fewReviewsReference))}</span></p>`
       : '';
+  const bar = `<div class="bar"${h == null ? ' data-none' : ''} style="height:${h ?? BAR_NONE}px">${label ? esc(label) : ''}</div>`;
   return `<li class="rung" data-id="${esc(r.id)}">
-<div class="rung-thumb"><img src="${esc(r.imageUrl)}" alt="" width="40" height="40" decoding="async"></div>
-<div class="rung-bar-wrap">${h != null ? `<div class="bar" style="--h:${h}px">${label ? `<span class="bar-label">${esc(label)}</span>` : ''}</div>` : ''}</div>
-${price}${brand}${rating}${reviews}${tags.length ? `<div class="rung-tags">${tags.join('')}</div>` : ''}${few}
+<div class="rung-bars"><div class="rung-thumb"><img src="${esc(r.imageUrl)}" alt="" width="40" height="40" decoding="async"></div>${bar}</div>
+${rungPrice(r, view.perUnit)}${brand}${rating}${reviews}<div class="rung-tags">${tags.join('')}</div>${few}
 </li>`;
 }
 
-function bracketHtml(view: FoldCardView, heights: Map<string, number>): string {
+/**
+ * The brand-tax bracket: a dimension line in its own column at the card's right edge, between dashed
+ * extension lines carried across from the tops of the Highest and Lowest bars (as in the extension).
+ */
+function bracketHtml(view: FoldCardView, heights: (number | null)[]): string {
   const tax = view.brandTax;
   if (!tax) return '';
-  const n = view.rungs.length;
-  const iLow = view.rungs.findIndex((r) => r.id === tax.lowId);
-  const iHigh = view.rungs.findIndex((r) => r.id === tax.highId);
-  const hLow = heights.get(tax.lowId);
-  const hHigh = heights.get(tax.highId);
-  if (iLow < 0 || iHigh < 0 || hLow == null || hHigh == null) return '';
-  const y1 = 96 - hLow;
-  const y2 = 96 - hHigh;
-  const mid = (iLow + iHigh + 1) / 2 / n;
-  return `<div class="bracket" aria-hidden="true"><svg viewBox="0 0 ${n} 96" preserveAspectRatio="none"><line x1="${iLow + 0.5}" y1="${y1}" x2="${iHigh + 0.5}" y2="${y2}" vector-effect="non-scaling-stroke"/></svg><span class="bracket-amount" style="left:${(mid * 100).toFixed(2)}%;top:${((y1 + y2) / 2).toFixed(1)}px">${esc(`+${formatPrice(tax.amount)}`)}</span></div>`;
+  const low = view.rungs.findIndex((r) => r.isLowest);
+  const high = view.rungs.findIndex((r) => r.isHighest);
+  if (low < 0 || high < 0 || low === high) return '';
+  const yLow = BAR_MAX - (heights[low] ?? BAR_NONE);
+  const yHigh = BAR_MAX - (heights[high] ?? BAR_MAX);
+  return `<div class="bracket" aria-hidden="true"><span class="bracket-ext" style="top:${yHigh}px"></span><span class="bracket-ext" style="top:${yLow}px"></span><span class="bracket-dim"><span class="bracket-tick" style="top:${yHigh}px"></span><span class="bracket-tick" style="top:${yLow}px"></span><span class="bracket-line" style="top:${yHigh}px;height:${Math.max(0, yLow - yHigh)}px"></span><span class="bracket-amount" style="top:${(yHigh + yLow) / 2}px">${esc(`+${formatPrice(tax.amount)}`)}</span></span></div>`;
 }
 
-/** The fold card (DESIGN.md, Fold card). `shortcuts` adds the keycaps. */
+function rangeHtml(view: FoldCardView): string {
+  const priced = view.rungs.map((r) => r.comparable).filter((v): v is number => v != null);
+  if (priced.length < 2) return `${esc(formatCount(view.rungs.length))} listings`;
+  return `<b>${esc(formatPrice(Math.min(...priced)))}</b> to <b>${esc(formatPrice(Math.max(...priced)))}</b>${view.perUnit ? ` ${esc(PER_UNIT)}` : ''}`;
+}
+
+/**
+ * The fold card (DESIGN.md, Fold card), laid out like the extension's FoldCard: a rail with the shared
+ * photo and its two actions, then the tinted header band, the price range with the brand-tax tag, and
+ * the ladder with the bracket column. `shortcuts` adds the keycaps.
+ */
 export function foldCardHtml(view: FoldCardView, o: { alt?: string; shortcuts?: boolean } = {}): string {
   const style = twinStyle(view.letter);
   const heights = barHeights(view.rungs);
   const tax = view.brandTax;
   const keycaps = o.shortcuts !== false;
+  const bracket = bracketHtml(view, heights);
+  const low = view.rungs.findIndex((r) => r.isLowest);
+  const guide = bracket
+    ? `<div class="guide" aria-hidden="true" style="top:${BRACKET_TOP + BAR_MAX - (heights[low] ?? BAR_NONE)}px"></div>`
+    : '';
   const cross =
     view.pagesSeen.length > 1
       ? `<p class="fold-seen">${esc(seenAcrossPages(view.memberCount, view.pagesSeen.length))}</p>`
       : '';
-  return `<section class="fold-card twin twin-${style.slot}" data-letter="${esc(view.letter)}" aria-label="${esc(`Twin ${view.letter}. ${foldHeader(view.memberCount)}`)}">
-<div class="fold-top">
-<div class="fold-photo"><img src="${esc(view.photoUrl)}" alt="${esc(o.alt ?? `The shared photo of twin group ${view.letter}`)}" width="160" height="160" decoding="async"></div>
-<div class="fold-head">
-<h2 class="fold-title">${esc(foldHeader(view.memberCount))}</h2>
-<div class="fold-tags"><span class="badge badge-static">${esc(badgeLabel(view.letter, view.memberCount))}</span>${tax ? `<span class="tax-tag">${icon('receipt', 16)}<span>${esc(brandTaxTag(tax.amount, tax.perUnit))}</span></span>` : ''}</div>
-${cross}
+  // Rung count (capped at 6) picks the widths at which stage.css stacks the rail and drops the bracket.
+  const n = Math.min(view.rungs.length, 6);
+  return `<section class="fold-card twin twin-${style.slot}" data-letter="${esc(view.letter)}" data-n="${n}" aria-label="${esc(`Twin ${view.letter}. ${foldHeader(view.memberCount)}`)}">
+<div class="fold-grid">
+<div class="fold-rail">
+<div class="fold-photo"><img src="${esc(view.photoUrl)}" alt="${esc(o.alt ?? GROUP_PHOTO_ALT)}" width="160" height="160" decoding="async"></div>
+<button type="button" class="btn btn-ghost fold-btn" data-act="lens" data-letter="${esc(view.letter)}"><span>${esc(CHECK_PIXELS)}</span>${keycaps ? '<kbd class="keycap">P</kbd>' : ''}</button>
+<button type="button" class="btn btn-ghost fold-btn" data-act="unfold"><span>${esc(UNFOLD_LABEL)}</span>${keycaps ? '<kbd class="keycap">F</kbd>' : ''}</button>
+${cross}</div>
+<div class="fold-main">
+<div class="fold-head"><h2 class="fold-title">${esc(foldHeader(view.memberCount))}</h2><span class="badge badge-static">${esc(badgeLabel(view.letter, view.memberCount))}</span></div>
+<div class="fold-summary"><span class="fold-range">${rangeHtml(view)}</span>${tax ? `<span class="tax-tag">${icon('receipt', 16)}<span>${esc(brandTaxTag(tax.amount, tax.perUnit))}</span></span>` : ''}</div>
+<div class="fold-ladder"${bracket ? ' data-measure' : ''}>
+<div class="ladder-scroll" role="group" tabindex="0" aria-label="${esc(`Twin ${view.letter} price ladder, scrolls sideways`)}"><div class="ladder-wrap">${guide}<ol class="ladder" aria-label="Price ladder, cheapest first">${view.rungs.map((r, i) => rungHtml(r, view, heights[i] ?? null)).join('')}</ol></div></div>
+${bracket}</div>
 </div></div>
-<div class="ladder-scroll" role="group" tabindex="0" aria-label="${esc(`Twin ${view.letter} price ladder, scrolls sideways`)}"><div class="ladder-wrap" style="--n:${view.rungs.length}">${bracketHtml(view, heights)}<ol class="ladder" aria-label="Price ladder, cheapest first">${view.rungs.map((r) => rungHtml(r, view, heights.get(r.id))).join('')}</ol></div></div>
-<div class="fold-foot">
-<button type="button" class="btn btn-ghost" data-act="lens" data-letter="${esc(view.letter)}">${icon('loupe')}<span>Check the pixels</span>${keycaps ? '<kbd class="keycap">P</kbd>' : ''}</button>
-<button type="button" class="btn btn-ghost" data-act="unfold">${esc(UNFOLD_TWINS.replace(' twins', ''))}${keycaps ? '<kbd class="keycap">F</kbd>' : ''}</button>
-<p class="fold-note">${esc(FOLD_FOOTNOTE)}</p>
-</div></section>`;
+<div class="fold-foot"><p class="fold-note">${esc(FOLD_FOOTNOTE)}</p></div>
+</section>`;
 }
 
 function emphasiseNumbers(segment: string): string {
@@ -179,11 +213,15 @@ export function pillHtml(
   o: { hasGroups: boolean; folded?: boolean; keycaps?: boolean; dismissable?: boolean } = { hasGroups: true },
 ): string {
   const caps = o.keycaps !== false;
-  const body = o.hasGroups
-    ? pillSegments(summary)
-        .map((s) => `<span class="seg">${emphasiseNumbers(s)}</span>`)
-        .join('<span class="div" aria-hidden="true"></span><span class="sr-only">, </span>')
-    : `<span class="seg">${emphasiseNumbers(pillNoTwins(summary.listings))}</span>`;
+  // Every segment carries its divider at its leading edge; the row is shifted left by one divider slot and
+  // clipped (stage.css), so whichever segment starts a line hides its divider, at any width (as in the
+  // extension's pill).
+  const seg = (text: string) =>
+    `<span class="seg"><span class="div" aria-hidden="true"></span>${emphasiseNumbers(text)}</span>`;
+  const segs = o.hasGroups
+    ? pillSegments(summary).map(seg).join('<span class="sr-only">, </span>')
+    : seg(pillNoTwins(summary.listings));
+  const body = `<span class="pill-text"><span class="pill-row">${segs}</span></span>`;
   // The button's name is its visible text (arrow and dividers are decorative and aria-hidden, the commas
   // are screen-reader only), so the spoken name always contains what is on screen (WCAG 2.5.3).
   const main = o.hasGroups

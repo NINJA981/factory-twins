@@ -162,7 +162,7 @@ export function createFolder(
 
       // Everything that is text or chrome appears at 520-680 ms.
       const late = card.querySelectorAll(
-        '.fold-photo, .fold-title, .fold-tags .badge-static, .fold-seen, .rung > :not(.rung-thumb):not(.rung-bar-wrap), .fold-foot',
+        '.fold-rail, .fold-head, .fold-range, .rung > :not(.rung-bars), .fold-foot',
       );
       late.forEach((el) =>
         anim(el, [{ opacity: 0 }, { opacity: 1 }], { delay: 520, duration: 160, easing: EASE_OUT }),
@@ -174,21 +174,28 @@ export function createFolder(
           easing: EASE_OUT,
         }),
       );
-      card.querySelectorAll('.bracket').forEach((el) => {
-        (el as HTMLElement).style.transformOrigin = 'left center';
+      // Extension lines run out from the bars to the dimension line, then the dimension line opens
+      // (the extension's timings: 600 ms and 640 ms, 120 ms each).
+      card.querySelectorAll('.bracket-ext').forEach((el) =>
         anim(
           el,
           [
             { transform: 'scaleX(0)', opacity: 0 },
             { transform: 'scaleX(1)', opacity: 1 },
           ],
-          {
-            delay: 640,
-            duration: 120,
-            easing: EASE_OUT,
-          },
-        );
-      });
+          { delay: 600, duration: 120, easing: EASE_OUT },
+        ),
+      );
+      card.querySelectorAll('.bracket-dim').forEach((el) =>
+        anim(
+          el,
+          [
+            { transform: 'scaleY(0)', opacity: 0 },
+            { transform: 'scaleY(1)', opacity: 1 },
+          ],
+          { delay: 640, duration: 120, easing: EASE_OUT },
+        ),
+      );
       card.querySelectorAll('.tax-tag').forEach((el) =>
         anim(
           el,

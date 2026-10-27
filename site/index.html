@@ -132,24 +132,33 @@
               picture, so the reviews sit right under each price.
             </p>
           </div>
-          <figure class="loop" data-loop>
-            <video
-              muted
-              loop
-              playsinline
-              preload="none"
-              width="720"
-              height="937"
-              poster="landing/loop-poster.avif"
-              aria-label="Recording of the demo above: the pill appears, rings circle five tiles, press F and they fold into one price ladder."
-            >
-              <source src="landing/loop.mp4" type="video/mp4" />
-            </video>
-            <button type="button" class="btn btn-secondary loop-toggle" data-loop-toggle aria-pressed="false">
-              Play the recording
-            </button>
+          <figure class="real-shot">
+            <picture>
+              <source
+                media="(max-width: 639px) and (prefers-color-scheme: dark)"
+                srcset="landing/real/card-375-dark.avif"
+                width="343"
+                height="632"
+              />
+              <source
+                media="(max-width: 639px)"
+                srcset="landing/real/card-375-light.avif"
+                width="343"
+                height="632"
+              />
+              <source media="(prefers-color-scheme: dark)" srcset="landing/real/card-768-dark.avif" />
+              <img
+                src="landing/real/card-768-light.avif"
+                width="736"
+                height="440"
+                loading="lazy"
+                decoding="async"
+                alt="The extension's fold card: one photo shared by 3 listings, a price ladder from $14.00 to $19.00 with Lowest and Highest marked, a brand tax of $5.00, and Check the pixels and Unfold buttons."
+              />
+            </picture>
             <figcaption class="t-caption">
-              Recorded from the demo on this page, 8 seconds, no sound.
+              Screenshot of the extension itself, folded on a made-up demo store page. The demo at the top of
+              this page runs the same engine.
             </figcaption>
           </figure>
         </div>

@@ -367,6 +367,77 @@ test.describe('layout', () => {
   });
 });
 
+test.describe('same layout as the extension', () => {
+  test('three rungs fit, the bracket sits at the right (dropped on a phone), no pill line starts with a divider', async ({
+    page,
+  }, info) => {
+    await open(page);
+    await press(sampleButton(page), info);
+    await expect(page.locator('.tile')).toHaveCount(60, { timeout: 20_000 });
+    await press(foldButton(page), info);
+    const card = page.locator('.fold-card').first();
+    await expect(card).toBeVisible();
+    const m = await card.evaluate((el) => {
+      const sc = el.querySelector('.ladder-scroll') as HTMLElement;
+      const br = el.querySelector<HTMLElement>('.bracket');
+      const b = br?.getBoundingClientRect();
+      return {
+        rungs: el.querySelectorAll('li.rung').length,
+        overflow: sc.scrollWidth - sc.clientWidth,
+        bracket: !!br && getComputedStyle(br).display !== 'none' && (b?.width ?? 0) > 0,
+        gap: b ? el.getBoundingClientRect().right - b.right : null,
+      };
+    });
+    expect(m.rungs).toBe(3);
+    expect(m.overflow).toBeLessThanOrEqual(0);
+    expect(m.bracket).toBe(info.project.name !== 'phone');
+    if (m.bracket) expect(m.gap!).toBeLessThan(40);
+    // The pill wraps on a phone. Whatever segment starts a line must have its divider clipped away.
+    const dangling = await page.locator('.pill-row').evaluate((row) => {
+      const clip = (row.parentElement as HTMLElement).getBoundingClientRect();
+      let top = -1;
+      let bad = 0;
+      for (const seg of row.querySelectorAll<HTMLElement>('.seg')) {
+        const first = seg.offsetTop !== top;
+        top = seg.offsetTop;
+        const div = (seg.querySelector('.div') as HTMLElement).getBoundingClientRect();
+        if (first && div.right > clip.left + 0.5) bad++;
+        if (!first && div.right <= clip.left) bad++;
+      }
+      return bad;
+    });
+    expect(dangling).toBe(0);
+  });
+
+  test('the Proof lens shows its number without scrolling, with the photo pickers as chips', async ({
+    page,
+  }, info) => {
+    await open(page);
+    await press(sampleButton(page), info);
+    await expect(page.locator('.tile')).toHaveCount(60, { timeout: 20_000 });
+    await press(foldButton(page), info);
+    await press(
+      page
+        .locator('.fold-card')
+        .first()
+        .getByRole('button', { name: /Check the pixels/ }),
+      info,
+    );
+    const num = page.locator('.lens-readout .readout-num');
+    await expect(num).toContainText('%');
+    const box = (await num.boundingBox())!;
+    expect(box.y + box.height).toBeLessThanOrEqual(page.viewportSize()!.height);
+    const top = page.getByRole('group', { name: 'Top photo' });
+    await expect(top.locator('.lens-chip')).toHaveCount(3);
+    await expect(top.locator('.lens-chip[aria-pressed="true"]')).toHaveCount(1);
+    // Picking the second listing as the top photo measures that pair instead.
+    const before = await num.textContent();
+    await press(top.locator('.lens-chip').nth(1), info);
+    await expect(top.locator('.lens-chip').nth(1)).toHaveAttribute('aria-pressed', 'true');
+    await expect.poll(() => num.textContent()).not.toBe(before);
+  });
+});
+
 test.describe('lens interaction', () => {
   test('the blend moves with a finger on a phone and with arrow keys on a desktop', async ({
     page,

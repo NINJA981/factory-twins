@@ -241,10 +241,8 @@
 .pill-main {
   appearance: none;
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  column-gap: var(--space-2);
-  row-gap: 0;
+  gap: var(--space-2);
   flex: 1 1 auto;
   min-width: 0;
   min-height: 44px;
@@ -271,18 +269,32 @@
   letter-spacing: var(--text-price-tracking);
   font-variant-numeric: tabular-nums;
 }
+/* Divider slot: 8 px gap, 1 px rule, 8 px gap. Each segment reserves one at its leading edge; the row is
+   shifted left by one slot and clipped, so the first segment of every line hides its divider. */
+.pill-text {
+  --slot: 17px;
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+}
+.pill-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-left: calc(-1 * var(--slot));
+}
+.pill-row .seg {
+  position: relative;
+  padding-left: var(--slot);
+}
 .pill .div {
+  position: absolute;
+  left: var(--space-2);
+  top: 50%;
+  translate: 0 -50%;
   width: 1px;
   height: 16px;
   background: var(--border);
-}
-@media (max-width: 479px) {
-  .pill .div {
-    display: none;
-  }
-  .pill-main {
-    column-gap: var(--space-3);
-  }
 }
 .pill-extra {
   flex: none;
@@ -294,7 +306,10 @@
   min-width: 0;
   overflow: hidden;
 }
-[data-rings='true'] .pill-extra {
+/* The fold button shows with the rings, and stays while folded so the pill can say "Unfold twins" (as in
+   the extension). */
+[data-rings='true'] .pill-extra,
+[data-folded='true'] .pill-extra {
   grid-template-columns: 1fr;
 }
 .pill-fold {
@@ -323,6 +338,37 @@
 }
 .pill-fold[hidden] {
   display: none;
+}
+/* Phones: the fold button drops to its own row instead of squeezing the counts (as in the extension).
+   The row opens on the vertical axis here, so a closed one takes no height. */
+@media (max-width: 480px) {
+  .pill {
+    flex-wrap: wrap;
+    padding-block: var(--space-1);
+    border-radius: var(--radius-md);
+  }
+  .pill-main {
+    flex: 1 1 0;
+  }
+  .pill-extra {
+    order: 3;
+    flex: 1 0 100%;
+    grid-template-columns: 1fr;
+    grid-template-rows: 0fr;
+    transition-property: grid-template-rows;
+  }
+  [data-rings='true'] .pill-extra,
+  [data-folded='true'] .pill-extra {
+    grid-template-rows: 1fr;
+  }
+  .pill-extra-in {
+    min-height: 0;
+  }
+  .pill-fold {
+    justify-content: space-between;
+    width: calc(100% - var(--space-3));
+    margin-bottom: var(--space-1);
+  }
 }
 .pill-x {
   appearance: none;
@@ -412,31 +458,49 @@
   margin: 0;
 }
 
-/* Fold card */
+/* Fold card: the same layout as the extension's card.css (rail, header band, range and tag, ladder with a
+   bracket column at the right edge), rebuilt over the site's class names. */
 .fold-card {
   grid-column: 1 / -1;
   position: relative;
   container-type: inline-size;
-  padding: var(--space-4);
-  border-top: 3px solid var(--twin);
+  padding: 19px var(--space-4) var(--space-4);
+  border: 1px solid var(--border);
   border-radius: var(--radius-md);
   background: var(--surface);
   color: var(--text);
-  box-shadow: var(--elev-e1);
+  box-shadow: 0 1px 2px color-mix(in oklab, var(--text) 5%, transparent);
   font-size: var(--text-ui-compact-size);
   line-height: var(--text-ui-compact-leading);
+  overflow: hidden;
 }
-.fold-top {
+.fold-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--twin);
+}
+.fold-grid {
   display: grid;
   grid-template-columns: 160px minmax(0, 1fr);
   gap: var(--space-4);
   align-items: start;
 }
+.fold-rail {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
 .fold-photo {
+  width: 160px;
   aspect-ratio: 1;
   border-radius: var(--radius-xs);
   overflow: hidden;
-  background: var(--surface-2);
+  background: var(--photo-mat);
   box-shadow: 0 0 0 1px var(--border);
 }
 .fold-photo img {
@@ -444,11 +508,32 @@
   height: 100%;
   object-fit: contain;
 }
-.fold-head {
+.fold-btn {
+  justify-content: space-between;
+  width: 100%;
+  text-align: left;
+  font-size: var(--text-label-compact-size);
+  font-weight: var(--text-label-compact-weight);
+  color: var(--text);
+}
+.fold-seen {
+  font-size: var(--text-caption-size);
+  line-height: var(--text-caption-leading);
+  color: var(--text-muted);
+  text-wrap: pretty;
+}
+.fold-main {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
-  align-items: flex-start;
+  min-width: 0;
+}
+.fold-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-3);
   padding: var(--space-3) var(--space-4);
   border-radius: var(--radius-sm);
   background: var(--twin-soft);
@@ -464,22 +549,31 @@
   font-variation-settings: var(--text-title-variation);
   text-wrap: balance;
 }
+/* After a keyboard fold, focus lands on the title. The ring goes around the whole header band,
+   concentric with it, as in the extension. */
 .fold-title:focus {
   outline: none;
 }
-.fold-title:focus-visible {
+.fold-head:has(.fold-title:focus-visible) {
   outline: 2px solid var(--ring);
   outline-offset: 2px;
 }
-.fold-tags {
+.fold-summary {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--space-2);
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-3);
+  min-height: 28px;
 }
-.fold-seen {
-  font-size: var(--text-caption-size);
-  color: var(--twin-ink);
+.fold-range {
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+.fold-range b {
+  color: var(--text);
+  font-size: var(--text-price-size);
+  font-weight: var(--text-price-weight);
 }
 .tax-tag {
   display: inline-flex;
@@ -492,155 +586,200 @@
   color: var(--danger);
   font-size: var(--text-label-compact-size);
   font-weight: var(--text-label-compact-weight);
+  line-height: 1;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
-@container (max-width: 720px) {
-  .fold-top {
-    grid-template-columns: 120px minmax(0, 1fr);
-  }
-}
-@container (max-width: 480px) {
-  .fold-top {
-    grid-template-columns: 88px minmax(0, 1fr);
-    gap: var(--space-3);
-  }
-  .fold-head {
-    padding: var(--space-3);
-  }
-  .fold-title {
-    font-size: 18px;
-  }
-}
 
+/* Price ladder. Rungs take their natural width (96 to 220 px each); the measure column takes the rest of
+   the row, so every card's brand tax sits in one column at the right. Without a bracket the rungs fill
+   the row. */
+.fold-ladder {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
+}
+.fold-ladder[data-measure] {
+  grid-template-columns: minmax(0, max-content) minmax(88px, 1fr);
+}
 .ladder-scroll {
-  margin-top: var(--space-4);
+  position: relative;
+  min-width: 0;
   overflow-x: auto;
-  scrollbar-gutter: stable;
-  padding-bottom: var(--space-2);
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+  scroll-padding-inline: var(--space-2);
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-strong) transparent;
   -webkit-overflow-scrolling: touch;
+}
+.ladder-scroll:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+  border-radius: var(--radius-xs);
+}
+/* Edge fades only while rungs are hidden past that edge (stage.ts sets data-fade). */
+.ladder-scroll[data-fade='end'] {
+  mask-image: linear-gradient(to right, black calc(100% - 40px), transparent);
+}
+.ladder-scroll[data-fade='start'] {
+  mask-image: linear-gradient(to right, transparent, black 40px);
+}
+.ladder-scroll[data-fade='start end'] {
+  mask-image: linear-gradient(to right, transparent, black 40px, black calc(100% - 40px), transparent);
 }
 .ladder-wrap {
   position: relative;
-  min-width: calc(var(--n) * 96px);
+  min-width: min-content;
 }
 .ladder {
   display: grid;
-  grid-template-columns: repeat(var(--n), minmax(96px, 1fr));
-  gap: var(--space-2);
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(96px, 1fr);
+  column-gap: var(--space-2);
+  min-width: min-content;
   margin: 0;
   padding: 0;
   list-style: none;
 }
+.fold-ladder[data-measure] .ladder {
+  grid-auto-columns: minmax(96px, 220px);
+}
+/* Gridline from the top of the lowest bar, so the brand tax reads against the others. */
+.guide {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 0;
+  border-top: 1px dashed color-mix(in oklab, var(--danger) 55%, transparent);
+  pointer-events: none;
+}
 .rung {
+  position: relative;
+  scroll-snap-align: start;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 2px;
+  gap: var(--space-1);
   min-width: 0;
+  padding: var(--space-2);
+  border-radius: var(--radius-sm);
+}
+/* Each rung's photo sits on top of its own bar, so the skyline of bars carries the photos with it. */
+.rung-bars {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: var(--space-1);
+  height: 140px;
 }
 .rung-thumb {
+  flex: none;
   width: 40px;
   height: 40px;
-  margin-bottom: var(--space-2);
-  border-radius: var(--radius-xs);
+  border: 1px solid var(--border);
+  border-radius: 6px;
   overflow: hidden;
-  background: var(--surface-2);
-  box-shadow: 0 0 0 1px var(--border);
+  background: var(--photo-mat);
 }
 .rung-thumb img {
   width: 100%;
   height: 100%;
   object-fit: contain;
 }
-.rung-bar-wrap {
-  display: flex;
-  align-items: flex-end;
-  width: 100%;
-  height: 96px;
-  margin-bottom: var(--space-2);
-}
 .bar {
+  position: relative;
+  flex: none;
   width: 100%;
-  height: var(--h);
-  padding: 3px 6px 0;
+  padding: 3px 6px;
   border-top: 2px solid var(--twin-ink);
   border-radius: var(--radius-xs) var(--radius-xs) 0 0;
   background: var(--twin-soft);
   color: var(--twin-ink);
+  font-size: var(--text-caption-size);
+  line-height: var(--text-caption-leading);
+  font-weight: 550;
   transform-origin: bottom;
+  overflow: hidden;
+  white-space: nowrap;
 }
-.bar-label {
-  font-size: var(--text-micro-size);
-  font-weight: var(--text-micro-weight);
-  line-height: 1.2;
+.bar[data-none] {
+  border-top-style: dashed;
+  border-top-color: var(--border-strong);
+  background: var(--surface-2);
 }
 .rung-price {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: 4px;
+  min-height: 24px;
   font-size: var(--text-price-lg-size);
   font-weight: var(--text-price-lg-weight);
   line-height: var(--text-price-lg-leading);
   letter-spacing: var(--text-price-lg-tracking);
   font-variant-numeric: tabular-nums;
 }
-.rung-from,
-.rung-unit,
-.rung-muted,
-.rung-reviews {
-  font-size: var(--text-caption-size);
-  line-height: var(--text-caption-leading);
+.rung-price small {
   color: var(--text-muted);
-}
-.rung-from {
-  font-weight: 450;
+  font-size: var(--text-caption-size);
+  font-weight: var(--text-caption-weight);
+  letter-spacing: 0;
 }
 .rung-noprice {
-  font-size: var(--text-ui-compact-size);
-  font-weight: 450;
   color: var(--text-muted);
+  font-size: var(--text-caption-size);
+  font-weight: var(--text-caption-weight);
+  letter-spacing: 0;
 }
-.rung-brand {
-  max-width: 100%;
+.rung-sub {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  color: var(--text-muted);
   font-size: var(--text-caption-size);
   line-height: var(--text-caption-leading);
+  font-weight: var(--text-caption-weight);
+  letter-spacing: var(--text-caption-tracking);
+  font-variant-numeric: tabular-nums;
+}
+.rung-brand {
   color: var(--text);
 }
 .rung-rating {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 3px;
-  font-size: var(--text-caption-size);
-  color: var(--text-muted);
-  font-variant-numeric: tabular-nums;
 }
 .rung-rating .icon {
-  color: var(--twin-b);
-}
-.rung-reviews {
-  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
 }
 .rung-tags {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-1);
-  margin-top: var(--space-1);
+  min-height: 20px;
 }
 .chip {
   display: inline-flex;
   align-items: center;
   height: 20px;
-  padding: 2px 8px;
+  padding: 0 8px;
   border-radius: var(--radius-full);
   background: var(--surface-2);
   color: var(--text-muted);
   font-size: var(--text-caption-size);
+  font-weight: var(--text-caption-weight);
   line-height: 1;
   white-space: nowrap;
 }
+.chip-established {
+  background: var(--twin-soft);
+  color: var(--twin-ink);
+  font-weight: 600;
+}
 .few-note {
   display: flex;
+  align-items: flex-start;
   gap: var(--space-1_5);
   margin-top: var(--space-1);
   padding: 6px 8px;
@@ -649,36 +788,57 @@
   color: var(--warning);
   font-size: var(--text-caption-size);
   line-height: var(--text-caption-leading);
+  white-space: normal;
 }
 .few-note .icon {
   margin-top: 1px;
 }
+
+/* The bracket column: a dimension line between extension lines drawn from the tops of the Highest and
+   Lowest bars. Same 52 px offset as the bars, 96 px tall like the tallest bar. */
 .bracket {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 48px;
+  position: relative;
+  min-width: 0;
   height: 96px;
+  margin-top: 52px;
   pointer-events: none;
 }
-.bracket svg {
-  width: 100%;
-  height: 100%;
-  overflow: visible;
+.bracket-ext {
+  position: absolute;
+  left: 0;
+  right: 6px;
+  height: 0;
+  border-top: 1px dashed color-mix(in oklab, var(--danger) 55%, transparent);
+  transform-origin: left center;
 }
-.bracket line {
-  stroke: var(--danger);
-  stroke-width: 1.5;
-  stroke-linecap: round;
+.bracket-dim {
+  position: absolute;
+  inset: 0;
+}
+.bracket-line {
+  position: absolute;
+  right: 6px;
+  width: 1.5px;
+  background: var(--danger);
+}
+.bracket-tick {
+  position: absolute;
+  right: 0;
+  width: 12px;
+  height: 1.5px;
+  translate: 0 -0.75px;
+  background: var(--danger);
 }
 .bracket-amount {
   position: absolute;
-  transform: translate(-50%, -50%);
-  padding: 0 var(--space-1);
+  right: 16px;
+  transform: translateY(-50%);
+  padding: 2px 0 2px 6px;
   background: var(--surface);
   color: var(--danger);
-  font-size: var(--text-caption-size);
-  font-weight: var(--text-label-compact-weight);
+  font-size: var(--text-label-compact-size);
+  font-weight: 600;
+  line-height: 1;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
@@ -686,20 +846,175 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--space-1) var(--space-2);
-  margin-top: var(--space-2);
-  padding-top: var(--space-2);
-  border-top: 1px solid var(--border);
+  margin-top: var(--space-4);
 }
 .fold-note {
-  margin-left: auto;
   font-size: var(--text-caption-size);
+  line-height: var(--text-caption-leading);
   color: var(--text-subtle);
 }
-@container (max-width: 560px) {
-  .fold-note {
-    flex-basis: 100%;
-    margin-left: 0;
+
+/* Narrow results columns: smaller photo, then a stacked rail with the photo at the left and its two
+   actions beside it. */
+@container (max-width: 720px) {
+  .fold-grid {
+    grid-template-columns: 120px minmax(0, 1fr);
+  }
+  .fold-photo {
+    width: 120px;
+  }
+  .fold-btn {
+    padding-inline: var(--space-2);
+  }
+}
+@container (max-width: 520px) {
+  .fold-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .fold-rail {
+    display: grid;
+    grid-template-columns: 120px minmax(0, 1fr);
+    grid-auto-rows: min-content;
+    align-content: start;
+    gap: var(--space-2) var(--space-3);
+  }
+  .fold-rail .fold-photo {
+    grid-row: 1 / span 3;
+  }
+  .fold-rail .fold-seen {
+    grid-column: 2;
+  }
+}
+/* The site's cards are often narrower than a store's results column (the hero demo is about 650 px wide).
+   When the rungs and the bracket would not fit beside the rail, the rail stacks above them (the
+   extension's 520 px layout), and when they would not fit even then, the bracket gives its column back.
+   Thresholds are content widths (container queries measure inside the padding): rail 120 (160 above
+   720) + gap 16, 96 px per rung plus 8 px gaps, 88 px of bracket. data-n is the rung count, capped at 6. */
+@container (max-width: 527px) {
+  .fold-card[data-n='3'] .fold-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .fold-card[data-n='3'] .fold-rail {
+    display: grid;
+    grid-template-columns: 120px minmax(0, 1fr);
+    grid-auto-rows: min-content;
+    align-content: start;
+    gap: var(--space-2) var(--space-3);
+  }
+  .fold-card[data-n='3'] .fold-photo {
+    grid-row: 1 / span 3;
+    width: 120px;
+  }
+  .fold-card[data-n='3'] .fold-seen {
+    grid-column: 2;
+  }
+}
+@container (max-width: 631px) {
+  .fold-card[data-n='4'] .fold-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .fold-card[data-n='4'] .fold-rail {
+    display: grid;
+    grid-template-columns: 120px minmax(0, 1fr);
+    grid-auto-rows: min-content;
+    align-content: start;
+    gap: var(--space-2) var(--space-3);
+  }
+  .fold-card[data-n='4'] .fold-photo {
+    grid-row: 1 / span 3;
+    width: 120px;
+  }
+  .fold-card[data-n='4'] .fold-seen {
+    grid-column: 2;
+  }
+}
+@container (max-width: 775px) {
+  .fold-card[data-n='5'] .fold-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .fold-card[data-n='5'] .fold-rail {
+    display: grid;
+    grid-template-columns: 120px minmax(0, 1fr);
+    grid-auto-rows: min-content;
+    align-content: start;
+    gap: var(--space-2) var(--space-3);
+  }
+  .fold-card[data-n='5'] .fold-photo {
+    grid-row: 1 / span 3;
+    width: 120px;
+  }
+  .fold-card[data-n='5'] .fold-seen {
+    grid-column: 2;
+  }
+}
+@container (max-width: 879px) {
+  .fold-card[data-n='6'] .fold-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .fold-card[data-n='6'] .fold-rail {
+    display: grid;
+    grid-template-columns: 120px minmax(0, 1fr);
+    grid-auto-rows: min-content;
+    align-content: start;
+    gap: var(--space-2) var(--space-3);
+  }
+  .fold-card[data-n='6'] .fold-photo {
+    grid-row: 1 / span 3;
+    width: 120px;
+  }
+  .fold-card[data-n='6'] .fold-seen {
+    grid-column: 2;
+  }
+}
+@container (max-width: 495px) {
+  .fold-card[data-n='4'] .fold-ladder[data-measure] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .fold-card[data-n='4'] .fold-ladder[data-measure] .ladder {
+    grid-auto-columns: minmax(96px, 1fr);
+  }
+  .fold-card[data-n='4'] .bracket {
+    display: none;
+  }
+}
+@container (max-width: 599px) {
+  .fold-card[data-n='5'] .fold-ladder[data-measure] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .fold-card[data-n='5'] .fold-ladder[data-measure] .ladder {
+    grid-auto-columns: minmax(96px, 1fr);
+  }
+  .fold-card[data-n='5'] .bracket {
+    display: none;
+  }
+}
+@container (max-width: 703px) {
+  .fold-card[data-n='6'] .fold-ladder[data-measure] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .fold-card[data-n='6'] .fold-ladder[data-measure] .ladder {
+    grid-auto-columns: minmax(96px, 1fr);
+  }
+  .fold-card[data-n='6'] .bracket {
+    display: none;
+  }
+}
+/* Phone-width cards: the bracket is decorative and repeats the brand-tax tag, so it gives its column back
+   and three rungs fit without scrolling. Longer ladders scroll with edge fades. */
+@container (max-width: 440px) {
+  .fold-ladder[data-measure] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .fold-ladder[data-measure] .ladder {
+    grid-auto-columns: minmax(96px, 1fr);
+  }
+  /* Rungs carry 8 px of padding each, so a 4 px gap still reads as a gap, and three rungs fit a 375 px
+     phone without scrolling. */
+  .ladder {
+    column-gap: var(--space-1);
+  }
+  .bracket {
+    display: none;
   }
 }
 
@@ -741,17 +1056,42 @@
     transform: translateY(8px) scale(0.96);
   }
 }
+.lens-in {
+  padding: var(--space-6);
+}
+/* Two columns: the photo and its pickers, then the number and the controls (the extension's layout). */
 .lens-grid {
   display: grid;
   grid-template-columns: minmax(0, 400px) minmax(0, 1fr);
   gap: var(--space-6);
-  padding: var(--space-6);
 }
 @media (max-width: 639px) {
-  .lens-grid {
-    grid-template-columns: minmax(0, 1fr);
-    gap: var(--space-4);
+  .lens-in {
     padding: var(--space-4);
+  }
+  /* One column on a phone: photo, then the number, then the controls, then the picks. */
+  .lens-grid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+  .lens-grid > .lens-side {
+    display: contents;
+  }
+  .lens-view {
+    order: 1;
+  }
+  .o2 {
+    order: 2;
+  }
+  .o3 {
+    order: 3;
+  }
+  .o4 {
+    order: 4;
+  }
+  .o5 {
+    order: 5;
   }
 }
 .lens-view {
@@ -794,28 +1134,118 @@
 .lens-side {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  gap: var(--space-4);
   min-width: 0;
 }
 .lens-head {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   gap: var(--space-3);
+  margin: calc(-1 * var(--space-2)) calc(-1 * var(--space-2)) var(--space-4) 0;
 }
 .lens-title {
   margin: 0;
-  padding-top: var(--space-2);
   font-family: var(--font-display);
   font-size: var(--text-title-size);
   font-weight: var(--text-title-weight);
   line-height: var(--text-title-leading);
   letter-spacing: var(--text-title-tracking);
   font-variation-settings: var(--text-title-variation);
+  text-wrap: balance;
 }
-.lens-pickers {
-  display: grid;
+.lens-close {
+  flex: none;
+  gap: var(--space-1_5);
+  color: var(--text);
+  font-size: var(--text-label-compact-size);
+  font-weight: var(--text-label-compact-weight);
+}
+/* Pickers: one chip per listing (thumbnail, price, brand); the chosen one is outlined in Berry. */
+.lens-pick {
+  min-width: 0;
+}
+.lens-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1_5);
+}
+.lens-chip {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
   gap: var(--space-2);
+  min-height: 44px;
+  max-width: 100%;
+  padding: 4px 10px 4px 4px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color var(--dur-1) ease-out,
+    border-color var(--dur-1) ease-out;
+}
+.lens-chip img {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  border-radius: var(--radius-xs);
+  background: var(--photo-mat);
+}
+.lens-chip-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  font-size: var(--text-caption-size);
+  line-height: var(--text-caption-leading);
+}
+.lens-chip-text b {
+  font-size: var(--text-label-compact-size);
+  font-weight: var(--text-label-compact-weight);
+  font-variant-numeric: tabular-nums;
+}
+.lens-chip-text span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-muted);
+}
+.lens-chip[aria-pressed='true'] {
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--accent);
+  background: var(--accent-soft);
+}
+.lens-chip:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+@media (hover: hover) and (pointer: fine) {
+  .lens-chip:hover {
+    background: var(--surface-2);
+  }
+  .lens-chip[aria-pressed='true']:hover {
+    background: var(--accent-soft);
+  }
+}
+.lens-blend-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  font-size: var(--text-label-compact-size);
+  font-weight: var(--text-label-compact-weight);
+  color: var(--text-muted);
+}
+.lens-blend-row span {
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
 }
 .field {
   display: grid;
@@ -893,12 +1323,12 @@ input[type='range']:disabled {
 input[type='range']::-webkit-slider-runnable-track {
   height: 4px;
   border-radius: var(--radius-full);
-  background: var(--surface-3);
+  background: linear-gradient(to right, var(--accent) var(--fill, 0%), var(--surface-3) var(--fill, 0%));
 }
 input[type='range']::-moz-range-track {
   height: 4px;
   border-radius: var(--radius-full);
-  background: var(--surface-3);
+  background: linear-gradient(to right, var(--accent) var(--fill, 0%), var(--surface-3) var(--fill, 0%));
 }
 input[type='range']::-webkit-slider-thumb {
   appearance: none;
