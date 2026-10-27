@@ -24,9 +24,7 @@ export async function decodeBlob(blob: Blob): Promise<RgbaImage> {
     const height = Math.max(1, Math.round(bitmap.height * scale));
     const canvas = makeCanvas(width, height);
     const ctx = canvas.getContext('2d', { willReadFrequently: true }) as
-      | OffscreenCanvasRenderingContext2D
-      | CanvasRenderingContext2D
-      | null;
+      OffscreenCanvasRenderingContext2D | CanvasRenderingContext2D | null;
     if (!ctx) throw new Error('2d canvas unavailable');
     // Letterbox on white like a marketplace photo, so transparent PNGs hash like their white version.
     ctx.fillStyle = '#ffffff';
@@ -93,9 +91,7 @@ export async function ingestFile(file: Blob): Promise<Ingested> {
       const height = Math.max(1, Math.round(bitmap.height * scale));
       const canvas = makeCanvas(width, height);
       const ctx = canvas.getContext('2d', { willReadFrequently: true }) as
-        | OffscreenCanvasRenderingContext2D
-        | CanvasRenderingContext2D
-        | null;
+        OffscreenCanvasRenderingContext2D | CanvasRenderingContext2D | null;
       if (!ctx) throw new Error('2d canvas unavailable');
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(0, 0, width, height);

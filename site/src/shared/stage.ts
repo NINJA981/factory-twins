@@ -44,7 +44,11 @@ export interface Stage {
   /** Replace the data (web app): re-renders the grid, resets rings and folds, refreshes the lens. */
   setData(
     data: StageData,
-    opts?: { imgAttrs?: (l: Listing, i: number) => string; compact?: boolean; extra?: (l: Listing) => string },
+    opts?: {
+      imgAttrs?: (l: Listing, i: number) => string;
+      compact?: boolean;
+      extra?: (l: Listing) => string;
+    },
   ): void;
   /** Fires after every state change with the previous and next state. */
   onChange(fn: (next: OverlayState, prev: OverlayState) => void): void;
@@ -112,7 +116,7 @@ export function mountStage(opts: StageOptions): Stage {
   }
 
   function syncPillState() {
-    dock?.querySelector('.pill-main')?.setAttribute('aria-pressed', String(state.rings));
+    dock?.querySelector('button.pill-main')?.setAttribute('aria-pressed', String(state.rings));
     const label = dock?.querySelector('.fold-label');
     if (label) label.textContent = state.folded ? UNFOLD_TWINS : FOLD_TWINS;
   }
@@ -213,7 +217,9 @@ export function mountStage(opts: StageOptions): Stage {
   let visible = false;
   const io =
     typeof IntersectionObserver === 'function'
-      ? new IntersectionObserver((es) => es.forEach((en) => (visible = en.isIntersecting)), { threshold: 0.25 })
+      ? // Any overlap counts. A 25% threshold made the keys dead on a full results page: 60 tiles are
+        // about 3,900 px tall, so no viewport ever shows a quarter of the stage.
+        new IntersectionObserver((es) => es.forEach((en) => (visible = en.isIntersecting)))
       : null;
   io?.observe(root);
 

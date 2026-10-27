@@ -167,32 +167,42 @@ export function createFolder(
       late.forEach((el) =>
         anim(el, [{ opacity: 0 }, { opacity: 1 }], { delay: 520, duration: 160, easing: EASE_OUT }),
       );
-      card
-        .querySelectorAll<HTMLElement>('.bar')
-        .forEach((el, i) =>
-          anim(el, [{ transform: 'scaleY(0)' }, { transform: 'scaleY(1)' }], {
-            delay: 440 + i * 30,
-            duration: 200,
-            easing: EASE_OUT,
-          }),
-        );
+      card.querySelectorAll<HTMLElement>('.bar').forEach((el, i) =>
+        anim(el, [{ transform: 'scaleY(0)' }, { transform: 'scaleY(1)' }], {
+          delay: 440 + i * 30,
+          duration: 200,
+          easing: EASE_OUT,
+        }),
+      );
       card.querySelectorAll('.bracket').forEach((el) => {
         (el as HTMLElement).style.transformOrigin = 'left center';
-        anim(el, [{ transform: 'scaleX(0)', opacity: 0 }, { transform: 'scaleX(1)', opacity: 1 }], {
-          delay: 640,
-          duration: 120,
-          easing: EASE_OUT,
-        });
+        anim(
+          el,
+          [
+            { transform: 'scaleX(0)', opacity: 0 },
+            { transform: 'scaleX(1)', opacity: 1 },
+          ],
+          {
+            delay: 640,
+            duration: 120,
+            easing: EASE_OUT,
+          },
+        );
       });
-      card
-        .querySelectorAll('.tax-tag')
-        .forEach((el) =>
-          anim(el, [{ opacity: 0, transform: 'scale(0.9)' }, { opacity: 1, transform: 'scale(1)' }], {
+      card.querySelectorAll('.tax-tag').forEach((el) =>
+        anim(
+          el,
+          [
+            { opacity: 0, transform: 'scale(0.9)' },
+            { opacity: 1, transform: 'scale(1)' },
+          ],
+          {
             delay: 660,
             duration: 320,
             easing: SPRING_PLAYFUL,
-          }),
-        );
+          },
+        ),
+      );
 
       // Ghosts travel to their rung thumbnails, cheapest first (rungs are already in price order).
       const rungs = [...card.querySelectorAll<HTMLElement>('.rung')];
@@ -206,7 +216,9 @@ export function createFolder(
         ghostCount++;
         const from = firstMedia.get(tile) as Rect;
         const to = rel(thumb);
-        const src = (tile.querySelector('img') as HTMLImageElement).currentSrc || (tile.querySelector('img') as HTMLImageElement).src;
+        const src =
+          (tile.querySelector('img') as HTMLImageElement).currentSrc ||
+          (tile.querySelector('img') as HTMLImageElement).src;
         const g = ghost(src, from);
         const s = to.w / from.w;
         const delay = 80 + rank * 40;
@@ -255,7 +267,8 @@ export function createFolder(
       card.querySelectorAll<HTMLElement>('.rung').forEach((rung) => {
         const thumb = rung.querySelector('.rung-thumb') as HTMLElement;
         const img = thumb.querySelector('img') as HTMLImageElement;
-        if (rung.dataset.id) thumbs.set(rung.dataset.id, { rect: rel(thumb), src: img.currentSrc || img.src });
+        if (rung.dataset.id)
+          thumbs.set(rung.dataset.id, { rect: rel(thumb), src: img.currentSrc || img.src });
       });
     }
     grid.dataset.state = 'idle';

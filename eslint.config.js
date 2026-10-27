@@ -15,6 +15,10 @@ export default tseslint.config(
       'playwright-report/**',
       'tests/fixtures/**',
       'public/**',
+      'site/dist/**',
+      'site/node_modules/**',
+      'site/test-results/**',
+      'site/public/**',
     ],
   },
   js.configs.recommended,
@@ -35,13 +39,37 @@ export default tseslint.config(
     },
   },
   {
-    files: ['scripts/**', 'tests/**', '*.config.{js,ts}', 'eslint.config.js'],
+    files: [
+      'scripts/**',
+      'tests/**',
+      '*.config.{js,ts}',
+      'eslint.config.js',
+      'site/scripts/**',
+      'site/tests/**',
+      'site/*.config.ts',
+    ],
     languageOptions: { globals: { ...globals.node } },
     rules: { 'no-console': 'off' },
   },
   {
+    // The site's DOM entry points look up elements that the static HTML guarantees, and its dev
+    // scripts drive Chromium through untyped page.evaluate callbacks. Neither ships to users as logic.
+    files: ['site/src/**/*.ts', 'site/scripts/**', 'site/tests/**'],
+    rules: { '@typescript-eslint/no-non-null-assertion': 'off' },
+  },
+  {
+    files: ['site/scripts/**'],
+    rules: { '@typescript-eslint/no-explicit-any': 'off' },
+  },
+  {
+    // The web app's service worker template runs in a ServiceWorkerGlobalScope; `__FILES__` is
+    // replaced with the precache list at build time (site/vite.config.ts).
+    files: ['site/src/app/sw.template.js'],
+    languageOptions: { globals: { ...globals.serviceworker, __FILES__: 'readonly' } },
+  },
+  {
     // Playwright fixtures: the first argument must be an object pattern and the callback is named `use`.
-    files: ['tests/e2e/**'],
+    files: ['tests/e2e/**', 'site/tests/e2e/**'],
     rules: { 'react-hooks/rules-of-hooks': 'off', 'no-empty-pattern': 'off' },
   },
   prettier,

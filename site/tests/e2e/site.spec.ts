@@ -105,7 +105,10 @@ test.describe('web app', () => {
     await expect(page.locator('.pill')).toBeVisible();
     await page.getByRole('button', { name: /Show twins/ }).click();
     await expect(page.locator('#stage')).toHaveAttribute('data-rings', 'true');
-    await page.getByRole('button', { name: /Fold twins/ }).first().click();
+    await page
+      .getByRole('button', { name: /Fold twins/ })
+      .first()
+      .click();
     const card = page.locator('.fold-card').first();
     await expect(card).toBeVisible();
     await expect(card.locator('.tax-tag')).toBeVisible();
@@ -116,13 +119,24 @@ test.describe('web app', () => {
   });
 
   test('Proof lens is touch-draggable on a phone', async ({ browser }) => {
-    const ctx = await browser.newContext({ viewport: { width: 375, height: 812 }, hasTouch: true, isMobile: true });
+    const ctx = await browser.newContext({
+      viewport: { width: 375, height: 812 },
+      hasTouch: true,
+      isMobile: true,
+    });
     const page = await ctx.newPage();
     await page.goto('/app/', { waitUntil: 'networkidle' });
     await page.getByRole('button', { name: 'Try a sample' }).first().click();
     await expect(page.locator('.tile').first()).toBeVisible({ timeout: 20_000 });
-    await page.getByRole('button', { name: /Fold twins/ }).first().tap();
-    await page.locator('.fold-card').first().getByRole('button', { name: /Check the pixels/ }).tap();
+    await page
+      .getByRole('button', { name: /Fold twins/ })
+      .first()
+      .tap();
+    await page
+      .locator('.fold-card')
+      .first()
+      .getByRole('button', { name: /Check the pixels/ })
+      .tap();
     const view = page.locator('.lens-view');
     await expect(view).toBeVisible();
     const slider = page.locator('[data-lens="blend"]');
@@ -131,7 +145,10 @@ test.describe('web app', () => {
     const cdp = await ctx.newCDPSession(page);
     const y = box.y + box.height / 2;
     const pt = (x: number) => [{ x, y }];
-    await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: pt(box.x + box.width * 0.5) });
+    await cdp.send('Input.dispatchTouchEvent', {
+      type: 'touchStart',
+      touchPoints: pt(box.x + box.width * 0.5),
+    });
     for (let i = 1; i <= 8; i++) {
       await cdp.send('Input.dispatchTouchEvent', {
         type: 'touchMove',
@@ -143,7 +160,9 @@ test.describe('web app', () => {
     await ctx.close();
   });
 
-  test('picked photos: a resized re-save groups with its original, a different photo does not', async ({ page }) => {
+  test('picked photos: a resized re-save groups with its original, a different photo does not', async ({
+    page,
+  }) => {
     const urls = trackRequests(page);
     await page.goto('/app/', { waitUntil: 'networkidle' });
     const files = [
@@ -152,12 +171,17 @@ test.describe('web app', () => {
       { name: 'c-different.jpg', mimeType: 'image/jpeg', buffer: await photo(11) },
     ];
     await page.locator('#file-input').setInputFiles(files);
-    await expect(page.locator('[data-status]')).toContainText(/1 twin group among 3 photos/, { timeout: 20_000 });
+    await expect(page.locator('[data-status]')).toContainText(/1 twin group among 3 photos/, {
+      timeout: 20_000,
+    });
     await expect(page.locator('.tile')).toHaveCount(3);
     const prices = page.locator('input[data-field="price"]');
     await prices.nth(0).fill('34.99');
     await prices.nth(1).fill('11.99');
-    await page.getByRole('button', { name: /Fold twins/ }).first().click();
+    await page
+      .getByRole('button', { name: /Fold twins/ })
+      .first()
+      .click();
     await expect(page.locator('.fold-card .tax-tag')).toContainText(/23/);
     expect(foreign(urls)).toEqual([]);
   });
@@ -165,9 +189,11 @@ test.describe('web app', () => {
   test('error state: a file that is not an image is explained, nothing is uploaded', async ({ page }) => {
     const urls = trackRequests(page);
     await page.goto('/app/', { waitUntil: 'networkidle' });
-    await page
-      .locator('#file-input')
-      .setInputFiles({ name: 'broken.jpg', mimeType: 'image/jpeg', buffer: Buffer.from('not an image at all') });
+    await page.locator('#file-input').setInputFiles({
+      name: 'broken.jpg',
+      mimeType: 'image/jpeg',
+      buffer: Buffer.from('not an image at all'),
+    });
     await expect(page.locator('[data-state-view="error"]')).toBeVisible({ timeout: 20_000 });
     await expect(page.locator('[data-state-view="error"]')).toContainText(/Nothing was uploaded/);
     await expect(page.getByRole('button', { name: 'Try a sample' }).first()).toBeVisible();
@@ -182,14 +208,20 @@ test.describe('web app', () => {
   });
 
   test('touch targets are at least 44 px at 375 px', async ({ browser }) => {
-    const ctx = await browser.newContext({ viewport: { width: 375, height: 812 }, hasTouch: true, isMobile: true });
+    const ctx = await browser.newContext({
+      viewport: { width: 375, height: 812 },
+      hasTouch: true,
+      isMobile: true,
+    });
     const page = await ctx.newPage();
     await page.goto('/app/', { waitUntil: 'networkidle' });
     await page.getByRole('button', { name: 'Try a sample' }).first().click();
     await expect(page.locator('.tile').first()).toBeVisible({ timeout: 20_000 });
     const small = await page.evaluate(() => {
       const out: string[] = [];
-      for (const el of document.querySelectorAll<HTMLElement>('button, a[href], input, select, [role="radio"]')) {
+      for (const el of document.querySelectorAll<HTMLElement>(
+        'button, a[href], input, select, [role="radio"]',
+      )) {
         const r = el.getBoundingClientRect();
         const cs = getComputedStyle(el);
         if (r.width === 0 || r.height === 0 || cs.visibility === 'hidden') continue;
@@ -197,7 +229,9 @@ test.describe('web app', () => {
         if (el.matches('.skip')) continue;
         if (el.matches('a') && cs.display === 'inline') continue; // inline text links
         if (r.width < 43.5 || r.height < 43.5)
-          out.push(`${el.tagName.toLowerCase()}.${el.className} ${Math.round(r.width)}x${Math.round(r.height)}`);
+          out.push(
+            `${el.tagName.toLowerCase()}.${el.className} ${Math.round(r.width)}x${Math.round(r.height)}`,
+          );
       }
       return out;
     });
@@ -231,7 +265,10 @@ test.describe('web app', () => {
       await page.goto('/app/', { waitUntil: 'networkidle' });
       await page.getByRole('button', { name: 'Try a sample' }).first().click();
       await expect(page.locator('.tile').first()).toBeVisible({ timeout: 20_000 });
-      await page.getByRole('button', { name: /Fold twins/ }).first().click();
+      await page
+        .getByRole('button', { name: /Fold twins/ })
+        .first()
+        .click();
       expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(w);
     });
   }

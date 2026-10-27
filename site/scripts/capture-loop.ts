@@ -19,7 +19,11 @@ const browser = await chromium.launch();
 
 // Social card: the hero at 1200 x 630, light theme, once the marker circle has drawn.
 {
-  const c = await browser.newContext({ viewport: { width: 1200, height: 630 }, deviceScaleFactor: 1, colorScheme: 'light' });
+  const c = await browser.newContext({
+    viewport: { width: 1200, height: 630 },
+    deviceScaleFactor: 1,
+    colorScheme: 'light',
+  });
   const p = await c.newPage();
   await p.goto(BASE + '/', { waitUntil: 'networkidle' });
   await p.waitForTimeout(2600);
@@ -53,7 +57,10 @@ await at(8200);
 await ctx.close();
 await browser.close();
 
-const webm = join(tmp, readdirSync(tmp).find((f) => f.endsWith('.webm'))!);
+const webm = join(
+  tmp,
+  readdirSync(tmp).find((f) => f.endsWith('.webm'))!,
+);
 const w = Math.round(box.width) & ~1;
 const h = Math.round(box.height) & ~1;
 const x = Math.round(box.x);
@@ -61,15 +68,42 @@ const y = Math.round(box.y);
 execFileSync(
   'ffmpeg',
   [
-    '-y', '-loglevel', 'error', '-i', webm,
-    '-vf', `crop=${w}:${h}:${x}:${y},scale=720:-2:flags=lanczos,fps=24`,
-    '-an', '-c:v', 'libx264', '-profile:v', 'high', '-pix_fmt', 'yuv420p', '-crf', '30', '-preset', 'slow', '-movflags', '+faststart',
+    '-y',
+    '-loglevel',
+    'error',
+    '-i',
+    webm,
+    '-vf',
+    `crop=${w}:${h}:${x}:${y},scale=720:-2:flags=lanczos,fps=24`,
+    '-an',
+    '-c:v',
+    'libx264',
+    '-profile:v',
+    'high',
+    '-pix_fmt',
+    'yuv420p',
+    '-crf',
+    '30',
+    '-preset',
+    'slow',
+    '-movflags',
+    '+faststart',
     join(outDir, 'loop.mp4'),
   ],
   { stdio: 'inherit' },
 );
-const poster = await sharp(join(tmp, 'poster.png')).resize({ width: 720 }).avif({ quality: 42, effort: 6 }).toBuffer();
+const poster = await sharp(join(tmp, 'poster.png'))
+  .resize({ width: 720 })
+  .avif({ quality: 42, effort: 6 })
+  .toBuffer();
 await sharp(poster).toFile(join(outDir, 'loop-poster.avif'));
 const meta = await sharp(poster).metadata();
-console.log(JSON.stringify({ video: statSync(join(outDir, 'loop.mp4')).size, poster: poster.length, w: meta.width, h: meta.height }));
+console.log(
+  JSON.stringify({
+    video: statSync(join(outDir, 'loop.mp4')).size,
+    poster: poster.length,
+    w: meta.width,
+    h: meta.height,
+  }),
+);
 rmSync(tmp, { recursive: true, force: true });

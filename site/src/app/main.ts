@@ -45,7 +45,6 @@ let lastMs: number | null = null;
 
 // ---- DOM ----------------------------------------------------------------------------------------------
 const stageEl = $('#stage') as HTMLElement;
-const resultsEl = $('[data-state-view="ready"]') as HTMLElement;
 const statusEl = $('[data-status]') as HTMLElement;
 const noteEl = $('[data-results-note]') as HTMLElement;
 const noticeEl = $('[data-notice]') as HTMLElement;
@@ -78,7 +77,8 @@ function skeleton(n: number) {
   const count = Math.max(4, Math.min(12, n));
   $('[data-skeleton]')!.innerHTML = Array.from(
     { length: count },
-    () => '<div class="sk-tile"><div class="sk-media"></div><div class="sk-line"></div><div class="sk-line"></div></div>',
+    () =>
+      '<div class="sk-tile"><div class="sk-media"></div><div class="sk-line"></div><div class="sk-line"></div></div>',
   ).join('');
 }
 
@@ -89,12 +89,19 @@ function setLoading(total: number, done = 0) {
   skeleton(total);
 }
 
-function showError(title: string, body: string, actions: Array<{ label: string; act: string; primary?: boolean }>) {
+function showError(
+  title: string,
+  body: string,
+  actions: Array<{ label: string; act: string; primary?: boolean }>,
+) {
   show('error');
   $('[data-error-title]')!.innerHTML = `${icon('alert', 18)}<span>${esc(title)}</span>`;
   $('[data-error-body]')!.textContent = body;
   $('[data-error-actions]')!.innerHTML = actions
-    .map((a) => `<button type="button" class="btn ${a.primary ? 'btn-primary' : 'btn-secondary'}" data-app="${a.act}">${esc(a.label)}</button>`)
+    .map(
+      (a) =>
+        `<button type="button" class="btn ${a.primary ? 'btn-primary' : 'btn-secondary'}" data-app="${a.act}">${esc(a.label)}</button>`,
+    )
     .join('');
   const first = $('[data-error-actions] button');
   first?.focus();
@@ -195,7 +202,8 @@ function recompute() {
 }
 
 // ---- Photos: pick, paste, drop ---------------------------------------------------------------------
-const looksLikeImage = (f: File) => f.type.startsWith('image/') || /\.(jpe?g|png|webp|avif|gif|heic|heif|bmp)$/i.test(f.name);
+const looksLikeImage = (f: File) =>
+  f.type.startsWith('image/') || /\.(jpe?g|png|webp|avif|gif|heic|heif|bmp)$/i.test(f.name);
 
 async function addFiles(files: File[]) {
   if (busy) return;
@@ -252,7 +260,10 @@ async function addFiles(files: File[]) {
       failed.length
         ? "This browser couldn't open them. HEIC photos from some phones need to be exported as JPEG or PNG first. Nothing was uploaded."
         : 'Nothing could be read.',
-      [{ label: 'Choose photos', act: 'pick', primary: true }, { label: 'Try a sample', act: 'sample' }],
+      [
+        { label: 'Choose photos', act: 'pick', primary: true },
+        { label: 'Try a sample', act: 'sample' },
+      ],
     );
     return;
   }
@@ -281,9 +292,13 @@ async function pasteFromClipboard() {
       if (type) files.push(new File([await item.getType(type)], 'pasted image', { type }));
     }
     if (files.length) return void addFiles(files);
-    notice('The clipboard has no image. Copy an image first (long-press or right-click, Copy image), then try again.');
+    notice(
+      'The clipboard has no image. Copy an image first (long-press or right-click, Copy image), then try again.',
+    );
   } catch {
-    notice("Couldn't read the clipboard here. Press Ctrl+V (Cmd+V on a Mac) with this page open, or paste into the page from your keyboard.");
+    notice(
+      "Couldn't read the clipboard here. Press Ctrl+V (Cmd+V on a Mac) with this page open, or paste into the page from your keyboard.",
+    );
   }
 }
 
@@ -363,7 +378,10 @@ async function loadSample() {
       showError(
         "Couldn't open the sample.",
         "The sample page didn't load. If you're offline and haven't opened this app online once, it isn't saved on this device yet. Nothing was uploaded.",
-        [{ label: 'Try again', act: 'sample', primary: true }, { label: 'Pick photos', act: 'pick' }],
+        [
+          { label: 'Try again', act: 'sample', primary: true },
+          { label: 'Pick photos', act: 'pick' },
+        ],
       );
       return;
     }
@@ -382,19 +400,26 @@ async function loadSample() {
     busy = false;
     if (!outcome.ok) {
       mode = 'none';
-      showError("Couldn't read the sample page.", `The listing reader reported: ${outcome.reason}. Nothing was uploaded.`, [
-        { label: 'Try again', act: 'sample', primary: true },
-      ]);
+      showError(
+        "Couldn't read the sample page.",
+        `The listing reader reported: ${outcome.reason}. Nothing was uploaded.`,
+        [{ label: 'Try again', act: 'sample', primary: true }],
+      );
       return;
     }
-    const listings = Object.values(outcome.session.listings).map((l) => ({ ...l, imageUrl: sampleImage(l.imageUrl) }));
+    const listings = Object.values(outcome.session.listings).map((l) => ({
+      ...l,
+      imageUrl: sampleImage(l.imageUrl),
+    }));
     renderResult(listings, outcome.result, false);
   } catch {
     busy = false;
     mode = 'none';
-    showError("Couldn't check the sample.", 'Something went wrong while comparing the photos. Nothing was uploaded.', [
-      { label: 'Try again', act: 'sample', primary: true },
-    ]);
+    showError(
+      "Couldn't check the sample.",
+      'Something went wrong while comparing the photos. Nothing was uploaded.',
+      [{ label: 'Try again', act: 'sample', primary: true }],
+    );
   }
 }
 
@@ -446,7 +471,10 @@ stageEl.addEventListener('change', (e) => {
     const a = document.activeElement as HTMLInputElement | null;
     const back = a?.matches?.('input[data-field]') ? { f: a.dataset.field, id: a.dataset.id } : null;
     recompute();
-    if (back) stageEl.querySelector<HTMLInputElement>(`input[data-field="${back.f}"][data-id="${back.id}"]`)?.focus({ preventScroll: true });
+    if (back)
+      stageEl
+        .querySelector<HTMLInputElement>(`input[data-field="${back.f}"][data-id="${back.id}"]`)
+        ?.focus({ preventScroll: true });
   }, 0);
 });
 
@@ -456,7 +484,13 @@ const setOnline = () => {
   if (!navigator.onLine) offlineEl.textContent = "You're offline. Everything here still works.";
 };
 addEventListener('offline', setOnline);
-addEventListener('online', () => (offlineEl.textContent = offlineReady ? 'Saved on this device. Works offline.' : 'Works offline after the first load.'));
+addEventListener(
+  'online',
+  () =>
+    (offlineEl.textContent = offlineReady
+      ? 'Saved on this device. Works offline.'
+      : 'Works offline after the first load.'),
+);
 let offlineReady = false;
 setOnline();
 
@@ -464,7 +498,9 @@ if ('serviceWorker' in navigator && import.meta.env.PROD) {
   navigator.serviceWorker.addEventListener('message', (e) => {
     if (e.data?.type === 'offline-ready') {
       offlineReady = true;
-      offlineEl.textContent = navigator.onLine ? 'Saved on this device. Works offline.' : "You're offline. Everything here still works.";
+      offlineEl.textContent = navigator.onLine
+        ? 'Saved on this device. Works offline.'
+        : "You're offline. Everything here still works.";
     }
   });
   navigator.serviceWorker

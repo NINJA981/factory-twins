@@ -18,7 +18,9 @@ self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches
       .keys()
-      .then((keys) => Promise.all(keys.filter((k) => k.startsWith('ft-app-') && k !== CACHE).map((k) => caches.delete(k))))
+      .then((keys) =>
+        Promise.all(keys.filter((k) => k.startsWith('ft-app-') && k !== CACHE).map((k) => caches.delete(k))),
+      )
       .then(() => self.clients.claim())
       .then(() => self.clients.matchAll({ type: 'window' }))
       .then((clients) => clients.forEach((c) => c.postMessage({ type: 'offline-ready', version: VERSION }))),
@@ -27,7 +29,7 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'status') {
-    event.source && event.source.postMessage({ type: 'offline-ready', version: VERSION });
+    if (event.source) event.source.postMessage({ type: 'offline-ready', version: VERSION });
   }
 });
 
@@ -38,8 +40,11 @@ self.addEventListener('fetch', (event) => {
   if (url.origin !== self.location.origin) return;
   event.respondWith(
     caches.open(CACHE).then(async (cache) => {
-      const hit = (await cache.match(req, { ignoreSearch: true, ignoreVary: true })) ||
-        (req.mode === 'navigate' ? await cache.match(new URL('./', self.location.href).href, { ignoreVary: true }) : undefined);
+      const hit =
+        (await cache.match(req, { ignoreSearch: true, ignoreVary: true })) ||
+        (req.mode === 'navigate'
+          ? await cache.match(new URL('./', self.location.href).href, { ignoreVary: true })
+          : undefined);
       return hit || fetch(req);
     }),
   );

@@ -46,7 +46,9 @@
   font-size: 19px;
   font-weight: 650;
   letter-spacing: -0.02em;
-  font-variation-settings: 'wdth' 90, 'opsz' 24;
+  font-variation-settings:
+    'wdth' 90,
+    'opsz' 24;
   text-decoration: none;
 }
 .wordmark:hover {

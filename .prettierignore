@@ -11,3 +11,7 @@ public/fonts
 .impeccable
 src/styles/tokens.css
 src/styles/theme.css
+site/dist
+site/public
+site/src/demo
+site/test-results

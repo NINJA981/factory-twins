@@ -79,7 +79,13 @@ Settings at build time (environment variables): `FT_REPO_URL` (repository link, 
 9. **The service worker caches by build hash.** A new deploy installs a new cache and `skipWaiting` plus `clients.claim` switch to it at once; an open tab keeps its old JS until reload. There is no "update available" prompt.
 10. **Lighthouse "agentic" checks** (`llms.txt`, `ai-catalog.json`) pass here because `public/llms.txt` exists and `ai-catalog.json` is a real 404 on `pnpm serve`. `pnpm preview` answers every unknown path with `index.html`, which makes `robots.txt`-style checks fail there; audit against `pnpm serve`.
 11. **`.impeccable/design.json` is stale** (root HANDOFF item 11), so the site was built from `DESIGN.md` directly.
-12. **The extension's `size-limit` and root lint do not cover `site/`.** The site has its own typecheck and tests; add it to CI as a separate job.
+12. **The extension's `size-limit` does not cover `site/`** (`pnpm build` runs `check-dist.mjs` for the site's own budgets). Root `pnpm lint` does cover `site/` since Stage 4; the site has its own typecheck (`pnpm typecheck:site` from the root) and tests, so add them to CI as a separate job.
+
+## Stage 4 (test engineer) changes in `site/`
+
+- New tests: `tests/e2e/app.spec.ts` (the web app at 375x812 touch and at 1440x900), `a11y.spec.ts` (axe on every surface and state), `smoke.spec.ts`, `helpers.ts`, and `tests/tokens.test.ts`. The full map is `docs/TEST_MATRIX.md` in the repo root. `@axe-core/playwright` 4.14.0 is a site dev dependency.
+- Bugs fixed in the product: keyboard shortcuts did not work on a full results page (the visibility check needed a quarter of a 3,900 px stage on screen); `aria-pressed` was set on a non-button pill; the Proof lens view had an `aria-label` without a role (now `role="img"`); the sideways-scrolling price ladder was not keyboard-scrollable (now a focusable labelled group); the fold card title was an `h3` under the `h1` (now `h2`). Run `pnpm assets` after touching `src/shared/templates.ts`, because the hero markup is generated from it.
+- Fold cards are in the DOM before folding (hidden). Tests and any future code must count the visible ones.
 
 ## Lines for the root HANDOFF.md
 

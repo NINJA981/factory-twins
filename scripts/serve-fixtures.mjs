@@ -8,6 +8,7 @@ import { fileURLToPath } from 'node:url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const demo = join(root, 'tests', 'fixtures', 'demo', 'laptop-stand');
+const sample = join(root, 'site', 'public', 'sample');
 const PORT = Number(process.env.FT_FIXTURE_PORT ?? 4817);
 
 function send(res, status, type, body) {
@@ -15,9 +16,24 @@ function send(res, status, type, body) {
   res.end(body);
 }
 
+// Every request that reaches this server, so the e2e tests can see what the extension itself fetched
+// (Playwright cannot observe requests made by an extension's service worker or offscreen document).
+const log = [];
+
 const server = createServer((req, res) => {
   const url = new URL(req.url ?? '/', `http://localhost:${PORT}`);
   if (url.pathname === '/healthz') return send(res, 200, 'text/plain', 'ok');
+  if (url.pathname === '/__log') {
+    const body = JSON.stringify(log);
+    if (url.searchParams.has('clear')) log.length = 0;
+    return send(res, 200, 'application/json', body);
+  }
+  log.push({
+    path: url.pathname + url.search,
+    origin: req.headers.origin ?? null,
+    site: req.headers['sec-fetch-site'] ?? null,
+    dest: req.headers['sec-fetch-dest'] ?? null,
+  });
 
   if (url.pathname === '/s') {
     const page = url.searchParams.get('page') === '2' ? 'page2.html' : 'page.html';
@@ -31,6 +47,25 @@ const server = createServer((req, res) => {
     );
     if (url.searchParams.get('theme') === 'dark') html = html.replace('<body>', '<body class="dark">');
     return send(res, 200, 'text/html; charset=utf-8', html);
+  }
+
+  // The web app's bundled sample page (site/public/sample), served in the same Amazon-shaped URL space so the
+  // extension can read the very page the web app reads (the parity test compares the two).
+  if (url.pathname === '/s/web-sample') {
+    const file = join(sample, 'page-1.html');
+    if (!existsSync(file)) return send(res, 404, 'text/plain', 'missing site/public/sample');
+    const html = readFileSync(file, 'utf8')
+      .replaceAll(`http://localhost:${PORT}/img/`, `http://localhost:${PORT}/sample-img/`)
+      .replace('</head>', '<link rel="stylesheet" href="/store.css"></head>');
+    return send(res, 200, 'text/html; charset=utf-8', html);
+  }
+
+  if (url.pathname.startsWith('/sample-img/')) {
+    const file = normalize(join(sample, 'img', url.pathname.slice('/sample-img/'.length)));
+    if (!file.startsWith(join(sample, 'img')) || !existsSync(file))
+      return send(res, 404, 'text/plain', 'not found');
+    res.writeHead(200, { 'content-type': 'image/jpeg', 'cache-control': 'max-age=60' });
+    return createReadStream(file).pipe(res);
   }
 
   if (url.pathname === '/store.css') {

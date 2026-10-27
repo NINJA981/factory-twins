@@ -77,8 +77,9 @@ if (demoEl) {
     draw(true);
   };
   // After the H1 and the images have painted; never competes with the LCP.
-  const idle = (window as unknown as { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => void })
-    .requestIdleCallback;
+  const idle = (
+    window as unknown as { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => void }
+  ).requestIdleCallback;
   const kick = () => (idle ? idle(start, { timeout: 1500 }) : setTimeout(start, 600));
   if (document.readyState === 'complete') kick();
   else addEventListener('load', kick, { once: true });
@@ -130,7 +131,8 @@ if (block && stackEl) {
       btnStack.textContent = stacked ? 'Fan them out' : 'Stack them';
     }
     btnDiff?.setAttribute('aria-pressed', String(mode === 'different'));
-    if (btnDiff) btnDiff.textContent = mode === 'different' ? 'Back to the twins' : 'Try two different photos';
+    if (btnDiff)
+      btnDiff.textContent = mode === 'different' ? 'Back to the twins' : 'Try two different photos';
     // Once the cards have met, flatten so the blend sees only the card below.
     if (stacked) timer = window.setTimeout(() => (stackEl!.dataset.settled = ''), reduced ? 160 : 800);
   }

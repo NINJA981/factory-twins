@@ -42,7 +42,21 @@
     <header class="nav" data-nav>
       <div class="wrap nav-in">
         <a class="wordmark" href="#top" aria-label="Factory Twins, top of page">
-          <svg class="glyph" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="2.5" width="13" height="13" rx="3" /><rect x="8.5" y="8.5" width="13" height="13" rx="3" fill="var(--bg)" /></svg>
+          <svg
+            class="glyph"
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            aria-hidden="true"
+          >
+            <rect x="2.5" y="2.5" width="13" height="13" rx="3" />
+            <rect x="8.5" y="8.5" width="13" height="13" rx="3" fill="var(--bg)" />
+          </svg>
           <span>Factory Twins</span>
         </a>
         <nav class="nav-links" aria-label="Page">
@@ -90,10 +104,14 @@
             <button type="button" class="btn btn-secondary" data-demo="fold">
               <span data-demo-label>Fold twins</span><kbd class="keycap">F</kbd>
             </button>
-            <button type="button" class="btn btn-ghost" data-demo="lens">Check the pixels<kbd class="keycap">P</kbd></button>
+            <button type="button" class="btn btn-ghost" data-demo="lens">
+              Check the pixels<kbd class="keycap">P</kbd>
+            </button>
           </div>
           <noscript>
-            <p class="t-caption">JavaScript is off, so the demo shows the folded result. The page works without it.</p>
+            <p class="t-caption">
+              JavaScript is off, so the demo shows the folded result. The page works without it.
+            </p>
           </noscript>
         </div>
       </section>
@@ -104,10 +122,10 @@
           <div class="block-copy">
             <h2 class="t-display" id="h-same">Same photo ×5.</h2>
             <p class="t-body">
-              Search for "laptop stand" and page 1 can show the same factory photo again and again under
-              names you've never heard of. Factory Twins hashes every thumbnail on the page and rings the
-              ones that match in a shared colour. Press F and each group folds into one card: every price,
-              rating and review count lined up under the same photo.
+              Search for "laptop stand" and page 1 can show the same factory photo again and again under names
+              you've never heard of. Factory Twins hashes every thumbnail on the page and rings the ones that
+              match in a shared colour. Press F and each group folds into one card: every price, rating and
+              review count lined up under the same photo.
             </p>
             <p class="t-caption block-caption">
               It compares photos, not products. A group can hold the original and a copy that borrowed its
@@ -130,7 +148,9 @@
             <button type="button" class="btn btn-secondary loop-toggle" data-loop-toggle aria-pressed="false">
               Play the recording
             </button>
-            <figcaption class="t-caption">Recorded from the demo on this page, 8 seconds, no sound.</figcaption>
+            <figcaption class="t-caption">
+              Recorded from the demo on this page, 8 seconds, no sound.
+            </figcaption>
           </figure>
         </div>
       </section>
@@ -146,9 +166,8 @@
               markup.
             </p>
             <p class="t-caption block-caption">
-              The listing with the most reviews is marked "Most established". A listing with almost no
-              reviews that borrows a well-reviewed photo gets a note saying so. Demo listings, made up for
-              this page.
+              The listing with the most reviews is marked "Most established". A listing with almost no reviews
+              that borrows a well-reviewed photo gets a note saying so. Demo listings, made up for this page.
             </p>
           </div>
           <div class="card-crop"><!--@cardB--></div>
@@ -165,7 +184,9 @@
               the pixels match, the frame turns black. The number underneath is measured, not guessed.
             </p>
             <div class="proof-actions">
-              <button type="button" class="btn btn-primary" data-stack="stack" aria-pressed="false">Stack them</button>
+              <button type="button" class="btn btn-primary" data-stack="stack" aria-pressed="false">
+                Stack them
+              </button>
               <button type="button" class="btn btn-secondary" data-stack="different" aria-pressed="false">
                 Try two different photos
               </button>
@@ -188,9 +209,9 @@
         <div class="pill-beat-copy">
           <h2 class="t-headline" id="h-pill">Useful even when you don't click.</h2>
           <p class="t-body">
-            After every search a small pill says what the page really holds: listings, distinct products,
-            twin groups, and the biggest brand tax on the page. When nothing repeats, it says that too. Go to
-            page 2 and it remembers page 1, so a photo that shows up on several pages is counted once.
+            After every search a small pill says what the page really holds: listings, distinct products, twin
+            groups, and the biggest brand tax on the page. When nothing repeats, it says that too. Go to page
+            2 and it remembers page 1, so a photo that shows up on several pages is counted once.
           </p>
         </div>
         <div class="pill-crops">
@@ -211,7 +232,10 @@
         <ol class="steps" role="list">
           <li>
             <h3 class="t-title">The decision</h3>
-            <p>Compare the photos the page already shows, on your machine, and claim only what the pixels prove.</p>
+            <p>
+              Compare the photos the page already shows, on your machine, and claim only what the pixels
+              prove.
+            </p>
           </li>
           <li>
             <h3 class="t-title">The naive version</h3>
@@ -225,8 +249,8 @@
             <p>
               The extension re-reads each thumbnail from the store's own image server, inside an extension
               page that has permission for that one host, then hashes it locally: a 64-bit difference hash, a
-              64-bit DCT hash and a small colour signature. Two photos are twins only when all three agree
-              and the titles name the same kind of thing.
+              64-bit DCT hash and a small colour signature. Two photos are twins only when all three agree and
+              the titles name the same kind of thing.
             </p>
           </li>
           <li>
@@ -309,7 +333,15 @@
         <div class="island">
           <div class="island-block">
             <p class="island-title">Chrome and Chromium</p>
-            <div class="cmd"><code id="cmd-chrome">pnpm install &amp;&amp; pnpm build</code><button type="button" class="btn btn-ghost cmd-copy" data-copy="#cmd-chrome" aria-label="Copy the Chrome build command"></button></div>
+            <div class="cmd">
+              <code id="cmd-chrome">pnpm install &amp;&amp; pnpm build</code
+              ><button
+                type="button"
+                class="btn btn-ghost cmd-copy"
+                data-copy="#cmd-chrome"
+                aria-label="Copy the Chrome build command"
+              ></button>
+            </div>
             <p class="island-steps">
               Then open <code>chrome://extensions</code>, switch on Developer mode, choose Load unpacked and
               pick <code>.output/chrome-mv3</code>.
@@ -317,7 +349,15 @@
           </div>
           <div class="island-block">
             <p class="island-title">Firefox 128 and up</p>
-            <div class="cmd"><code id="cmd-firefox">pnpm install &amp;&amp; pnpm build:firefox</code><button type="button" class="btn btn-ghost cmd-copy" data-copy="#cmd-firefox" aria-label="Copy the Firefox build command"></button></div>
+            <div class="cmd">
+              <code id="cmd-firefox">pnpm install &amp;&amp; pnpm build:firefox</code
+              ><button
+                type="button"
+                class="btn btn-ghost cmd-copy"
+                data-copy="#cmd-firefox"
+                aria-label="Copy the Firefox build command"
+              ></button>
+            </div>
             <p class="island-steps">
               Then open <code>about:debugging</code>, choose This Firefox, then Load Temporary Add-on and pick
               the manifest inside <code>.output/firefox-mv3</code>.
@@ -337,9 +377,9 @@
         <div class="oss-copy">
           <h2 class="t-headline" id="h-oss">Open source, MIT.</h2>
           <p class="t-body">
-            The engine is pure functions, each store is one adapter file, and a test fails if the engine
-            ever touches a browser-extension API. You can read all of it in an afternoon. Three things would
-            help most:
+            The engine is pure functions, each store is one adapter file, and a test fails if the engine ever
+            touches a browser-extension API. You can read all of it in an afternoon. Three things would help
+            most:
           </p>
           <ul class="oss-list" role="list">
             <li>
@@ -359,7 +399,9 @@
         </div>
         <div class="oss-actions">
           <a class="btn btn-primary" href="__REPO_URL__" data-repo rel="noopener">View the source</a>
-          <a class="btn btn-secondary" href="__REPO_URL__/issues" data-repo-issues rel="noopener">Report a layout or a bug</a>
+          <a class="btn btn-secondary" href="__REPO_URL__/issues" data-repo-issues rel="noopener"
+            >Report a layout or a bug</a
+          >
         </div>
       </section>
     </main>

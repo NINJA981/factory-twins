@@ -31,7 +31,8 @@ async function rgba(buf: Buffer): Promise<RgbaImage> {
   return { width: info.width, height: info.height, data: new Uint8ClampedArray(data) };
 }
 
-const sampleImage = (u: string) => join(root, 'public', 'sample', 'img', new URL(u).pathname.split('/').pop()!);
+const sampleImage = (u: string) =>
+  join(root, 'public', 'sample', 'img', new URL(u).pathname.split('/').pop()!);
 
 const client: ScanClient = {
   async hashImages({ urls }) {
@@ -102,13 +103,19 @@ describe('picked photos', () => {
       b: hashImage(await rgba(await photo(3, 0.7, 55))),
       c: hashImage(await rgba(await photo(11))),
     };
-    const result = cluster({ listings: [listing('a', 34.99), listing('b', 11.99), listing('c', null)], hashes });
+    const result = cluster({
+      listings: [listing('a', 34.99), listing('b', 11.99), listing('c', null)],
+      hashes,
+    });
     assert.equal(result.summary.twinGroups, 1);
     assert.deepEqual([...(result.groups[0]?.memberIds ?? [])].sort(), ['a', 'b']);
   });
 
   it('computes the brand tax from the two prices', async () => {
-    const hashes = { a: hashImage(await rgba(await photo(3))), b: hashImage(await rgba(await photo(3, 0.8, 70))) };
+    const hashes = {
+      a: hashImage(await rgba(await photo(3))),
+      b: hashImage(await rgba(await photo(3, 0.8, 70))),
+    };
     const result = cluster({ listings: [listing('a', 34.99), listing('b', 11.99)], hashes });
     assert.equal(result.groups[0]?.brandTax?.amount, 23);
   });

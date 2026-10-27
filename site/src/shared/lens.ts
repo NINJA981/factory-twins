@@ -53,7 +53,7 @@ export function createLens(hooks: LensHooks): Lens {
   dlg.className = 'lens';
   dlg.setAttribute('aria-labelledby', 'lens-title');
   dlg.innerHTML = `<div class="lens-grid">
-<div class="lens-viewcol"><div class="lens-view" data-mode="onion">
+<div class="lens-viewcol"><div class="lens-view" role="img" data-mode="onion">
 </div></div>
 <div class="lens-side">
 <div class="lens-head"><h2 id="lens-title" class="lens-title">${esc(LENS_TITLE)}</h2><button type="button" class="btn btn-ghost btn-icon" data-lens="close" aria-label="${esc(CLOSE)}">${icon('x', 20)}</button></div>
@@ -125,7 +125,9 @@ export function createLens(hooks: LensHooks): Lens {
     e.preventDefault();
     hooks.dispatch({ type: 'escape' });
   });
-  selTop.addEventListener('change', () => hooks.dispatch({ type: 'lens-pick', side: 'top', id: selTop.value }));
+  selTop.addEventListener('change', () =>
+    hooks.dispatch({ type: 'lens-pick', side: 'top', id: selTop.value }),
+  );
   selBottom.addEventListener('change', () =>
     hooks.dispatch({ type: 'lens-pick', side: 'bottom', id: selBottom.value }),
   );

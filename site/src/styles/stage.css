@@ -2,12 +2,36 @@
    Mirrors DESIGN.md > Components. Animation values come from the design's motion tokens. */
 
 /* Twin colours: one slot per group, set on the element that carries the group. */
-.twin-a { --twin: var(--twin-a); --twin-soft: var(--twin-a-soft); --twin-ink: var(--twin-a-ink); }
-.twin-b { --twin: var(--twin-b); --twin-soft: var(--twin-b-soft); --twin-ink: var(--twin-b-ink); }
-.twin-c { --twin: var(--twin-c); --twin-soft: var(--twin-c-soft); --twin-ink: var(--twin-c-ink); }
-.twin-d { --twin: var(--twin-d); --twin-soft: var(--twin-d-soft); --twin-ink: var(--twin-d-ink); }
-.twin-e { --twin: var(--twin-e); --twin-soft: var(--twin-e-soft); --twin-ink: var(--twin-e-ink); }
-.twin-f { --twin: var(--twin-f); --twin-soft: var(--twin-f-soft); --twin-ink: var(--twin-f-ink); }
+.twin-a {
+  --twin: var(--twin-a);
+  --twin-soft: var(--twin-a-soft);
+  --twin-ink: var(--twin-a-ink);
+}
+.twin-b {
+  --twin: var(--twin-b);
+  --twin-soft: var(--twin-b-soft);
+  --twin-ink: var(--twin-b-ink);
+}
+.twin-c {
+  --twin: var(--twin-c);
+  --twin-soft: var(--twin-c-soft);
+  --twin-ink: var(--twin-c-ink);
+}
+.twin-d {
+  --twin: var(--twin-d);
+  --twin-soft: var(--twin-d-soft);
+  --twin-ink: var(--twin-d-ink);
+}
+.twin-e {
+  --twin: var(--twin-e);
+  --twin-soft: var(--twin-e-soft);
+  --twin-ink: var(--twin-e-ink);
+}
+.twin-f {
+  --twin: var(--twin-f);
+  --twin-soft: var(--twin-f-soft);
+  --twin-ink: var(--twin-f-ink);
+}
 
 .stage {
   --stage-pad: var(--space-3);
@@ -125,9 +149,16 @@
   --ring-style: solid;
   --ring-w: 3px;
 }
-.tile[data-pattern^='dashed'] { --ring-style: dashed; }
-.tile[data-pattern='dotted'] { --ring-style: dotted; }
-.tile[data-pattern='double'] { --ring-style: double; --ring-w: 4px; }
+.tile[data-pattern^='dashed'] {
+  --ring-style: dashed;
+}
+.tile[data-pattern='dotted'] {
+  --ring-style: dotted;
+}
+.tile[data-pattern='double'] {
+  --ring-style: double;
+  --ring-w: 4px;
+}
 [data-rings='true'] .tile[data-twin] {
   outline: var(--ring-w) var(--ring-style) var(--twin);
   outline-offset: 4px;

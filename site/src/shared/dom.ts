@@ -1,7 +1,13 @@
 // Tiny DOM helpers. All dynamic text goes through esc() or textContent; nothing user-supplied reaches
 // innerHTML unescaped.
 
-const ENTITIES: Record<string, string> = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+const ENTITIES: Record<string, string> = {
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;',
+  '"': '&quot;',
+  "'": '&#39;',
+};
 
 export function esc(value: string | number): string {
   return String(value).replace(/[&<>"']/g, (c) => ENTITIES[c] as string);

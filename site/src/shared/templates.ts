@@ -70,7 +70,9 @@ export function tileHtml(l: Listing, o: TileOpts = {}): string {
   const twin = o.letter ? twinStyle(o.letter) : null;
   const size = o.size ?? 360;
   const cls = twin ? ` twin twin-${twin.slot}` : '';
-  const attrs = twin ? ` data-twin data-letter="${esc(o.letter as string)}" data-pattern="${twin.pattern}"` : '';
+  const attrs = twin
+    ? ` data-twin data-letter="${esc(o.letter as string)}" data-pattern="${twin.pattern}"`
+    : '';
   const badge =
     o.letter && o.members
       ? `<button type="button" class="badge" data-act="lens" data-letter="${esc(o.letter)}" aria-label="${esc(`${badgeLabel(o.letter, o.members)}. ${sameAsOthers(o.members - 1)}. Check the pixels.`)}" title="${esc(sameAsOthers(o.members - 1))}">${esc(badgeLabel(o.letter, o.members))}</button>`
@@ -104,9 +106,15 @@ function rungHtml(r: Rung, view: FoldCardView, h: number | undefined): string {
   const price = r.price
     ? `<p class="rung-price">${r.price.isFromRange ? `<span class="rung-from">${esc(FROM)} </span>` : ''}${esc(formatPrice(r.price.amount))}</p>${view.perUnit ? `<p class="rung-unit">${esc(PER_UNIT)}</p>` : ''}`
     : `<p class="rung-price rung-noprice">${esc(NO_PRICE)}</p>`;
-  const brand = r.brand ? `<p class="rung-brand">${esc(r.brand)}</p>` : `<p class="rung-brand rung-muted">Brand not shown</p>`;
-  const rating = r.rating != null ? `<p class="rung-rating">${icon('star', 12)}<span>${esc(r.rating.toFixed(1))}</span></p>` : '';
-  const reviews = r.reviewCount != null ? `<p class="rung-reviews">${esc(reviewsLabel(r.reviewCount))}</p>` : '';
+  const brand = r.brand
+    ? `<p class="rung-brand">${esc(r.brand)}</p>`
+    : `<p class="rung-brand rung-muted">Brand not shown</p>`;
+  const rating =
+    r.rating != null
+      ? `<p class="rung-rating">${icon('star', 12)}<span>${esc(r.rating.toFixed(1))}</span></p>`
+      : '';
+  const reviews =
+    r.reviewCount != null ? `<p class="rung-reviews">${esc(reviewsLabel(r.reviewCount))}</p>` : '';
   const few =
     r.fewReviewsReference != null
       ? `<p class="few-note">${icon('alert', 14)}<span>${esc(fewReviewsNote(r.fewReviewsReference))}</span></p>`
@@ -147,11 +155,11 @@ export function foldCardHtml(view: FoldCardView, o: { alt?: string; shortcuts?: 
 <div class="fold-top">
 <div class="fold-photo"><img src="${esc(view.photoUrl)}" alt="${esc(o.alt ?? `The shared photo of twin group ${view.letter}`)}" width="160" height="160" decoding="async"></div>
 <div class="fold-head">
-<h3 class="fold-title">${esc(foldHeader(view.memberCount))}</h3>
+<h2 class="fold-title">${esc(foldHeader(view.memberCount))}</h2>
 <div class="fold-tags"><span class="badge badge-static">${esc(badgeLabel(view.letter, view.memberCount))}</span>${tax ? `<span class="tax-tag">${icon('receipt', 16)}<span>${esc(brandTaxTag(tax.amount, tax.perUnit))}</span></span>` : ''}</div>
 ${cross}
 </div></div>
-<div class="ladder-scroll"><div class="ladder-wrap" style="--n:${view.rungs.length}">${bracketHtml(view, heights)}<ol class="ladder" aria-label="Price ladder, cheapest first">${view.rungs.map((r) => rungHtml(r, view, heights.get(r.id))).join('')}</ol></div></div>
+<div class="ladder-scroll" role="group" tabindex="0" aria-label="${esc(`Twin ${view.letter} price ladder, scrolls sideways`)}"><div class="ladder-wrap" style="--n:${view.rungs.length}">${bracketHtml(view, heights)}<ol class="ladder" aria-label="Price ladder, cheapest first">${view.rungs.map((r) => rungHtml(r, view, heights.get(r.id))).join('')}</ol></div></div>
 <div class="fold-foot">
 <button type="button" class="btn btn-ghost" data-act="lens" data-letter="${esc(view.letter)}">${icon('loupe')}<span>Check the pixels</span>${keycaps ? '<kbd class="keycap">P</kbd>' : ''}</button>
 <button type="button" class="btn btn-ghost" data-act="unfold">${esc(UNFOLD_TWINS.replace(' twins', ''))}${keycaps ? '<kbd class="keycap">F</kbd>' : ''}</button>

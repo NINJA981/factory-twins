@@ -18,12 +18,17 @@ function fragments(): Plugin {
         const frags = JSON.parse(readFileSync(file, 'utf8')) as Record<string, string>;
         // The repository URL is one setting: FT_REPO_URL at build time. The default is the same
         // placeholder the extension uses (HANDOFF known issue 6); set the real one before launch.
-        const repo = (process.env.FT_REPO_URL ?? 'https://github.com/factory-twins/factory-twins').replace(/\/$/, '');
-        return html
-          .replace(/<!--@([\w-]+)-->/g, (m, name: string) => frags[name] ?? m)
-          .replaceAll('__REPO_URL__', repo)
-          // Social cards need absolute URLs: set FT_SITE_URL (with a trailing slash) when the domain is known.
-          .replaceAll('__SITE_URL__', process.env.FT_SITE_URL ?? '');
+        const repo = (process.env.FT_REPO_URL ?? 'https://github.com/factory-twins/factory-twins').replace(
+          /\/$/,
+          '',
+        );
+        return (
+          html
+            .replace(/<!--@([\w-]+)-->/g, (m, name: string) => frags[name] ?? m)
+            .replaceAll('__REPO_URL__', repo)
+            // Social cards need absolute URLs: set FT_SITE_URL (with a trailing slash) when the domain is known.
+            .replaceAll('__SITE_URL__', process.env.FT_SITE_URL ?? '')
+        );
       },
     },
     handleHotUpdate({ file, server }) {
@@ -47,14 +52,17 @@ function inlineLandingCss(): Plugin {
       handler(html, ctx) {
         if (!ctx.bundle || resolve(ctx.filename) !== resolve(root, 'index.html')) return html;
         const bundle = ctx.bundle;
-        return html.replace(/<link rel="stylesheet"[^>]*href="\.\/(assets\/[^"]+\.css)"[^>]*>/g, (m, file: string) => {
-          const asset = bundle[file];
-          if (!asset || asset.type !== 'asset') return m;
-          const css = String(asset.source).replaceAll('url(../', 'url(./');
-          // A stylesheet only the landing page uses has no reason to ship as its own file.
-          if (/^assets\/landing-/.test(file)) delete bundle[file];
-          return `<style>${css}</style>`;
-        });
+        return html.replace(
+          /<link rel="stylesheet"[^>]*href="\.\/(assets\/[^"]+\.css)"[^>]*>/g,
+          (m, file: string) => {
+            const asset = bundle[file];
+            if (!asset || asset.type !== 'asset') return m;
+            const css = String(asset.source).replaceAll('url(../', 'url(./');
+            // A stylesheet only the landing page uses has no reason to ship as its own file.
+            if (/^assets\/landing-/.test(file)) Reflect.deleteProperty(bundle, file);
+            return `<style>${css}</style>`;
+          },
+        );
       },
     },
   };

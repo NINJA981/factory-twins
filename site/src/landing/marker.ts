@@ -67,8 +67,10 @@ export function markerPath(tiles: Element[], within: Element): string {
   if (poly.length < 3) return '';
 
   // Lattice index -> pixel. Edges sit at the tile edges (the ring lives 4 px outside them).
-  const rightOf = (c: number) => Math.max(...rects.filter((r) => idx(r.left, lefts) === c).map((r) => r.right));
-  const bottomOf = (rr: number) => Math.max(...rects.filter((r) => idx(r.top, tops) === rr).map((r) => r.bottom));
+  const rightOf = (c: number) =>
+    Math.max(...rects.filter((r) => idx(r.left, lefts) === c).map((r) => r.right));
+  const bottomOf = (rr: number) =>
+    Math.max(...rects.filter((r) => idx(r.top, tops) === rr).map((r) => r.bottom));
   const px = (c: number) => (c < lefts.length ? (lefts[c] as number) : rightOf(c - 1));
   const py = (rr: number) => (rr < tops.length ? (tops[rr] as number) : bottomOf(rr - 1));
   const pad = 12;

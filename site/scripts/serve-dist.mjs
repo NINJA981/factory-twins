@@ -37,7 +37,9 @@ createServer((req, res) => {
   if (!existsSync(file)) return void res.writeHead(404, { 'content-type': 'text/plain' }).end('Not found');
   const ext = extname(file);
   const headers = { 'content-type': types[ext] ?? 'application/octet-stream' };
-  headers['cache-control'] = /\/assets\/|\.woff2$/.test(file.replaceAll('\\', '/')) ? 'public, max-age=31536000, immutable' : 'no-cache';
+  headers['cache-control'] = /\/assets\/|\.woff2$/.test(file.replaceAll('\\', '/'))
+    ? 'public, max-age=31536000, immutable'
+    : 'no-cache';
   const gz = compressible.has(ext) && /\bgzip\b/.test(req.headers['accept-encoding'] ?? '');
   if (gz) headers['content-encoding'] = 'gzip';
   headers.vary = 'Accept-Encoding';
