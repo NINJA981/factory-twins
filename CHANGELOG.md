@@ -22,6 +22,7 @@ First public version. Tested on synthetic store pages only; see the README's Lim
 - Session memory: pages 2 and 3 of a search join the groups found on page 1, for the browser session only.
 - Landing page and an in-browser web app (`site/`) that runs the same engine on photos you pick.
 - Chrome MV3 build (offscreen hashing) and a Firefox MV3 build (background-page hashing, untested in Firefox).
+- Extension icons (16, 32, 48 and 128 px) from the twin glyph (`pnpm icons`).
 
 ### Changed during release preparation
 
@@ -34,7 +35,7 @@ First public version. Tested on synthetic store pages only; see the README's Lim
   reference prices and other dollar currencies (CA$, A$).
 - A title that names two different pack sizes ("100 Count (Pack of 2)") is treated as uncertain.
 - The Proof lens leaves out white background that both photos share, so two different products on white
-  no longer read as mostly identical.
+  no longer read as mostly identical. The lens says so in its method note.
 - The Walmart price is read from semantic markup first and from a generated class name last.
 - The Firefox build requires Firefox 140, the first version that reads `data_collection_permissions`.
 - Demo brand names replaced with invented ones.
