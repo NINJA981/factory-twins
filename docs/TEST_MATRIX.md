@@ -1,6 +1,6 @@
 # Test matrix: SPEC acceptance criteria to tests
 
-Last updated: 2026-10-27, Stage 4 (test engineer). Every acceptance criterion in `SPEC.md` is listed once. "Unit" is vitest (`tests/unit`) or node:test (`site/tests/*.test.ts`); "e2e" is Playwright against the real built extension (Chromium, `--load-extension`, made-up pages served from `localhost:4817`) or against `site/dist` served by `site/scripts/serve-dist.mjs`.
+Last updated: 2026-11-04 (release preparation; first written 2026-10-27). Every acceptance criterion in `SPEC.md` is listed once. "Unit" is vitest (`tests/unit`) or node:test (`site/tests/*.test.ts`); "e2e" is Playwright against the real built extension (Chromium, `--load-extension`, made-up pages served from `localhost:4817`) or against `site/dist` served by `site/scripts/serve-dist.mjs`.
 
 Status words are literal. **Tested** means an automated test fails if the behaviour breaks. **Partly** says what is left. **Not testable here** means it needs a live store page, real Firefox or a human, and is listed in HANDOFF known issues. **Unmet** means the behaviour is not built.
 
@@ -29,12 +29,12 @@ pnpm --dir site test:e2e        # 85 Playwright tests: smoke, axe, landing, web 
 | F1.3 | Late tiles picked up within 500 ms, no re-hash | unit + e2e | `controller.test.ts` "picks up tiles that load later"; `acceptance.spec.ts` "a tile inserted after load" (in-page MutationObserver timing under 500 ms, popup still shows 60 reads) | Tested |
 | F1.4 | Walmart meets F1.1 to F1.3 | unit | `adapters.fixtures.test.ts` runs both stores (`describe.each(STORES)`) | Tested on fixtures |
 | F1.5 | Match only the two search URLs | unit + e2e | `hasher.test.ts` "matches content scripts on the two search URLs only"; `extension.spec.ts` "does nothing on a URL it does not match"; `acceptance.spec.ts` "commands are declared" | Tested |
-| F1.6 | Broken layout becomes the error pill | unit + e2e | `controller.test.ts` "degrades to the error state"; `extension.spec.ts` "degrades to the error state on a changed layout"; `acceptance.spec.ts` "the error pill passes axe and carries no page content" | Tested |
+| F1.6 | Broken layout becomes the error pill | unit + e2e | `controller.test.ts` "degrades to the error state"; `extension.spec.ts` "degrades to the error state on a changed layout"; `acceptance.spec.ts` "the error pill passes axe and carries no page content"; `controller.test.ts` "stays quiet on a store page that is not a search", "stays quiet on a search with no results" | Tested |
 | F2.1 | Pure hashes, same in Node and browser | unit | `hash.test.ts` "is deterministic", "matches pinned known answers"; `parity.spec.ts` (extension and web app agree to the percent) | Tested |
 | F2.2 | pHash <= 6 for 98% of re-uploads, different > 6 for 99% | unit | `hash.test.ts` "keeps re-uploads within pHash 6 and different photos beyond it" | Partly: floors are 92% and 99%; measured 93.75% against the 98% target (HANDOFF known issue 3) |
 | F2.3 | A photo seen once is not fetched again | unit + e2e | `coordinator.test.ts` "sends misses to the hasher and caches", "asks for a duplicated URL once"; `acceptance.spec.ts` server log has 60 distinct URLs and the late tile adds no read | Tested |
 | F2.4 | Non-allowlisted URLs are skipped and counted | unit | `hasher.test.ts` "image host allowlist", "never calls fetch for a URL outside the allowlist" | Tested |
-| F3.1 | Edge rule thresholds | unit | `cluster.test.ts` "twin edge rule" | Tested |
+| F3.1 | Edge rule thresholds | unit | `cluster.test.ts` "twin edge rule" (including "never joins a blank or placeholder photo"); `hash.test.ts` "flags a flat or blank photo as low information" | Tested |
 | F3.2 | Medoid split | unit | `cluster.test.ts` "splits a long chain" | Tested |
 | F3.3 | Variant families never form twin groups | unit | `cluster.test.ts` "collapses variant families", `cluster.corpus.test.ts` "never puts two members of one variant family in the same twin group" | Tested |
 | F3.4 | Stable letters | unit + e2e | `cluster.test.ts` "letters"; `controller.test.ts` "joins page 2 to page 1 and numbers groups the same"; `parity.spec.ts` (same letters in both shells) | Tested |
@@ -51,7 +51,7 @@ pnpm --dir site test:e2e        # 85 Playwright tests: smoke, axe, landing, web 
 | F5.5 | T again removes rings at once | unit + e2e | `controller.test.ts` "turns rings and fold on and off from the keyboard"; `ui.spec.ts` | Tested |
 | F6.1 | Fold card: photo, header, ladder, links | unit + e2e | `overlay.test.tsx` "says what the pixels prove"; `ui.spec.ts` "F folds each group", "rungs link to the listings" | Tested |
 | F6.2 | Columns under every rung | unit | `overlay.test.tsx` ladder tests (price, per unit, rating, reviews, brand, Sponsored) | Tested |
-| F6.3 | Brand tax tag | unit + e2e | `price.test.ts` "brand tax"; `overlay.test.tsx` "tags the brand tax"; `parity.spec.ts` | Tested |
+| F6.3 | Brand tax tag | unit + e2e | `price.test.ts` "brand tax" (including price ranges left out, reference prices ignored); `text.test.ts` conflicting pack sizes; `overlay.test.tsx` "tags the brand tax"; `parity.spec.ts` | Tested |
 | F6.4 | Most established | unit + e2e | `cluster.test.ts` "picks the member with the most reviews"; `overlay.test.tsx`; `app.spec.ts` chip in the web app | Tested |
 | F6.5 | Few-reviews warning | unit | `cluster.test.ts`, `overlay.test.tsx` "warns about a rung with few reviews" | Tested |
 | F6.6 | No banned phrase | unit | `compliance.test.ts` "copy lint" over source and every function output | Tested |
@@ -60,7 +60,7 @@ pnpm --dir site test:e2e        # 85 Playwright tests: smoke, axe, landing, web 
 | F7.1 | Defaults to cheapest and priciest, switchable | unit | `state.test.ts` "opens the lens on the focused group ... cheapest and priciest", lens-pick tests | Tested |
 | F7.2 | Onion skin slider and keys | unit + e2e | `core.misc.test.ts` "maps arrows to lens nudges (5% and 25%)"; `ui.spec.ts` "P opens it" | Tested |
 | F7.3 | Difference renders black for identical photos | unit + e2e | `hash.test.ts` "reports 100.0% only when zero pixels differ"; `ui.spec.ts` "D cancels to black" | Tested |
-| F7.4 | Readout is computed, never rounded up | unit + e2e | `hash.test.ts` pixelDiff group; `compliance.test.ts` readout wording; `parity.spec.ts` lens percentages equal in both shells | Tested |
+| F7.4 | Readout is computed, never rounded up | unit + e2e | `hash.test.ts` pixelDiff group (including "leaves shared white background out"); `compliance.test.ts` readout wording; `parity.spec.ts` lens percentages equal in both shells | Tested |
 | F7.5 | Focus trap, Esc, focus return | e2e | `ui.spec.ts` "focus stays inside the dialog and goes back where it came from" | Tested |
 | F8.1 | Per-query sessions in storage.session | unit + e2e | `session.test.ts` "query keys", "mergePageScan"; `storage.wxt.test.ts`; `extension.spec.ts` page 2 joins page 1 | Tested |
 | F8.2 | "seen N times across M pages", "page 2" rung marks | unit + e2e | `overlay.test.tsx` "marks other pages"; `acceptance.spec.ts` badge tooltip says "across 2 pages" | Tested |
@@ -133,3 +133,9 @@ pnpm --dir site test:e2e        # 85 Playwright tests: smoke, axe, landing, web 
 4. W.12 LCP, CLS and Lighthouse numbers are manual.
 5. F6.8 choreography is judged from frames, not asserted.
 6. The ten screenshot tests only run with `FT_SHOTS=1`.
+
+## Added in release preparation (not tied to one AC)
+
+- Client-side navigation: `controller.test.ts` "starts over when the store routes to a new search without a reload" and "watches the new results list when the store replaces it in place".
+- Walmart price lookup without the generated class name: `adapters.fixtures.test.ts`.
+- Launch images: `tests/e2e/launch.spec.ts` (opt in with `FT_LAUNCH=1`) captures the real extension for `docs/launch/`.

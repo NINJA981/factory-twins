@@ -86,7 +86,7 @@ Extracted per tile: image URL (the one the page displayed), title, price (and pr
 For each listing: 64-bit dHash, 64-bit pHash (DCT), and a coarse colour signature, computed in the hasher context from the thumbnail the page already loaded (ADR, "Runtime architecture").
 
 - **AC-F2.1** Hash functions are pure TypeScript over RGBA buffers, with our own area-average resample, so Node tests and the browser produce identical hashes for identical pixels.
-- **AC-F2.2** Synthetic robustness set (F11): a photo and its JPEG re-encode (q 60–95), 0.5–2× resize and ≤ 3% border crop stay within pHash Hamming ≤ 6 in ≥ 98% of cases. Two different products on white backgrounds exceed 6 in ≥ 99% of cases.
+- **AC-F2.2** Synthetic robustness set (F11): a photo and its JPEG re-encode (q 60–95), 0.5–2× resize and ≤ 3% border crop stay within pHash Hamming ≤ 6 in ≥ 98% of cases. Two different products on white backgrounds exceed 6 in ≥ 99% of cases. *Status: not met; measured 93.75% for re-uploads (100% for different products) on the synthetic corpus.*
 - **AC-F2.3** A hash cache (keyed by normalised image URL) means a thumbnail seen once in a browser session is never fetched again in that session.
 - **AC-F2.4** Every fetch URL is checked against the per-store image-host allowlist before the request is made; a non-allowlisted URL is skipped and counted, never fetched (unit-tested).
 
@@ -136,7 +136,7 @@ From a badge or fold card ("Check the pixels", or `P` on a focused group), a dia
 - **AC-F7.1** Defaults to the cheapest and the priciest rung; either side can be switched to any member.
 - **AC-F7.2** Onion-skin mode: a slider (keyboard: arrows 5%, Shift+arrows 25%) blends photo A over photo B.
 - **AC-F7.3** Difference mode: photo A over photo B with `mix-blend-mode: difference`; identical photos render black.
-- **AC-F7.4** Readout "Photos 99.6% identical" with "0.4% of pixels differ" beneath it, computed in the hasher context at 256 × 256 (per-pixel max channel difference > 24/255 counts as differing). The number is computed, never estimated or rounded up; "100%" appears only when zero pixels differ.
+- **AC-F7.4** Readout "Photos 99.6% identical" with "0.4% of pixels differ" beneath it, computed in the hasher context at 256 × 256 (per-pixel max channel difference > 24/255 counts as differing; pixels at or above 245 in every channel of both photos are shared white background and are left out of the count). The number is computed, never estimated or rounded up; "100%" appears only when zero pixels differ.
 - **AC-F7.5** The dialog traps focus, closes with Esc and returns focus to its trigger.
 
 ### F8. Session memory across result pages
