@@ -79,7 +79,7 @@ Settings at build time (environment variables): `FT_REPO_URL` (repository link, 
 8. **`/app` needs a trailing slash.** The service worker scope and the relative asset paths assume `/app/`. Most static hosts redirect `/app` to `/app/`; `scripts/serve-dist.mjs` does. All paths are relative (`base: './'`), so the site also works under a sub-path such as `https://user.github.io/factory-twins/`.
 9. **The service worker caches by build hash.** A new deploy installs a new cache and `skipWaiting` plus `clients.claim` switch to it at once; an open tab keeps its old JS until reload. There is no "update available" prompt.
 10. **Lighthouse "agentic" checks** (`llms.txt`, `ai-catalog.json`) pass here because `public/llms.txt` exists and `ai-catalog.json` is a real 404 on `pnpm serve`. `pnpm preview` answers every unknown path with `index.html`, which makes `robots.txt`-style checks fail there; audit against `pnpm serve`.
-11. **`.impeccable/design.json` is stale** (root HANDOFF item 11), so the site was built from `DESIGN.md` directly.
+11. The site was built from `DESIGN.md` directly (the design-tool sidecar is no longer kept in the repository).
 12. **The extension's `size-limit` does not cover `site/`** (`pnpm build` runs `check-dist.mjs` for the site's own budgets). Root `pnpm lint` does cover `site/` since Stage 4; the site has its own typecheck (`pnpm typecheck:site` from the root) and tests, so add them to CI as a separate job.
 
 ## Stage 4 (test engineer) changes in `site/`
