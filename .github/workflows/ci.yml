@@ -1,0 +1,63 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  extension:
+    name: Extension (lint, typecheck, unit tests, builds)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm test
+      - name: Build for Chrome (ends with the release-manifest check)
+        run: pnpm build
+      - name: Build for Firefox
+        run: pnpm build:firefox
+      - run: pnpm size
+      - name: Zip both builds
+        run: pnpm zip && pnpm zip:firefox
+      - uses: actions/upload-artifact@v4
+        with:
+          name: factory-twins-builds
+          path: .output/*.zip
+          if-no-files-found: error
+
+  site:
+    name: Site (typecheck, unit tests, build)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: |
+            pnpm-lock.yaml
+            site/pnpm-lock.yaml
+      # The site imports the engine from ../src, so it needs the root dependencies too.
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --dir site install --frozen-lockfile
+      - run: pnpm typecheck:site
+      - run: pnpm --dir site test
+      - run: pnpm build:site

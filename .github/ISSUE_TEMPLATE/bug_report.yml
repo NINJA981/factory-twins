@@ -1,0 +1,55 @@
+name: Bug report
+description: Something looks wrong on a search page, in the popup or in the options.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. Please do not paste page HTML, and crop screenshots so they show no names,
+        addresses or order details. For a security or privacy problem, use the private report described
+        in SECURITY.md instead.
+  - type: dropdown
+    id: store
+    attributes:
+      label: Store
+      options:
+        - Amazon.com
+        - Walmart.com
+        - Not a store page (popup, options, web app)
+    validations:
+      required: true
+  - type: input
+    id: query
+    attributes:
+      label: Search query and page number
+      placeholder: "laptop stand, page 2"
+  - type: dropdown
+    id: browser
+    attributes:
+      label: Browser
+      options:
+        - Chrome
+        - Edge
+        - Brave or another Chromium browser
+        - Firefox
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Browser version and extension version
+      placeholder: "Chrome 142, Factory Twins 0.1.0"
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What the pill said, which tiles were ringed, what you expected instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Search for ...
+        2. Press F ...

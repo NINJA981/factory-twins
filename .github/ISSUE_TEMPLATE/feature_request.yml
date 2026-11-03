@@ -1,0 +1,25 @@
+name: Feature request
+description: Suggest an improvement or a new store.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: What were you trying to do on a search page, and what got in the way?
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would help
+      description: Describe the behaviour you would like. Sketches welcome.
+  - type: checkboxes
+    id: rules
+    attributes:
+      label: Project rules
+      options:
+        - label: It keeps everything on the device (no new server, no account, no tracking).
+          required: true
+        - label: It shows evidence and leaves the verdict to the shopper (no "fake" or "same item" claims).
+          required: true
