@@ -53,17 +53,21 @@ function toNumber(raw: string): number | null {
   return Number.isFinite(n) ? n : null;
 }
 
+/**
+ * Every pattern family is read, not just the first that matches: "100 Count (Pack of 2)" names two
+ * different numbers (100 per pack, or 100 in all?), so it is uncertain rather than "2".
+ */
 export function parsePackCount(title: string): PackCount {
+  const found = new Set<number>();
   for (const pattern of PACK_PATTERNS) {
     pattern.lastIndex = 0;
-    const found = new Set<number>();
     for (const m of title.matchAll(pattern)) {
       const n = toNumber(m[1] ?? '');
       if (n != null && n >= 1 && n <= MAX_PACK) found.add(n);
     }
-    if (found.size === 1) return { count: [...found][0] as number, certain: true };
-    if (found.size > 1) return { count: 1, certain: false };
   }
+  if (found.size === 1) return { count: [...found][0] as number, certain: true };
+  if (found.size > 1) return { count: 1, certain: false };
   if (MULTI_SIGNALS.test(title)) return { count: 1, certain: false };
   return { count: 1, certain: true };
 }

@@ -19,11 +19,14 @@ function roundCents(v: number): number {
 /**
  * Which members can be compared, and how (SPEC §8.5, §8.6):
  * - members without a price never take part ("No price shown");
+ * - members showing a range ("from $12.99", "$12.99 - $40.00") never take part: the low end may
+ *   belong to a smaller or different variant, so it would make the brand tax look larger than it is
+ *   (they stay on the ladder, after the compared members);
  * - members with an uncertain pack count never take part;
  * - when the remaining members' pack counts differ, prices are compared per unit.
  */
 export function comparablePrices(members: readonly Listing[]): Comparison {
-  const eligible = members.filter((m) => m.price != null && m.packCountCertain);
+  const eligible = members.filter((m) => m.price != null && !m.price.isFromRange && m.packCountCertain);
   const packs = new Set(eligible.map((m) => m.packCount));
   const perUnit = packs.size > 1;
   return {

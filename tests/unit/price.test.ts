@@ -22,6 +22,20 @@ describe('parsePrice', () => {
     expect(parsePrice('from $12.99')).toEqual({ amount: 12.99, currency: 'USD', isFromRange: true });
   });
 
+  it('ignores was, list and typical prices in either order', () => {
+    expect(parsePrice('Was $20.00 Now $15.00')?.amount).toBe(15);
+    expect(parsePrice('Now $15.00 Was $20.00')?.amount).toBe(15);
+    expect(parsePrice('$44.58 List: $57.95')?.amount).toBe(44.58);
+    expect(parsePrice('Typical price $30.00 $24.99')?.amount).toBe(24.99);
+    expect(parsePrice('current price $9.97 Reg. $12.47')?.amount).toBe(9.97);
+    expect(parsePrice('Was $20.00')).toBeNull();
+  });
+
+  it('does not read other dollar currencies as USD', () => {
+    expect(parsePrice('CA$12.99')).toBeNull();
+    expect(parsePrice('A$12.99 $9.99')?.amount).toBe(9.99);
+  });
+
   it('ignores unit prices', () => {
     expect(parsePrice('$19.99 ($0.42/count)')?.amount).toBe(19.99);
     expect(parsePrice('($0.42/count)')).toBeNull();
@@ -101,6 +115,16 @@ describe('brand tax (SPEC AC-F6.3, section 8.5)', () => {
     ]);
     expect(prices.map((p) => p.id)).toEqual(['a', 'c']);
     expect(perUnit).toBe(false);
+  });
+
+  it('leaves out members that show a price range: the low end may be another variant', () => {
+    const members = [
+      listing({ id: 'a', price: 20 }),
+      listing({ id: 'b', price: { amount: 12.99, currency: 'USD', isFromRange: true } }),
+      listing({ id: 'c', price: 26 }),
+    ];
+    expect(brandTax(members)).toEqual({ amount: 6, perUnit: false, lowId: 'a', highId: 'c' });
+    expect(ladderOrder(members)).toEqual(['a', 'c', 'b']);
   });
 
   it('rounds to cents without floating point drift', () => {

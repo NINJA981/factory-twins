@@ -57,6 +57,9 @@ describe('parsePackCount (SPEC section 8.5)', () => {
     'Value Pack Sponges Large',
     'Cable Ties 2 Pack and 3 Pack Combo',
     'Combo Pack Hair Clips 6 Pack or 12 Pack',
+    // Two families, two numbers: per pack or in all? Not certain either way.
+    'Brightly Dish Sponges 100 Count (Pack of 2)',
+    'Ondrel Dog Waste Bags 2 Pack, 120 Count',
   ];
   it.each(uncertain)('marks "%s" as an uncertain pack', (title) => {
     const p = parsePackCount(title);
