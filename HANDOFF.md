@@ -42,6 +42,7 @@ All commands ran on 2026-11-04 on the final tree, one at a time through the stud
 | Unit, extension | `pnpm exec vitest run --maxWorkers=1 --no-file-parallelism` | 491 tests in 18 files pass |
 | Unit, site | `pnpm --dir site test` | 12 pass |
 | e2e, extension (real Chromium, built extension) | `FT_LAUNCH=1 pnpm test:e2e --workers=1` | 46 pass, 10 skipped (the `FT_SHOTS` screenshot tests; they ran and passed in an earlier run of the same day, which regenerated `docs/screenshots`) |
+| e2e, site (landing and web app, phone and desktop projects, axe) | `pnpm --dir site build && pnpm --dir site exec playwright test --workers=1` | 91 pass |
 | Builds | `pnpm build`, `pnpm build:firefox` (each ends in the release-manifest check), site build inside `pnpm test:e2e` (ends in `check-dist`) | pass |
 | Bundle budgets | `pnpm size` | content script 106.75 kB of 110, background 10.94 kB, offscreen 3.35 kB, popup and options 137.13 kB of 150 (gzip) |
 | Release zips | `pnpm zip`, `pnpm zip:firefox` | `factory-twins-0.1.0-chrome.zip` and `-firefox.zip` (copied to `docs/launch/`), `-sources.zip` in `.output/` |
