@@ -298,17 +298,17 @@
    "a": "B05U48B0VQ",
    "b": "B0HAZ7ZWK8",
    "differing": 2816,
-   "total": 65536,
-   "identicalTenths": 957,
-   "differingTenths": 43
+   "total": 16499,
+   "identicalTenths": 829,
+   "differingTenths": 171
   },
   "different": {
    "a": "B05U48B0VQ",
    "b": "B0W2HA42UP",
    "differing": 19539,
-   "total": 65536,
-   "identicalTenths": 701,
-   "differingTenths": 299
+   "total": 22578,
+   "identicalTenths": 134,
+   "differingTenths": 866
   }
  }
 }
