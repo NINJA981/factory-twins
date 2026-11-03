@@ -16,9 +16,9 @@ function fragments(): Plugin {
         const file = join(root, 'src/demo/fragments.json');
         if (!existsSync(file)) return html;
         const frags = JSON.parse(readFileSync(file, 'utf8')) as Record<string, string>;
-        // The repository URL is one setting: FT_REPO_URL at build time. The default is the same
-        // placeholder the extension uses (HANDOFF known issue 6); set the real one before launch.
-        const repo = (process.env.FT_REPO_URL ?? 'https://github.com/factory-twins/factory-twins').replace(
+        // The repository URL is one setting: FT_REPO_URL at build time. The default matches the
+        // extension's REPO_URL in src/copy/links.ts.
+        const repo = (process.env.FT_REPO_URL ?? 'https://github.com/NINJA981/factory-twins').replace(
           /\/$/,
           '',
         );

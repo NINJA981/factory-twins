@@ -1,9 +1,9 @@
 import type { StoreId } from '../core/types';
 
-// Where the source lives. This is the only place the repository URL is written down.
-// Placeholder until the public repository exists (HANDOFF.md, known issues): change it here and
-// the options page, the pill and the popup all follow.
-export const REPO_URL = 'https://github.com/factory-twins/factory-twins';
+// Where the source lives. This is the only place the extension writes the repository URL down:
+// the options page, the pill and the popup all follow it. The site reads the same default
+// (site/vite.config.ts, overridable with FT_REPO_URL).
+export const REPO_URL = 'https://github.com/NINJA981/factory-twins';
 
 /** Prefilled issue link for the "Report layout" action. Carries the store and adapter version only. */
 export function layoutReportUrl(store: StoreId, adapterVersion: number): string {
