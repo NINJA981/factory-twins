@@ -54,7 +54,7 @@ function fixtureHasher() {
   return { hasher, hash, seen, byUrl };
 }
 
-function setup(html = fixture.html, href = PAGE_1) {
+function setup(html = fixture.html, href: string | (() => string) = PAGE_1) {
   load(html);
   const fh = fixtureHasher();
   // Index hashes by the image URL the adapter reads, for both page variants.
@@ -335,6 +335,56 @@ describe('content controller', () => {
     await s.controller.start();
     s.controller.runAction('toggle-rings');
     expect(document.body.innerHTML).toBe(before);
+  });
+
+  it('starts over when the store routes to a new search without a reload', async () => {
+    let href = PAGE_1;
+    const s = setup(fixture.html, () => href);
+    active = s.controller;
+    await s.controller.start();
+    expect(s.controller.checkPage()).toBe('unchanged');
+    s.controller.runAction('toggle-rings');
+
+    // Client-side routing: new query, new tiles, same document, no new content script.
+    load(page2Html);
+    href = PAGE_1.replace(/k=[^&]+/, 'k=desk+riser');
+    expect(s.controller.checkPage()).toBe('navigated');
+    expect(s.controller.getState().overlay.rings).toBe(false);
+    await tick(80);
+    const state = s.controller.getState();
+    // Only the new search's tiles: nothing merged into the old query's session.
+    expect(state.result?.summary.listings).toBe(fixture.labels.tiles);
+    expect(state.result?.summary.pages).toEqual([1]);
+    expect(Object.keys(state.session?.listings ?? {}).every((id) => id.startsWith('B1'))).toBe(true);
+  });
+
+  it('watches the new results list when the store replaces it in place', async () => {
+    const s = setup();
+    active = s.controller;
+    await s.controller.start();
+    const old = document.querySelector('.s-main-slot') as Element;
+    old.replaceWith(old.cloneNode(true));
+    expect(s.controller.checkPage()).toBe('reattached');
+    await tick(80);
+    const tiles = [...s.controller.getState().tilesById.values()];
+    expect(tiles.length).toBeGreaterThan(0);
+    expect(tiles.every((t) => t.isConnected)).toBe(true);
+    expect(s.controller.checkPage()).toBe('unchanged');
+  });
+
+  it('stays quiet on a store page that is not a search (no false layout alarm)', async () => {
+    const s = setup(fixture.html, 'https://www.amazon.com/stores/page/0A1B2C3D');
+    active = s.controller;
+    await s.controller.start();
+    expect(s.controller.getState().pill.kind).toBe('idle');
+    expect(s.hash).not.toHaveBeenCalled();
+  });
+
+  it('stays quiet on a search with no results', async () => {
+    const s = setup('<html><body><div class="s-main-slot"><p>No results for this search.</p></div></body></html>');
+    active = s.controller;
+    await s.controller.start();
+    expect(s.controller.getState().pill.kind).toBe('idle');
   });
 });
 

@@ -44,6 +44,12 @@ export interface Controller {
   stop(): void;
   /** Rescans now (settings changed, session cleared). */
   rescan(): Promise<void>;
+  /**
+   * Called on an interval and on history events. A new search (the store routed client-side to a
+   * new query or page) starts over with an empty page state; a replaced results container is
+   * watched again. Returns what it did, for tests.
+   */
+  checkPage(): 'unchanged' | 'navigated' | 'reattached';
   dispatch(action: OverlayAction): void;
   pill(event: PillEvent): void;
   applySettings(settings: Settings): void;
@@ -58,7 +64,8 @@ export interface Controller {
 export interface ControllerOptions {
   adapter: StoreAdapter;
   doc: Document;
-  href: string;
+  /** The page URL, read at every scan: stores such as Walmart route to a new search without a reload. */
+  href: string | (() => string);
   client: ControllerClient;
   /** Debounce for lazy tile rescans. */
   lazyDebounceMs?: number;
@@ -66,6 +73,10 @@ export interface ControllerOptions {
 
 export function createController(opts: ControllerOptions): Controller {
   const { adapter, doc, client } = opts;
+  const currentHref = typeof opts.href === 'function' ? opts.href : () => opts.href as string;
+  /** The URL the current page state belongs to; a different one means the shopper searched again. */
+  let pageHref = currentHref();
+  let watched: Element | null = null;
   let state: ControllerState = {
     pill: INITIAL_PILL,
     overlay: INITIAL_OVERLAY,
@@ -113,10 +124,11 @@ export function createController(opts: ControllerOptions): Controller {
     }
     scanning = true;
     try {
+      const href = currentHref();
       const outcome = await scanDocument({
         adapter,
         doc,
-        href: opts.href,
+        href,
         client,
         settings,
         localLetters,
@@ -135,17 +147,29 @@ export function createController(opts: ControllerOptions): Controller {
           }
         },
       });
-      if (stopped) return;
+      // The shopper moved on while this scan ran: its result belongs to the old search.
+      if (stopped || !sameSearch(href, pageHref)) return;
       if (!outcome.ok) {
+        // Not a results page (a store page under /s, a category hub): nothing to say, and no
+        // "layout changed" alarm either.
+        if (outcome.reason === 'not-search-page') {
+          pill({ type: 'quiet' });
+          return;
+        }
         pill({ type: 'scan-failed', reason: outcome.reason });
         if (state.pill.kind === 'error')
           tell({ status: 'error', store: adapter.store, adapterVersion: adapter.version });
         return;
       }
       Object.assign(localLetters, outcome.result.letters);
+      const empty = outcome.result.summary.listings === 0;
       const next: ControllerState = {
         ...state,
-        pill: pillReducer(state.pill, { type: 'scan-done', summary: outcome.result.summary }),
+        // A search with no results is not a broken layout: the pill stays away.
+        pill: pillReducer(
+          state.pill,
+          empty ? { type: 'quiet' } : { type: 'scan-done', summary: outcome.result.summary },
+        ),
         result: outcome.result,
         session: outcome.session,
         page: outcome.page,
@@ -180,6 +204,7 @@ export function createController(opts: ControllerOptions): Controller {
   function startWatching(): void {
     stopWatch?.();
     const container = adapter.resultsContainer(doc);
+    watched = container;
     const root = container ?? doc.body;
     if (!root) return;
     for (const tile of adapter.findTiles(root)) {
@@ -226,6 +251,48 @@ export function createController(opts: ControllerOptions): Controller {
     }
   }
 
+  function sameSearch(a: string, b: string): boolean {
+    try {
+      const qa = adapter.readQuery(new URL(a));
+      const qb = adapter.readQuery(new URL(b));
+      if (!qa || !qb) return a === b;
+      return JSON.stringify(qa) === JSON.stringify(qb);
+    } catch {
+      return a === b;
+    }
+  }
+
+  function checkPage(): 'unchanged' | 'navigated' | 'reattached' {
+    if (stopped || !state.settings || !enabled(state.settings)) return 'unchanged';
+    const href = currentHref();
+    if (!sameSearch(href, pageHref)) {
+      pageHref = href;
+      seen.clear();
+      for (const k of Object.keys(localLetters)) delete localLetters[k];
+      state = {
+        ...state,
+        // A dismissed pill was dismissed for that page only (AC-F4.4).
+        pill: state.pill.kind === 'paused' ? state.pill : INITIAL_PILL,
+        overlay: INITIAL_OVERLAY,
+        result: null,
+        session: null,
+        page: 1,
+        tilesById: new Map(),
+      };
+      emit();
+      startWatching();
+      void scan();
+      return 'navigated';
+    }
+    pageHref = href;
+    if (watched && !watched.isConnected) {
+      startWatching();
+      void scan();
+      return 'reattached';
+    }
+    return 'unchanged';
+  }
+
   return {
     adapter,
     getState: () => state,
@@ -254,6 +321,7 @@ export function createController(opts: ControllerOptions): Controller {
       listeners.clear();
     },
     rescan: scan,
+    checkPage,
     dispatch,
     pill,
     applySettings(settings) {

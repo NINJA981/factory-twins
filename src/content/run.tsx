@@ -13,6 +13,9 @@ import { createController, type ControllerClient } from './controller';
 // messages, mount the overlay, listen for keys and tab messages. Everything is torn down when the
 // extension context is invalidated (update, reload).
 
+/** How often the content script checks for a client-side navigation or a replaced results list. */
+const PAGE_CHECK_MS = 1000;
+
 const client: ControllerClient = {
   hashImages: (req) => backgroundMessenger.sendMessage('hashImages', req),
   mergeQuerySession: (scan: PageScan) => backgroundMessenger.sendMessage('mergeQuerySession', scan),
@@ -24,7 +27,7 @@ const client: ControllerClient = {
 
 export async function runContentScript(store: StoreId, ctx: ContentScriptContext): Promise<void> {
   const adapter = ADAPTERS[store];
-  const controller = createController({ adapter, doc: document, href: location.href, client });
+  const controller = createController({ adapter, doc: document, href: () => location.href, client });
   const removeFonts = installFonts(document, (path) =>
     browser.runtime.getURL(path as '/fonts/rethink-sans-latin-wght.woff2'),
   );
@@ -49,7 +52,14 @@ export async function runContentScript(store: StoreId, ctx: ContentScriptContext
     void controller.rescan();
   });
 
+  // Stores route to a new search without a reload (Walmart) or swap the results container in
+  // place. History events catch most of it; the interval catches pushState, which fires no event.
+  const onHistory = () => controller.checkPage();
+  window.addEventListener('popstate', onHistory);
+  ctx.setInterval(onHistory, PAGE_CHECK_MS);
+
   ctx.onInvalidated(() => {
+    window.removeEventListener('popstate', onHistory);
     document.removeEventListener('keydown', onKeydown, true);
     offCommand();
     offSettings();

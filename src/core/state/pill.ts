@@ -23,6 +23,8 @@ export type PillEvent =
   | { type: 'scan-progress'; done: number }
   | { type: 'scan-done'; summary: ScanSummary }
   | { type: 'scan-failed'; reason: PillErrorReason }
+  /** Nothing worth a pill: not a results page, or a search with no results. */
+  | { type: 'quiet' }
   | { type: 'dismiss' };
 
 export const INITIAL_PILL: PillState = { kind: 'idle' };
@@ -54,6 +56,8 @@ export function pillReducer(state: PillState, event: PillEvent): PillState {
       return event.summary.twinGroups > 0
         ? { kind: 'result', summary: event.summary }
         : { kind: 'no-twins', summary: event.summary };
+    case 'quiet':
+      return state.kind === 'paused' ? state : { kind: 'idle' };
     case 'scan-failed':
       if (state.kind === 'paused') return state;
       // Keep a good result on screen if a later lazy-tile re-scan fails.

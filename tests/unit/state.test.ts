@@ -32,6 +32,14 @@ describe('pill state machine (AC-F4.2)', () => {
     expect(pillVisible(s)).toBe(true);
   });
 
+  it('goes quiet, not to the error pill, when there is nothing to say', () => {
+    const scanning = pillReducer(INITIAL_PILL, { type: 'scan-start', total: 0 });
+    expect(pillReducer(scanning, { type: 'quiet' })).toEqual({ kind: 'idle' });
+    expect(pillVisible(pillReducer(scanning, { type: 'quiet' }))).toBe(false);
+    expect(pillReducer({ kind: 'paused' }, { type: 'quiet' })).toEqual({ kind: 'paused' });
+    expect(pillReducer({ kind: 'dismissed' }, { type: 'quiet' })).toEqual({ kind: 'dismissed' });
+  });
+
   it('says no twins when there are none', () => {
     const s = pillReducer(INITIAL_PILL, {
       type: 'scan-done',
