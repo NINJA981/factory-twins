@@ -1,6 +1,6 @@
 # Landing page: narrative, hero and draft copy
 
-Package: `site/` (built in the landing stage). Visual system: `DESIGN.md` (Landing page components; 3D plan). Structure: the five-beat narrative from `_studio/3D_INSPIRATION.md` §3.1, in ≤ 7 viewports at 1440 × 900. Visitor mode: Persuade. The visitor should leave knowing three things: listings on a search page often share one photo, this extension shows which ones and what the name costs, and it does that on their own machine.
+Package: `site/` (built in the landing stage). Visual system: `DESIGN.md` (Landing page components; 3D plan). Structure: a five-beat narrative, in ≤ 7 viewports at 1440 × 900. Visitor mode: Persuade. The visitor should leave knowing three things: listings on a search page often share one photo, this extension shows which ones and what the name costs, and it does that on their own machine.
 
 **Truth rules for this page**
 - Every product, price, rating and review count on the page belongs to **made-up demo listings**, and the page says so where they appear ("Demo listings, made up for this page"). No store logo, store name styling or store trade dress appears in the demo.
@@ -16,7 +16,7 @@ Package: `site/` (built in the landing stage). Visual system: `DESIGN.md` (Landi
 
 - **H1 (Display hero, Bricolage 700 wdth 85):** Five brands. One photo.
 - **Lead:** Factory Twins circles the listings on your Amazon or Walmart search that use the same product photo, then folds them into one price ladder so you can see what the name on the box costs.
-- **Primary:** Add to Chrome · **Secondary:** Get it for Firefox
+- **Primary:** Install for Chrome · **Secondary:** Install for Firefox (both go to the install-from-source section until the store listings exist)
 - **Caption:** For desktop Chrome and Firefox, on Amazon.com and Walmart.com search pages. No account. Nothing leaves your device.
 - **Under the demo grid:** "Demo listings, made up for this page." and the button "Fold twins" with keycap `F`.
 - **Poster/LCP:** the H1 (text paints first); the demo grid's images reserve their squares; a poster of the folded state stands in under reduced motion and JS-off.
@@ -51,14 +51,14 @@ Quiet beat after two loud ones. A close crop of the summary pill on a results pa
 
 - **Heading (Headline):** Useful even when you don't click.
 - **Body:** After every search a small pill says what the page really holds: listings, distinct products, twin groups, and the biggest brand tax on the page. Go to page 2 and it remembers page 1, so a photo that shows up nine times across three pages is counted once.
-- **Pill crop text (demo):** 60 listings → 37 products | 6 twin groups | up to $23 brand tax (dividers drawn, not typed).
+- **Pill crop text (demo):** 60 listings → 47 products | 6 twin groups | up to $23 brand tax (dividers drawn, not typed).
 
 ## Beat 4. The how (viewport 6)
 
 Inline SVG diagram, text in DOM: a box "Your browser" containing "Store search page" and "Factory Twins"; an arrow from Factory Twins to "Store image server" labelled "re-reads the thumbnails already on the page"; a struck-through box "Factory Twins server" labelled "doesn't exist".
 
 - **Heading (Headline):** Nothing leaves your device.
-- **How it works, in the studio's five steps (3D_INSPIRATION §3.7), one number per step:**
+- **How it works, in five steps, one number per step:**
   1. **The decision.** Compare the photos the page already shows, on your machine, and claim only what the pixels prove.
   2. **The naive version.** Drawing store thumbnails onto a canvas from the page fails: the browser blocks reading pixels from another site's images ([measure: share of tiles that fail with a tainted canvas in the spike]).
   3. **The trick.** The extension re-reads each thumbnail from the store's own image server inside an extension page that has permission for that one host, then hashes it locally: a 64-bit difference hash, a 64-bit DCT hash and a small colour signature ([measure: p95 ms to hash 60 thumbnails]).
@@ -70,7 +70,7 @@ Inline SVG diagram, text in DOM: a box "Your browser" containing "Store search p
 
 - **Heading (Headline):** Try it on your next search.
 - **Install island (ink background, copy button):** until store listings exist, the load-unpacked steps: `pnpm install && pnpm build`, then Chrome → `chrome://extensions` → Developer mode → Load unpacked → `.output/chrome-mv3`. Firefox: `pnpm build:firefox`, then `about:debugging` → Load Temporary Add-on.
-- **Platforms row:** Chrome and Chromium browsers (desktop), Firefox 128+ (desktop). Not available for phones or the store apps.
+- **Platforms row:** Chrome and Chromium browsers (desktop), Firefox 140+ (desktop, build not yet tried in Firefox). Not available for phones or the store apps.
 - **Source:** a link to the GitHub repo. A stars badge only if it is the live shields.io badge for the real repo; never a typed number.
 - **Footer:** MIT licence, source, "No analytics on this page.", "Not affiliated with Amazon or Walmart."
 
@@ -88,9 +88,9 @@ Inline SVG diagram, text in DOM: a box "Your browser" containing "Store search p
 
 ## Hero concept notes for the landing stage
 
-- The hero is the product working, not a picture of it (3P2; DESIGN.md 3D plan). No WebGL, no canvas.
-- Demo product stills: one laptop-stand "factory photo" rendered with `_studio/inspo/3d/prerender-kit` (Lightformer studio light, white sweep like a marketplace photo), reused for the five twins; 7 distractor products rendered or authored the same way. AVIF ≤ 40 KB each.
-- Demo brand names are invented and checked against a quick trademark search before launch. "ProBrand" comes from the council's scenario.
+- The hero is the product working, not a picture of it (DESIGN.md 3D plan). No WebGL, no canvas.
+- Demo product stills: one laptop-stand "factory photo" rendered offline (studio light, white sweep like a marketplace photo), reused for the five twins; 7 distractor products rendered or authored the same way. AVIF ≤ 40 KB each.
+- Demo brand names are invented ("ProBrand", "Plumbrook", "Tessaly", "Corvane", "Ondrel" and generated nonsense words). No formal trademark search has been done.
 - Colour blocks follow The Marker Belongs to the Shopper Rule: the blocks are twin tints because each block is telling the story of a twin group. Berry Ink appears only on the primary buttons, focus rings and the wordmark glyph.
 - One marker circle per page in the hero. It does not reappear as decoration elsewhere.
-- Meet bible §11.3: initial JS ≤ 120 KB gz, CLS 0, LCP is the H1, no loader.
+- Budgets: initial JS ≤ 120 KB gz, CLS 0, LCP is the H1, no loader.

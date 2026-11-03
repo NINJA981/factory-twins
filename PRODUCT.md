@@ -2,7 +2,7 @@
 
 <!-- impeccable:product-schema 1 -->
 
-> Provenance: written by the architect stage from `_studio/picks.json` (entry `factory-twins`) and the council transcript `W2-4-1-factory-twins.md`. No interview was possible in this unattended run, so facts marked *(inferred)* come from the brief, not from a confirmed user answer.
+> Facts marked *(inferred)* come from the original product brief, not from user research.
 
 ## Platform
 
@@ -10,7 +10,7 @@ web
 
 ## Stack
 
-Delegated by the studio brief: WXT browser extension (Chrome MV3 first, Firefox build too), React + Tailwind v4 for extension pages. See `docs/adr/0001-architecture.md`.
+WXT browser extension (Chrome MV3 first, Firefox build too), React + Tailwind v4 for extension pages. See `docs/adr/0001-architecture.md`.
 
 ## Users
 
@@ -42,12 +42,12 @@ It clusters the whole results page the shopper is already looking at, in place, 
 ## Brand Commitments
 
 - Name: Factory Twins. Honest, checkable copy is a brand commitment, not a style choice.
-- Studio assignment: colour direction D4 Mulberry and type pairing T6 (Bricolage Grotesque + Rethink Sans) from `_studio/DESIGN_BIBLE.md`, fixed so the five studio projects stay distinct.
+- Visual identity: colour direction Mulberry and the type pairing Bricolage Grotesque + Rethink Sans (see `DESIGN.md`).
 
 ## Evidence on Hand
 
 - No real users, testimonials, ratings, install counts or measured savings exist yet. None may be invented.
-- Demo prices in the council brief ($11.99 · $13.49 · $15.99 · $19.99 · $34.99 "ProBrand") are an illustrative scenario. On any marketing surface they must be labelled as a demo unless they come from a real, dated capture.
+- Demo prices in the original brief ($11.99 · $13.49 · $15.99 · $19.99 · $34.99 "ProBrand") are an illustrative scenario. On any marketing surface they must be labelled as a demo unless they come from a real, dated capture.
 - Product photos on the landing page must be authored (rendered) assets, not copied store photos.
 
 ## Product Principles

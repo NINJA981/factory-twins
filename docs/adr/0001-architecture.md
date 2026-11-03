@@ -1,8 +1,8 @@
 # ADR-0001: Architecture for Factory Twins v0.1
 
-**Status:** Accepted (architect stage). The hasher-context decision (Decision 3) stays *Proposed* until the day-1 spike (SPEC F0) passes, then it is updated with the measured results.
+**Status:** Accepted. The hasher-context decision (Decision 3) stays *Proposed* until the day-1 spike (SPEC F0) passes, then it is updated with the measured results.
 **Date:** 2026-10-20
-**Deciders:** studio architect; reviewed by the code and security reviewer stage.
+**Deciders:** the maintainers.
 
 ## Context
 
@@ -54,8 +54,8 @@ Forces:
 
 | Option | gz cost | Verdict |
 |---|---|---|
-| **React 19 + WAAPI** (Motion excluded from the content bundle) | ~58 KB React + our code; budget ≤ 110 KB gz total | **Chosen**: one stack across all surfaces (studio bible) |
-| Preact | ~4 KB | Rejected: second component model for contributors; bible standardises React |
+| **React 19 + WAAPI** (Motion excluded from the content bundle) | ~58 KB React + our code; budget ≤ 110 KB gz total | **Chosen**: one stack across all surfaces |
+| Preact | ~4 KB | Rejected: a second component model for contributors |
 | Vanilla DOM | 0 | Rejected: fold card and lens have enough state to justify a component model |
 
 ## Stack (pinned with `npm view <pkg> version`, 2026-10-20)
@@ -94,7 +94,7 @@ Pin exact versions (no `^`/`~`) in `package.json`.
 | `web-ext` | 10.8.0 | wxt peer (`>=9.2.0`), Firefox run/lint |
 | `sharp` | 0.35.5 | Decode/encode in Node for synthetic corpus generation and pixel tests |
 | `subset-font` | 2.9.0 | Instance Bricolage at `wdth 85, opsz 96` and subset to the overlay's glyphs |
-| `culori` | 4.0.2 | CI check: token contrast and ΔE_OK ≥ 0.06 from the bible §4.4 blocklist |
+| `culori` | 4.0.2 | CI check: token contrast and ΔE_OK ≥ 0.06 from a blocklist of well-known brand colours |
 | `size-limit`, `@size-limit/file` | 14.2.0 | Bundle budgets in CI |
 
 Checked but not used: `idb-keyval` (storage.session suffices), `zustand` (React state + messaging suffice), `linkedom`/`jsdom` (happy-dom covers it).
@@ -251,7 +251,7 @@ Mapped to SPEC acceptance criteria; the test-engineer stage completes the mappin
   4. `PROVENANCE.md` records query, store, capture date, browser version and sanitiser version.
   - Target corpus: Amazon ≥ 12 pages across ≥ 8 categories (laptop stand, LED strip lights, phone tripod, silicone spatula set, dog poop bags, cable organizer, ring light, acrylic paint set, shower caddy, kitchen scale, USB-C hub, plant pots); Walmart ≥ 6.
 - **Synthetic corpus (`tests/fixtures/synthetic/`, committed):** `scripts/gen-synthetic-corpus.ts` renders deterministic product-like images with sharp (seeded shapes, gradients and labels on white), then derives twins (JPEG q 60–95, resize 0.5–2×, ≤ 3% crop, brightness ±5%) and non-twins (different seed, same category silhouette). Labels are generated with the images.
-- **Demo page (`tests/fixtures/demo/laptop-stand/`):** a store-like results grid with 60 made-up listings and authored images (rendered stills of a laptop stand model with the studio prerender kit, plus generated distractors). No store logo, name or trade dress beyond the DOM structure the adapter reads. A visible corner label reads "Demo page with made-up listings". Used by e2e, the README GIF and the landing page.
+- **Demo page (`tests/fixtures/demo/laptop-stand/`):** a store-like results grid with 60 made-up listings and authored images (generated, seeded product-like stills, no real photos). No store logo, name or trade dress beyond the DOM structure the adapter reads. A visible corner label reads "Demo page with made-up listings". Used by e2e, the README GIF and the landing page.
 - **Drift policy:** when a store changes its DOM, capture a new fixture, keep the old one (adapters must handle both while both exist in the wild), and bump the adapter's `version`.
 
 ## Trade-off analysis

@@ -1,4 +1,4 @@
-// Diagnostics that never carry user data (studio rule: keys and user data are never logged).
+// Diagnostics that never carry user data (project rule: keys and user data are never logged).
 // Only a fixed event name and numeric fields are accepted, so a title, URL or price cannot slip in
 // through a template string. Silent in production builds.
 

@@ -1,6 +1,6 @@
 # Factory Twins: product spec (v0.1)
 
-Status: architect stage, 2026-10-20. Sources: `_studio/picks.json` (entry `factory-twins`, authoritative for scope, signature moment and risks), council transcript `W2-4-1-factory-twins.md`, `_studio/DESIGN_BIBLE.md`. Architecture: `docs/adr/0001-architecture.md`. Visual system: `DESIGN.md`.
+Status: v0.1, first written 2026-10-20 and kept current with the code. Architecture: `docs/adr/0001-architecture.md`. Visual system: `DESIGN.md`.
 
 > **One line.** On an Amazon or Walmart search page, Factory Twins rings every listing that uses the same factory photo in a shared colour, then folds each twin group into one card with a price ladder and a "Brand tax +$23.00" tag. A Proof lens overlays the photos so anyone can check the match by eye. It runs on your device: no account, no servers.
 
@@ -22,17 +22,17 @@ What is visibly true, and therefore all we claim: **these listings use the same 
 
 Running any search on a supported store. After the result tiles load, a small pill appears in the corner of the page:
 
-> **60 listings → 37 products · 6 twin groups · up to $18 brand tax**
+> **60 listings → 47 products · 6 twin groups · up to $23 brand tax**
 
 The shopper does nothing to get it. Clicking it (or pressing `T`) rings the twins; `F` folds them; `P` opens the Proof lens. On page 2 and 3 of the same query, groups found earlier are remembered, so a badge can say "seen 9× across 3 pages".
 
-## 4. Weakness fix (council's lowest scores: utility 6, novelty 7)
+## 4. Weak spots of the idea, and how v0.1 answers them
 
-The council passed on demo (9) and virality (9) and marked utility and novelty as the weak gates. v0.1 answers them as follows. Where this section and `picks.json` could conflict, `picks.json` wins; nothing below contradicts it.
+The idea demos well; its weak spots are everyday utility and novelty. v0.1 answers them as follows.
 
 | Council concern | v0.1 response | Where it is tested |
 |---|---|---|
-| Utility 6: the value only shows when you click | Passive summary pill on **every** supported search (F4), worded as a concrete saving: "60 listings → 37 products · 6 twin groups · up to $18 brand tax". Shows even with zero clicks. | AC-F4.* |
+| Utility 6: the value only shows when you click | Passive summary pill on **every** supported search (F4), worded as a concrete saving: "60 listings → 47 products · 6 twin groups · up to $23 brand tax". Shows even with zero clicks. | AC-F4.* |
 | Utility 6: one page is a small sample | **Session memory across result pages** (F8): groups persist across page 1, 2, 3 of the same query; badges say "seen 9× across 3 pages"; the pill totals the whole session for that query. | AC-F8.* |
 | Utility 6: mobile shopping | Conceded. Desktop-only, stated on the landing page and README. No mobile claims. | Copy review |
 | Feasibility 7 / roast: tainted canvas and "0 requests" | **Day 1 proves the hashing path before anything else is built** (F0): offscreen document (Chrome) or background page (Firefox), fetching thumbnails from the store's image CDN under host permission, decoding from a `Blob` so no canvas is ever tainted. Gate criteria in §6. The privacy copy is the honest "Nothing leaves your device", never "0 requests". | AC-F0.* |
@@ -49,7 +49,7 @@ The council passed on demo (9) and virality (9) and marked utility and novelty a
 - **Listing:** one result tile on a search page (one ASIN on Amazon, one item id on Walmart).
 - **Variant family:** listings with the same normalised brand and a title stem match (title with size, colour and pack tokens removed, token Jaccard ≥ 0.8). Collapsed into one listing before twin grouping, labelled "variants of one listing".
 - **Twin group:** two or more listings (after variant collapse) whose thumbnails match per §8 and pass the title sanity check. Shown as "Twin A ×5".
-- **Products (pill count):** listings minus the extra members of twin groups and variant families. "60 listings → 37 products" means 37 distinct product photos remain. See open question Q1.
+- **Products (pill count):** listings minus the extra members of twin groups and variant families. "60 listings → 47 products" means 47 distinct product photos remain. See open question Q1.
 - **Brand tax (group):** highest minus lowest comparable price in a twin group (per-unit when pack sizes differ, §8.5). **Brand tax (pill):** the largest group brand tax on the current query, rounded down to whole dollars ("up to $18").
 - **Most established:** the member with the most reviews (ties: higher rating, then earliest in the page order).
 
@@ -64,7 +64,7 @@ Build nothing else until this passes. A throwaway WXT build with one content scr
 - **AC-F0.1** On three real Amazon search pages (laptop stand, LED strip, phone tripod) in Chrome stable, ≥ 95% of tile thumbnails decode to pixels with no `SecurityError` (tainted canvas) and no CORS failure.
 - **AC-F0.2** Hashing 60 thumbnails completes in ≤ 1,500 ms p95 from "URLs received" to "hashes returned", cold hasher.
 - **AC-F0.3** The spike logs, per run, how many fetches were served from the HTTP cache (`PerformanceResourceTiming.transferSize === 0`) versus re-downloaded, and the exact set of hosts contacted. The result is written into the ADR and the privacy copy is adjusted to match what was measured. Every contacted host must be the store's image CDN.
-- **AC-F0.4** The same path works in Firefox (≥ 128) from the MV3 background page (no offscreen API there).
+- **AC-F0.4** The same path works in Firefox (≥ 140, the first version that reads `data_collection_permissions`) from the MV3 background page (no offscreen API there).
 - **AC-F0.5** One Walmart search page passes AC-F0.1 with Walmart's image host.
 - **Fallback if F0 fails:** documented in the ADR (service-worker `OffscreenCanvas` path; then reading pixels from same-size `<img>` re-requests with `crossorigin` only if the CDN sends CORS headers). If no path passes, the project stops and reports, rather than shipping a hashing path that fails silently.
 
@@ -102,7 +102,7 @@ For each listing: 64-bit dHash, 64-bit pHash (DCT), and a coarse colour signatur
 
 A small pill in the bottom-right corner of the page (bottom-left if the store has a chat widget there; adapter decides).
 
-- **AC-F4.1** On a fixture page with 60 tiles, the pill appears ≤ 1,500 ms after the last initial tile has loaded, showing listings, products, twin group count and the largest brand tax, e.g. "60 listings → 37 products · 6 twin groups · up to $18 brand tax". The separators are drawn dividers, not middle-dot characters; the accessible name reads "60 listings, 37 products, 6 twin groups, up to 18 dollars brand tax".
+- **AC-F4.1** On a fixture page with 60 tiles, the pill appears ≤ 1,500 ms after the last initial tile has loaded, showing listings, products, twin group count and the largest brand tax, e.g. "60 listings → 47 products · 6 twin groups · up to $23 brand tax". The separators are drawn dividers, not middle-dot characters; the accessible name reads "60 listings, 47 products, 6 twin groups, up to $23 brand tax" (the visible words with commas, so it contains the visible label, WCAG 2.5.3; screen readers say "23 dollars").
 - **AC-F4.2** States: scanning ("Checking 60 photos…" with a determinate count), result, **no twins** ("60 listings, no shared photos on this page"), **error** ("Couldn't read this page's listings. The store may have changed its layout." with a "Report layout" link that opens a prefilled GitHub issue containing no page content), **paused** (site disabled in settings: no pill at all).
 - **AC-F4.3** The pill never shifts page layout (fixed-position, in a shadow root) and never covers the store's own checkout or cart controls (adapter supplies an avoid-rect).
 - **AC-F4.4** The pill can be dismissed for the current page (`×`, Esc while focused) and turned off per store in settings.
@@ -114,7 +114,7 @@ A small pill in the bottom-right corner of the page (bottom-left if the store ha
 - **AC-F5.2** Ring colours meet ≥ 3:1 against the tile background in both themes; badge text ≥ 4.5:1 (values in DESIGN.md).
 - **AC-F5.3** Rings follow their tiles through scroll, resize and lazy loading with no drift (they live inside each tile, not in a page-level layer).
 - **AC-F5.4** Hovering or focusing a badge outlines the other members of its group and shows "Same photo as 4 other listings on this page" (or "…seen 9× across 3 pages" with session memory).
-- **AC-F5.5** `T` again removes all rings instantly (0 ms, per bible P1).
+- **AC-F5.5** `T` again removes all rings instantly (0 ms: frequent actions do not animate).
 
 ### F6. Fold twins (signature moment)
 
@@ -189,7 +189,7 @@ A separate static package that lets people on a phone (where extensions cannot r
 - **AC-W.9** Mobile first: designed at 375 px, then 768 and 1440. No horizontal page scroll at any of the three widths, with results shown and folded (e2e). Every button, link and field is at least 44 x 44 px at 375 px (e2e measures them).
 - **AC-W.10** Installable and offline: a valid manifest (`display: standalone`, 192, 512 and maskable icons) and a service worker that precaches every file the app needs, including the sample page and its images. After one online visit, with the network switched off, a reload still shows the app and the sample still loads and groups (e2e `setOffline`). The service worker has no fetch of its own.
 - **AC-W.11** Same tokens as the extension: all colour, type, spacing and motion values come from the generated `tokens.css` (no hex literals in `site/src` styles). Light and dark follow `prefers-color-scheme`; motion follows `prefers-reduced-motion`.
-- **AC-W.12** Budget (bible 11.3): initial JS of the landing page and of the app each at most 120 KB gzip (checked by `site/scripts/check-dist.mjs`, actual about 25 KB); no WebGL; the recording's poster (`landing/loop-poster.avif`, a social asset) at most 80 KB AVIF. On Chrome with 4x CPU slowdown and Fast 4G emulation at 375 px, LCP at most 2.0 s and CLS at most 0.01 for both pages (DevTools performance trace). Lighthouse accessibility, best practices and SEO at least 95 on both pages.
+- **AC-W.12** Budget: initial JS of the landing page and of the app each at most 120 KB gzip (checked by `site/scripts/check-dist.mjs`, actual about 25 KB); no WebGL; the recording's poster (`landing/loop-poster.avif`, a social asset) at most 80 KB AVIF. On Chrome with 4x CPU slowdown and Fast 4G emulation at 375 px, LCP at most 2.0 s and CLS at most 0.01 for both pages (DevTools performance trace). Lighthouse accessibility, best practices and SEO at least 95 on both pages.
 - **AC-W.13** Truth: all listings, brands, prices, ratings and review counts in the sample and on the landing page are made up and labelled "made up" where they appear. No store logo or trade dress, no testimonial, no star or install count.
 - **AC-W.14** Same layout as the extension's overlay (the site redraws it from the engine's view models; see `site/HANDOFF.md`). Fold card: a rail with the shared photo and its two actions, the tinted header band with the title and badge, the price range with the brand-tax tag, and the ladder, whose bracket sits in its own column at the card's right edge with dashed extension lines from the tops of the Highest and Lowest bars. When the rungs and bracket do not fit beside the rail, the rail stacks above them; when they do not fit even then, the bracket is dropped (the tag still states the brand tax). A three-rung ladder does not scroll sideways at 375 px; a longer one scrolls, with an edge fade only on an edge that hides rungs. e2e: the app's first card at 375 and 1440, the landing's hero and brand-tax cards at 375, 768 and 1440.
 - **AC-W.15** Pill: no line of a wrapped pill starts with a divider, and at 480 px and narrower the fold button takes its own row; while folded the pill offers "Unfold twins" (e2e checks every segment's divider). Proof lens: at 375 x 812 the measured number is on screen when the lens opens, without scrolling; the top and bottom photos are picked with one chip per listing (`aria-pressed`), and picking another chip re-measures (e2e).
@@ -302,7 +302,7 @@ interface NetworkCounter {     // storage.session, key `net`
 |---|---|---|---|
 | Chrome ≥ 120 (Windows, macOS, Linux) | **Primary**, fully tested (unit + e2e) | Offscreen document | MV3 service worker as coordinator |
 | Edge, Brave (Chromium) | Expected to work, smoke-tested manually only | Offscreen document | Same build as Chrome |
-| Firefox ≥ 128 desktop | **Supported build**, unit + manual smoke | MV3 background page (has DOM; no offscreen API) | `browser_specific_settings.gecko.id` set; `storage.session` available since 115 |
+| Firefox ≥ 140 desktop | **Supported build**, unit + manual smoke | MV3 background page (has DOM; no offscreen API) | `browser_specific_settings.gecko.id` set; `storage.session` available since 115 |
 | Safari, mobile browsers, store apps | Not supported | n/a | Stated on landing page |
 
 Stores: `amazon.com` (US) search and `walmart.com` (US) search only.
@@ -313,7 +313,7 @@ Recorded from the e2e "laptop stand" demo page (synthetic listings in a store-li
 
 | Time | Shot | On screen | Proof |
 |---|---|---|---|
-| 0.0–1.5 s | Search results for "laptop stand", 60 tiles, nothing unusual | Bottom-right pill slides in: "60 listings → 37 products · 6 twin groups · up to $23 brand tax" | Value with zero clicks |
+| 0.0–1.5 s | Search results for "laptop stand", 60 tiles, nothing unusual | Bottom-right pill slides in: "60 listings → 47 products · 6 twin groups · up to $23 brand tax" | Value with zero clicks |
 | 1.5–3.0 s | Cursor clicks the pill | Five tiles get a teal solid ring and "Twin A ×5"; four get an amber dashed ring and "Twin B ×4" | Same photo, visibly |
 | 3.0–5.5 s | Key-press caption "F" | Twin A's five tiles slide into one card: ladder $11.99 · $13.49 · $15.99 · $19.99 · $34.99 "ProBrand", tag "Brand tax +$23.00"; ratings and review counts under each rung; $11.99 rung marked "Most established" | The signature moment |
 | 5.5–6.5 s | Cursor rests on the $34.99 rung | "ProBrand · 4.4 · 212 reviews" beside the cheapest's "4.5 · 3,918 reviews" | Evidence, not verdict |
@@ -332,7 +332,7 @@ Searches run in this stage: Chrome Web Store / web for "group duplicate listings
 
 No tool found that clusters the visible results page in place by photo with a price ladder. Residual risk unchanged: a closed tool could add it. Positioning copy should name the mechanism (photo grouping on the page you are on), not claim "first".
 
-## 14. Risks (from picks.json, with owners)
+## 14. Risks, with owners
 
 | Risk | Mitigation | Owner stage |
 |---|---|---|
@@ -346,6 +346,6 @@ No tool found that clusters the visible results page in place by photo with a pr
 
 ## 15. Open questions
 
-- **Q1.** Pill wording "37 products" (picks.json) versus "37 distinct photos". picks.json wording is the default; the UI stage should test whether "products" reads as a sameness claim, and if the design critic flags it, switch to "37 distinct photos" in both the pill and landing copy.
+- **Q1.** Pill wording "47 products" versus "47 distinct photos". "products" is the default; the UI stage should test whether "products" reads as a sameness claim, and if the design critic flags it, switch to "47 distinct photos" in both the pill and landing copy.
 - **Q2.** Exact Walmart image host list and whether Walmart tiles expose a stable item id in the DOM (spike AC-F0.5 answers).
 - **Q3.** Whether Amazon's page CSP blocks web-accessible extension fonts inside the shadow root (spike checks; fallback is the metric-matched system stack in DESIGN.md).

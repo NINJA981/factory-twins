@@ -1,4 +1,4 @@
-// Fails the build when dist/ breaks a rule of the launch brief: bundle budgets (bible 11.3), no third-party
+// Fails the build when dist/ breaks a rule of the launch brief: bundle budgets, no third-party
 // hosts, no WebGL code in the initial graph, poster and recording within budget, and a service worker
 // that precaches the whole web app. Run by `pnpm build`.
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';

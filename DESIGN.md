@@ -2,7 +2,7 @@
 name: Factory Twins
 description: "A contact sheet for shopping search: matching photos circled in shared marker colours, folded into a price ladder, checked under a loupe. Berry ink on blush-neutral paper; Bricolage Grotesque for the moments that matter, Rethink Sans for everything else."
 colors:
-  # Role tokens, light theme (D4 Mulberry, DESIGN_BIBLE §4.2). Canonical values are OKLCH.
+  # Role tokens, light theme (Mulberry direction). Canonical values are OKLCH.
   # primary = accent (Berry Ink); "primary" is the Stitch key, "accent" the CSS role name used in code.
   primary: "oklch(0.48 0.17 355)"
   bg: "oklch(0.985 0.004 345)"
@@ -38,7 +38,7 @@ colors:
   on-accent-dark: "oklch(0.18 0.04 355)"
   ring-dark: "oklch(0.76 0.13 355)"
   scrim-dark: "oklch(0.12 0.01 345 / 0.65)"
-  # Semantic (bible §4.1 step 4). Always paired with an icon or label.
+  # Semantic. Always paired with an icon or label.
   danger: "oklch(0.54 0.19 27)"
   danger-soft: "oklch(0.95 0.026 25)"
   danger-dark: "oklch(0.77 0.13 25)"
@@ -610,7 +610,7 @@ A photographer's contact sheet is a grid of near-identical frames, and the photo
 
 The system is quiet where the shopper works and loud where they discover. On the store page it is precise, small and reversible: crisp rings that follow the store's own tile corners, a pill that sits out of the way, nothing that shifts the store's layout until the shopper asks. Expression is spent in three places only: the fold (the signature moment), the Proof lens readout, and the landing page, where the contact-sheet grid, oversized twin-colour blocks and one hand-drawn marker circle carry the brand. Berry ink (mulberry) is ours and marks our controls; the twin palette belongs to the shopper's data and never becomes chrome.
 
-Assigned by the studio and not negotiable: colour direction **D4 Mulberry** and pairing **T6 Bricolage Grotesque + Rethink Sans**. Archetype: **A4 Playful utility**, with the A6 extension-popup constraints (DESIGN_BIBLE §8.3).
+Fixed for this project: colour direction **Mulberry** and the type pairing **Bricolage Grotesque + Rethink Sans**. Archetype: **playful utility**, with the size and speed constraints of an extension popup.
 
 **Key Characteristics:**
 - Light-first blush-neutral paper (bg `oklch(0.985 0.004 345)`), berry-ink accent `oklch(0.48 0.17 355)` used as a signal, never as paint.
@@ -620,13 +620,13 @@ Assigned by the studio and not negotiable: colour direction **D4 Mulberry** and 
 - Depth by surface steps and 1px hairlines; shadow only on things that float above the store page.
 - One choreographed fold; everything frequent renders instantly.
 
-### Brand blend (bible §10, non-cloning rule)
+### Brand blend (what we borrowed and what we refused)
 
 - **From Figma we took** the mechanism of a restrained frame interrupted by oversized colour blocks that each carry one story, one block per viewport, with the frame returning between them. Our blocks are the twin palette's soft tints, so a landing section literally becomes "Twin A". We also took pills as the shape for status objects. **We rejected** black primary CTAs, pill buttons, uppercase mono eyebrows, the variable sans and every block hex.
 - **From PostHog we took** the friendly engineering-blog voice (plain, specific, a little wry) and the hand-made marginalia energy, re-expressed as one bespoke monoline motif: an irregular china-marker circle, drawn once per landing viewport at most. We also took the dark code island for the install command. **We rejected** the cream canvas, the yellow CTA, the mascot, IBM Plex, uppercase eyebrows and emoji callouts.
 - **From Notion we took** the rule that a pastel tag palette belongs to user data and stays off the chrome (our twin palette), sober rectangular buttons, and the real working UI as the hero. **We rejected** the purple CTA, the navy hero band, the centred hero and the brand typeface.
 - **Our version differs by** berry ink on blush paper, Bricolage at `wdth 85`, the contact-sheet marker motif, and data colours that double as section colours on the landing page only.
-- Studio distinctness: D4 + T6 + soft-plus radius + rect CTA + light default. Signature moment is bespoke (the fold into a price ladder), not one of the bible's M1–M15, so it cannot collide with a sibling project.
+- Distinctness: Mulberry + Bricolage/Rethink + soft-plus radius + rect CTA + light default. The signature moment is bespoke: the fold into a price ladder.
 
 ### We never (P8)
 
@@ -669,7 +669,7 @@ Groups beyond F cycle the palette and patterns with their own letter (G reuses A
 - **Photo Mat** (`photo-mat`, pure white in both themes): the square behind every product photo we display (fold card, Proof lens, ghosts). Marketplace photos are shot on white, so the mat is never themed.
 - **Hairline** (`border`) and **Edge** (`border-strong`, 3.8:1): 1px dividers; input and switch-off borders.
 - **Ink** (`text`, 16.3:1), **Graphite** (`text-muted`, 6.9:1), **Pencil** (`text-subtle`, 4.7:1 on bg).
-- **Pop Yellow** (`pop`, `oklch(0.90 0.10 100)`): landing illustration and empty-state motif only. Deviation from the bible's D4 pop `oklch(0.86 0.15 92)`, which measured ΔE_OK 0.024 from Miro's signature yellow; ours measures 0.075.
+- **Pop Yellow** (`pop`, `oklch(0.90 0.10 100)`): landing illustration and empty-state motif only. Moved from the starting pop `oklch(0.86 0.15 92)`, which measured ΔE_OK 0.024 from Miro's signature yellow; ours measures 0.075.
 
 ### Named Rules
 **The Marker Belongs to the Shopper Rule.** Twin colours mark the shopper's results and the landing blocks that tell their story. They never colour a button, a focus ring, a nav item or our logo.
@@ -741,7 +741,7 @@ Depth comes from tone and hairlines. Shadows exist only for things that float ab
 - **Dark e1–e3** (`box-shadow: 0 0 0 1px var(--border), inset 0 1px 0 oklch(1 0 0 / 0.05)`), **dark e4** (`0 0 0 1px oklch(1 0 0 / 0.06), 0 24px 48px -12px oklch(0 0 0 / 0.6)`).
 - **Scrim:** `scrim` (light) / `scrim-dark`, no blur.
 
-**Z-index:** overlay hosts use `2147483647` inside their shadow roots (bible §5.4); inside our pages: base 0, sticky 10, dropdown 20, overlay 30, modal 40, toast 60, tooltip 70.
+**Z-index:** overlay hosts use `2147483647` inside their shadow roots; inside our pages: base 0, sticky 10, dropdown 20, overlay 30, modal 40, toast 60, tooltip 70.
 
 ### Named Rules
 **The No Glass Rule.** No `backdrop-filter` anywhere, including the pill over store content. Opaque surfaces only.
@@ -760,14 +760,14 @@ Soft-plus radii: **xs 8** (badges' inner elements, keycaps, ladder bars, tooltip
 
 ### Buttons
 - **Shape:** rect, sm 12 (12px), height 32 compact / 44 landing.
-- **Primary:** Berry Ink fill, `on-accent` text, label-compact 13/550. One per view. Dark: `accent-dark` fill with `on-accent-dark` text at 13/600 minimum (bible §4.3).
+- **Primary:** Berry Ink fill, `on-accent` text, label-compact 13/550. One per view. Dark: `accent-dark` fill with `on-accent-dark` text at 13/600 minimum.
 - **Secondary:** Sheet White with 1px `border` and e1; hover moves to `surface-2`.
 - **Ghost:** transparent, `text-muted`; hover `surface-2`.
 - **States:** hover is a 100 ms background step (pointer: fine only); press `scale(0.97)` 100 ms ease-out; focus-visible `outline: 2px solid var(--ring); outline-offset: 2px`; disabled `opacity .5` + tooltip explaining why; loading keeps the label, prepends a 14 px spinner, locks width, `aria-busy`.
 - **Shortcut hint:** buttons with a key show a keycap at the right edge ("Fold twins  F").
 
 ### Summary pill (overlay, passive, every search)
-- **Look:** Sheet White, full radius, e3, height 40, the twin glyph (16 px, Berry Ink) at the left, then three segments separated by 1 × 16 px `border` dividers: **"60 listings → 37 products"**, **"6 twin groups"**, **"up to $18 brand tax"**. (picks.json writes this line with middle dots; in the UI the dots are drawn dividers.) Numbers Price 15/600 `tnum` in `text`; words UI compact in `text-muted`. Trailing 28 px ghost icon button "×" (Hide for this page).
+- **Look:** Sheet White, full radius, e3, height 40, the twin glyph (16 px, Berry Ink) at the left, then three segments separated by 1 × 16 px `border` dividers: **"60 listings → 47 products"**, **"6 twin groups"**, **"up to $23 brand tax"**. (the line is often written with middle dots; in the UI the dots are drawn dividers.) Numbers Price 15/600 `tnum` in `text`; words UI compact in `text-muted`. Trailing 28 px ghost icon button "×" (Hide for this page).
 - **Interaction:** the pill body is a `<button>`: click rings twins (`T`). When rings are on, the pill extends by a secondary button "Fold twins F" (width animates via grid `0fr → 1fr`, 200 ms ease-out; 0 ms when triggered by keyboard).
 - **States:**
 
@@ -781,7 +781,7 @@ Soft-plus radii: **xs 8** (badges' inner elements, keycaps, ladder bars, tooltip
 | Hidden | nothing rendered | after "×" until next navigation |
 | Off for this store | nothing rendered | settings |
 
-- **Accessibility:** accessible name "60 listings, 37 products, 6 twin groups, up to 18 dollars brand tax. Show twins." Result updates announce once via `aria-live="polite"`.
+- **Accessibility:** accessible name "60 listings, 47 products, 6 twin groups, up to $23 brand tax" (the visible words in order with commas, WCAG 2.5.3). Result updates announce once via `aria-live="polite"`.
 
 ### Rings and twin badges (overlay, per tile)
 - **Ring:** `outline: 3px <pattern> var(--twin-x); outline-offset: 4px;` with the tile's radius. Patterns per the twin palette table. No fill, no shadow, no glow.
@@ -826,7 +826,7 @@ Soft-plus radii: **xs 8** (badges' inner elements, keycaps, ladder bars, tooltip
 ### Popup
 - **Shell:** 360 px, `bg`, 12 px padding, Rethink compact. Follows `prefers-color-scheme`.
 - **Header (40 px):** twin glyph + "Factory Twins" (Label compact 13/550) + right-aligned status chip ("On for Amazon" with a 6 px success dot / "Not a search page").
-- **Supported page, success:** stat rows (label left in `text-muted`, value right in Price `tnum`): Listings 60, Products 37, Twin groups 6, Largest brand tax $18.00, one row each. Primary button "Show twins on this page" with keycap `T`; secondary "Fold twins" `F`. Switch row "Run on Amazon". Privacy panel. Footer: ghost "Shortcuts" (opens the cheatsheet list inline) and ghost "Settings".
+- **Supported page, success:** stat rows (label left in `text-muted`, value right in Price `tnum`): Listings 60, Products 47, Twin groups 6, Largest brand tax $23.00, one row each. Primary button "Show twins on this page" with keycap `T`; secondary "Fold twins" `F`. Switch row "Run on Amazon". Privacy panel. Footer: ghost "Shortcuts" (opens the cheatsheet list inline) and ghost "Settings".
 - **Privacy panel:** surface-2, md radius. Title row: shield icon + "Nothing leaves your device." (Label compact). Body: "184 image reads this session, all from m.media-amazon.com." and a success check + "0 to anyone else." Caption: "Factory Twins re-reads thumbnails from the store's own image server to compare them. It has no server of its own."
 - **States:**
 
@@ -861,17 +861,17 @@ Soft-plus radii: **xs 8** (badges' inner elements, keycaps, ladder bars, tooltip
 | `?` | store page | Toggle the shortcut cheatsheet popover above the pill |
 | `Alt+Shift+T`, `Alt+Shift+F` | browser-level `commands` | Same as `T`, `F`; rebindable |
 
-**Command palette:** deliberately not built for v0.1. The complete action set is five actions, all visible as labelled controls with keycaps on the pill, the popup and the cheatsheet; a cmdk palette injected into a store page would add a sixth surface that competes with the store's own search box. This is a written deviation from the bible §6.8 per its prime directive.
+**Command palette:** deliberately not built for v0.1. The complete action set is five actions, all visible as labelled controls with keycaps on the pill, the popup and the cheatsheet; a cmdk palette injected into a store page would add a sixth surface that competes with the store's own search box. This is a written deviation from the usual command-palette rule.
 
 ### Motion system
-Tokens (bible §5.5): `--dur-0 0ms`, `--dur-1 100ms`, `--dur-2 150ms`, `--dur-3 200ms`, `--dur-4 250ms`, `--dur-5 300ms`; `--ease-out cubic-bezier(0.23, 1, 0.32, 1)`, `--ease-out-soft cubic-bezier(0.25, 1, 0.5, 1)`, `--ease-in-out cubic-bezier(0.77, 0, 0.175, 1)`, `--ease-scene cubic-bezier(0.65, 0.05, 0, 1)` (landing only), `--spring-playful linear(0, 0.157, 0.48, 0.79, 1.01, 1.11, 1.12, 1.08, 1.03, 0.99, 0.98, 0.99, 1)` (CSS approximation of `SPRING.playful`, visualDuration 0.4, bounce 0.25; signature moments only). Popup/options use Motion with `MotionConfig reducedMotion="user"` and the bible `SPRING` presets; the overlay uses WAAPI with the same values. Never `transition: all`; animate `transform`, `opacity` and `clip-path` only.
+Tokens: `--dur-0 0ms`, `--dur-1 100ms`, `--dur-2 150ms`, `--dur-3 200ms`, `--dur-4 250ms`, `--dur-5 300ms`; `--ease-out cubic-bezier(0.23, 1, 0.32, 1)`, `--ease-out-soft cubic-bezier(0.25, 1, 0.5, 1)`, `--ease-in-out cubic-bezier(0.77, 0, 0.175, 1)`, `--ease-scene cubic-bezier(0.65, 0.05, 0, 1)` (landing only), `--spring-playful linear(0, 0.157, 0.48, 0.79, 1.01, 1.11, 1.12, 1.08, 1.03, 0.99, 0.98, 0.99, 1)` (CSS approximation of `SPRING.playful`, visualDuration 0.4, bounce 0.25; signature moments only). Popup/options use Motion with `MotionConfig reducedMotion="user"` and shared `SPRING` presets; the overlay uses WAAPI with the same values. Never `transition: all`; animate `transform`, `opacity` and `clip-path` only.
 
 - **Instant (0 ms):** rings on/off, pill appearing in result state, popup open, keyboard navigation, unfold when triggered within 2 s of a fold (treated as an undo).
 - **Small (100–200 ms):** hover colours, press scale, tooltip, pill extension, toast exit.
 - **Dialog (220 ms):** Proof lens enter `opacity 0→1, scale .96→1, y 8→0`, `--ease-out`; exit 160 ms; scrim 150 ms.
 
 ### Signature moment: "Fold twins" (frame by frame)
-Trigger: `F` or the pill's "Fold twins". Deviation from bible P1 (keyboard actions animate at 0 ms), written here as required: the fold is the product's one rare, meaningful event (a few times a week, not 20 times a day), and the motion is the explanation of what happened to the store's grid. It stays interruptible and is skippable by OS reduced motion. Unfold is fast.
+Trigger: `F` or the pill's "Fold twins". Deviation from the general rule that keyboard actions animate at 0 ms: the fold is the product's one rare, meaningful event (a few times a week, not 20 times a day), and the motion is the explanation of what happened to the store's grid. It stays interruptible and is skippable by OS reduced motion. Unfold is fast.
 
 | t (ms) | What moves | Property and value | Easing |
 |---|---|---|---|
@@ -912,23 +912,23 @@ The readout number's single roll happens once per lens open, when the measuremen
 - **Footer:** licence, source, "No analytics on this page." (true only if the site ships none; the landing stage must keep it true).
 - **States:** JS off: the demo renders its folded end state as static HTML. Reduced motion: demo starts folded with a "Replay fold" button that crossfades. Images loading: grid cells reserve `aspect-ratio: 1` with surface-2 fill. Copy failure: "Couldn't copy. Select the text and press Ctrl+C."
 
-### 3D and immersive plan (bible §11): CSS/SVG and pre-rendered stills, no live WebGL
+### 3D and immersive plan: CSS/SVG and pre-rendered stills, no live WebGL
 **The one sentence:** "Five listings that look different are one photo: stack them and they cancel to black."
 
-**Decision:** no live WebGL on the landing page. The product is a DOM overlay, so the most persuasive hero is the overlay itself working on a contact sheet (bible 3P2, §11.2 principle 5: the DOM stays the source of truth). A WebGL scene would be a picture of the product instead of the product. Per 3D_INSPIRATION §5.2's decision rule, live WebGL would need a T-pattern that says something only 3D can say; the "stack and cancel" idea is fully expressed by CSS layering and `mix-blend-mode`.
+**Decision:** no live WebGL on the landing page. The product is a DOM overlay, so the most persuasive hero is the overlay itself working on a contact sheet (the DOM stays the source of truth). A WebGL scene would be a picture of the product instead of the product. Live WebGL would only earn its place if it said something only 3D can say; the "stack and cancel" idea is fully expressed by CSS layering and `mix-blend-mode`.
 
 **Patterns used (2):**
 - **T21 Cards in space, CSS version:** in the "Check the pixels" beat, the five twin photo cards sit in a CSS `perspective: 1200px` stack (`rotateY(-18deg) translateZ(calc(var(--i) * -40px))`), slide together on a button press or when the beat scrolls into view (once), then the top card switches to `mix-blend-mode: difference` and the stack goes black. Under reduced motion: a static before/after pair.
-- **T3 Product-on-surface, pre-rendered only:** the demo's product photos (one laptop-stand "factory photo" shared by the five twins, plus distractor products) are rendered offline with the studio prerender kit (`_studio/inspo/3d/prerender-kit/`), Lightformer lighting, on white like real marketplace photos. Shipped as AVIF stills ≤ 40 KB each (≤ 600 KB total, lazy below the fold). They are honest synthetic assets, labelled as demo listings.
+- **T3 Product-on-surface, pre-rendered only:** the demo's product photos (one laptop-stand "factory photo" shared by the five twins, plus distractor products) are rendered offline (authored stills, studio lighting), on white like real marketplace photos. Shipped as AVIF stills ≤ 40 KB each (≤ 600 KB total, lazy below the fold). They are honest synthetic assets, labelled as demo listings.
 
-**Pre-rendered deliverables:** hero poster (the folded state of the demo, AVIF ≤ 80 KB, the LCP candidate after the H1), README GIF and LinkedIn MP4 captured deterministically by stepping WAAPI `currentTime` with Playwright (bible §11.7 rules applied to DOM animation), OG card 1200 × 630.
+**Pre-rendered deliverables:** hero poster (the folded state of the demo, AVIF ≤ 80 KB, the LCP candidate after the H1), README GIF and LinkedIn MP4 captured deterministically by stepping WAAPI `currentTime` with Playwright, OG card 1200 × 630.
 
 **Budget:** initial JS ≤ 120 KB gz (the demo reuses the overlay components; no 3D chunk exists); CLS 0; LCP is the H1 or the poster; no canvas; no Lenis; native scroll.
 
-### Pre-flight checklist (bible Appendix B and §11.10)
-- [x] Archetype A4 Playful utility (+ A6 popup constraints) and blend notes with rejections: Overview, "Brand blend".
-- [x] Direction D4 Mulberry, adjustments: `surface-3` added; pop yellow moved to `oklch(0.90 0.10 100)` after the §4.4 check (Miro ΔE 0.024 → 0.075); twin palette checked ≥ 0.06 from every blocklisted colour (Colors).
-- [x] Pairing T6, scales Compact (overlay, popup) and Comfortable (options, landing), features `tnum`, `wdth`, `opsz`, `font-synthesis: none` (Typography).
+### Pre-flight checklist
+- [x] Archetype playful utility (+ popup constraints) and blend notes with rejections: Overview, "Brand blend".
+- [x] Direction Mulberry, adjustments: `surface-3` added; pop yellow moved to `oklch(0.90 0.10 100)` after the brand-colour distance check (Miro ΔE 0.024 → 0.075); twin palette checked ≥ 0.06 from every blocklisted colour (Colors).
+- [x] Pairing Bricolage Grotesque + Rethink Sans, scales Compact (overlay, popup) and Comfortable (options, landing), features `tnum`, `wdth`, `opsz`, `font-synthesis: none` (Typography).
 - [x] Radius soft-plus 8/12/16/24, CTA grammar rect, theme default light (Shapes, Colors).
 - [x] Three "we never" constraints (Overview, "We never").
 - [x] Signature moments and their events: Fold twins (on `F`), Cancel to black (Difference in the Proof lens) (Components).

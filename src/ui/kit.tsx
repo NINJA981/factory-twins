@@ -8,7 +8,7 @@ import type { NetworkCounter } from '../core/types';
 // Shared pieces of the popup and the options page (DESIGN.md, Components). Tailwind utilities over the
 // generated tokens. The overlay on the store page has its own plain-CSS twins of the button and keycap.
 
-/** The bible's SPRING.snappy: 180 ms, no bounce. */
+/** Snappy spring: 180 ms, no bounce. */
 export const SPRING_SNAPPY = { type: 'spring', visualDuration: 0.18, bounce: 0 } as const;
 
 export function MotionRoot({ children }: { children: ReactNode }) {

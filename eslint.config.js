@@ -33,7 +33,7 @@ export default tseslint.config(
       ...reactHooks.configs.recommended.rules,
       '@typescript-eslint/consistent-type-imports': 'error',
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
-      // User data and keys are never logged (studio rule). Diagnostics go through src/util/log.ts.
+      // User data and keys are never logged (project rule). Diagnostics go through src/util/log.ts.
       'no-console': 'error',
       eqeqeq: ['error', 'smart'],
     },
