@@ -63,10 +63,22 @@ export function fixtureDocument(f: Fixture): Document {
   return win.document as unknown as Document;
 }
 
-/** Listings as the real adapter reads them from page.html. */
+const listingsCache = new WeakMap<Fixture, Listing[]>();
+
+/**
+ * Listings as the real adapter reads them from page.html. Read once per fixture and the happy-dom
+ * window closed straight after: the corpus tests ask for every fixture several times, and open
+ * windows add up to hundreds of megabytes.
+ */
 export function fixtureListings(f: Fixture): Listing[] {
-  const r = readPage(ADAPTERS[f.store], fixtureDocument(f), fixtureUrl(f));
+  const cached = listingsCache.get(f);
+  if (cached) return cached;
+  const win = new Window({ url: fixtureUrl(f) });
+  win.document.documentElement.innerHTML = f.html.replace(/^<!doctype html>/i, '');
+  const r = readPage(ADAPTERS[f.store], win.document as unknown as Document, fixtureUrl(f));
+  void win.happyDOM.close();
   if (!r.ok) throw new Error(`${f.store}/${f.slug} unreadable: ${r.reason}`);
+  listingsCache.set(f, r.listings);
   return r.listings;
 }
 

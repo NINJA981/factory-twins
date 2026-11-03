@@ -113,9 +113,9 @@ describe('title sanity check (SPEC section 8.4)', () => {
     expect(firstClause('Plumbrook Adjustable Laptop Stand for Desk, Aluminum')).toBe(
       'Plumbrook Adjustable Laptop Stand',
     );
-    expect(feat('Plumbrook Adjustable Laptop Stand for Desk, Aluminum', 'Plumbrook').headNouns.has('stand')).toBe(
-      true,
-    );
+    expect(
+      feat('Plumbrook Adjustable Laptop Stand for Desk, Aluminum', 'Plumbrook').headNouns.has('stand'),
+    ).toBe(true);
   });
 
   it('passes two titles that share a head noun', () => {
@@ -197,6 +197,9 @@ describe('brand handling', () => {
       brand: 'Corvane',
       confidence: 'byline',
     });
-    expect(resolveBrand(null, 'PLUMBROOK Laptop Stand')).toEqual({ brand: 'PLUMBROOK', confidence: 'heuristic' });
+    expect(resolveBrand(null, 'PLUMBROOK Laptop Stand')).toEqual({
+      brand: 'PLUMBROOK',
+      confidence: 'heuristic',
+    });
   });
 });

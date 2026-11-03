@@ -381,7 +381,9 @@ describe('content controller', () => {
   });
 
   it('stays quiet on a search with no results', async () => {
-    const s = setup('<html><body><div class="s-main-slot"><p>No results for this search.</p></div></body></html>');
+    const s = setup(
+      '<html><body><div class="s-main-slot"><p>No results for this search.</p></div></body></html>',
+    );
     active = s.controller;
     await s.controller.start();
     expect(s.controller.getState().pill.kind).toBe('idle');

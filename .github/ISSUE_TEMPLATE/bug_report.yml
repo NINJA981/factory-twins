@@ -22,7 +22,7 @@ body:
     id: query
     attributes:
       label: Search query and page number
-      placeholder: "laptop stand, page 2"
+      placeholder: 'laptop stand, page 2'
   - type: dropdown
     id: browser
     attributes:
@@ -38,7 +38,7 @@ body:
     id: version
     attributes:
       label: Browser version and extension version
-      placeholder: "Chrome 142, Factory Twins 0.1.0"
+      placeholder: 'Chrome 142, Factory Twins 0.1.0'
   - type: textarea
     id: what
     attributes:

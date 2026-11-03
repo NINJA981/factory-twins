@@ -66,12 +66,13 @@ describe('Walmart price lookup without the generated class name', () => {
   };
 
   it('prefers itemprop, then screen-reader text, and reads the whole block last', () => {
-    expect(extractWalmartTile(tile('<meta itemprop="price" content="14.97" /><span>$99.00</span>')).priceText).toBe(
-      '$14.97',
-    );
     expect(
-      extractWalmartTile(tile('<span class="sr-only">current price $14.97</span><span>$14.97 Was $19.99</span>'))
-        .priceText,
+      extractWalmartTile(tile('<meta itemprop="price" content="14.97" /><span>$99.00</span>')).priceText,
+    ).toBe('$14.97');
+    expect(
+      extractWalmartTile(
+        tile('<span class="sr-only">current price $14.97</span><span>$14.97 Was $19.99</span>'),
+      ).priceText,
     ).toBe('current price $14.97');
     const blockOnly = extractWalmartTile(tile('<div aria-hidden="true">Now $9.97 Was $12.97</div>'));
     expect(parsePrice(blockOnly.priceText)?.amount).toBe(9.97);

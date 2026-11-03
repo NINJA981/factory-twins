@@ -266,7 +266,9 @@ describe('pixelDiff (Proof lens readout)', () => {
   it('leaves shared white background out, so two different products on white do not look alike', () => {
     // Two different small dark objects on a large white sweep: about 94% of pixels are white in both.
     const object = (x0: number) =>
-      fromFn(256, 256, (x, y) => (x >= x0 && x < x0 + 40 && y >= 100 && y < 140 ? [30, 30, 30] : [255, 255, 255]));
+      fromFn(256, 256, (x, y) =>
+        x >= x0 && x < x0 + 40 && y >= 100 && y < 140 ? [30, 30, 30] : [255, 255, 255],
+      );
     const r = pixelDiff(object(40), object(170));
     expect(r.total).toBe(2 * 40 * 40);
     expect(r.differing).toBe(2 * 40 * 40);

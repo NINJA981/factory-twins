@@ -92,7 +92,7 @@ export function createController(opts: ControllerOptions): Controller {
   let scanning = false;
   let again = false;
   const seen = new Set<string>();
-  const localLetters: Record<string, string> = {};
+  let localLetters: Record<string, string> = {};
 
   const emit = () => {
     for (const l of [...listeners]) l();
@@ -268,7 +268,7 @@ export function createController(opts: ControllerOptions): Controller {
     if (!sameSearch(href, pageHref)) {
       pageHref = href;
       seen.clear();
-      for (const k of Object.keys(localLetters)) delete localLetters[k];
+      localLetters = {};
       state = {
         ...state,
         // A dismissed pill was dismissed for that page only (AC-F4.4).
