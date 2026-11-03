@@ -17,7 +17,7 @@ export function listing(over: ListingOverrides): Listing {
     position: 0,
     url: `https://www.amazon.com/dp/${over.id}`,
     imageUrl: `https://m.media-amazon.com/images/I/${over.id}._AC_UL320_.jpg`,
-    title: 'Zexmte Adjustable Laptop Stand for Desk',
+    title: 'Plumbrook Adjustable Laptop Stand for Desk',
     brand: null,
     brandConfidence: 'none',
     packCount: 1,

@@ -13,7 +13,7 @@ import { listing } from './helpers/listing';
 
 const summary = (over: Partial<ScanSummary> = {}): ScanSummary => ({
   listings: 60,
-  products: 37,
+  products: 47,
   twinGroups: 6,
   maxBrandTaxDollars: 18,
   pages: [1],
@@ -193,7 +193,7 @@ describe('overlay reducer (F5, F6, F7)', () => {
 describe('group view models (F5, F6)', () => {
   const listings = Object.fromEntries(
     [
-      listing({ id: 'lo', price: 11.99, reviewCount: 3918, rating: 4.5, brand: 'Zexmte', page: 1 }),
+      listing({ id: 'lo', price: 11.99, reviewCount: 3918, rating: 4.5, brand: 'Plumbrook', page: 1 }),
       listing({ id: 'mid', price: 19.99, reviewCount: 640, rating: 4.2, page: 1 }),
       listing({ id: 'new', price: 15.99, reviewCount: 2, rating: 5, page: 2, sponsored: true }),
       listing({ id: 'hi', price: 34.99, reviewCount: 212, rating: 4.4, brand: 'ProBrand', page: 1 }),

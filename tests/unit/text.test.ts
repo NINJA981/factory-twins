@@ -13,10 +13,10 @@ import { firstClause, titleFeatures, titlesCompatible, titleStem } from '../../s
 describe('parsePackCount (SPEC section 8.5)', () => {
   // Titles typed by hand in the style of public listings; every brand is invented.
   const certain: [string, number][] = [
-    ['Zexmte Silicone Spatula Set 2 Pack Heat Resistant', 2],
-    ['Lumora LED Strip Lights, 3-Pack, 16ft Each', 3],
-    ['Vantix Cable Ties (2-Pack) Black', 2],
-    ['Oriant Dog Waste Bags Pack of 3 Unscented', 3],
+    ['Plumbrook Silicone Spatula Set 2 Pack Heat Resistant', 2],
+    ['Tessaly LED Strip Lights, 3-Pack, 16ft Each', 3],
+    ['Corvane Cable Ties (2-Pack) Black', 2],
+    ['Ondrel Dog Waste Bags Pack of 3 Unscented', 3],
     ['Kaxon Phone Tripod Set of 4 Mini Stands', 4],
     ['Nuvik Plant Pots x2 Ceramic', 2],
     ['Nuvik Plant Pots X 6 Ceramic', 6],
@@ -34,7 +34,7 @@ describe('parsePackCount (SPEC section 8.5)', () => {
     ['Yarex Wall Hooks, 24 Count, Heavy Duty', 24],
     ['Qintu Acrylic Paint Set 2-pack Washable', 2],
     ['Laptop Stand Aluminum Foldable', 1],
-    ['Zexmte Laptop Stand for Desk Adjustable Height', 1],
+    ['Plumbrook Laptop Stand for Desk Adjustable Height', 1],
     ['Torvex Digital Scale with 0.1g Precision', 1],
     ['USB C Hub 7 in 1 with 4K HDMI', 1],
     ['Phone Tripod 60 Inch Extendable', 1],
@@ -107,10 +107,10 @@ describe('title sanity check (SPEC section 8.4)', () => {
   const feat = (t: string, brand: string | null = null) => titleFeatures(t, brand);
 
   it('finds the head noun in the first clause', () => {
-    expect(firstClause('Zexmte Adjustable Laptop Stand for Desk, Aluminum')).toBe(
-      'Zexmte Adjustable Laptop Stand',
+    expect(firstClause('Plumbrook Adjustable Laptop Stand for Desk, Aluminum')).toBe(
+      'Plumbrook Adjustable Laptop Stand',
     );
-    expect(feat('Zexmte Adjustable Laptop Stand for Desk, Aluminum', 'Zexmte').headNouns.has('stand')).toBe(
+    expect(feat('Plumbrook Adjustable Laptop Stand for Desk, Aluminum', 'Plumbrook').headNouns.has('stand')).toBe(
       true,
     );
   });
@@ -118,8 +118,8 @@ describe('title sanity check (SPEC section 8.4)', () => {
   it('passes two titles that share a head noun', () => {
     expect(
       titlesCompatible(
-        feat('Lumora Foldable Laptop Stand with Cooling Vents', 'Lumora'),
-        feat('VANTIX Aluminum Notebook Stand, Ergonomic Riser', 'VANTIX'),
+        feat('Tessaly Foldable Laptop Stand with Cooling Vents', 'Tessaly'),
+        feat('CORVANE Aluminum Notebook Stand, Ergonomic Riser', 'CORVANE'),
       ),
     ).toBe(true);
   });
@@ -127,7 +127,7 @@ describe('title sanity check (SPEC section 8.4)', () => {
   it('rejects two unrelated products that could share a blank photo', () => {
     expect(
       titlesCompatible(
-        feat('Lumora Foldable Laptop Stand', 'Lumora'),
+        feat('Tessaly Foldable Laptop Stand', 'Tessaly'),
         feat('Torvex Digital Kitchen Scale 0.1g', 'Torvex'),
       ),
     ).toBe(false);
@@ -143,14 +143,14 @@ describe('title sanity check (SPEC section 8.4)', () => {
   });
 
   it('does not count the brand as shared content', () => {
-    const a = feat('Zexmte Laptop Stand', 'Zexmte');
-    const b = feat('Zexmte Kitchen Scale', 'Zexmte');
+    const a = feat('Plumbrook Laptop Stand', 'Plumbrook');
+    const b = feat('Plumbrook Kitchen Scale', 'Plumbrook');
     expect(titlesCompatible(a, b)).toBe(false);
   });
 
   it('builds a title stem without colours, sizes, packs and brand', () => {
-    const a = titleStem('Zexmte Foldable Laptop Stand Black Large', 'Zexmte');
-    const b = titleStem('Zexmte Foldable Laptop Stand Silver Small', 'Zexmte');
+    const a = titleStem('Plumbrook Foldable Laptop Stand Black Large', 'Plumbrook');
+    const b = titleStem('Plumbrook Foldable Laptop Stand Silver Small', 'Plumbrook');
     expect([...a].sort()).toEqual(['foldable', 'laptop', 'stand']);
     expect(jaccard(a, b)).toBe(1);
   });
@@ -158,10 +158,10 @@ describe('title sanity check (SPEC section 8.4)', () => {
 
 describe('brand handling', () => {
   it('cleans the byline forms stores print', () => {
-    expect(cleanByline('Visit the Zexmte Store')).toBe('Zexmte');
-    expect(cleanByline('Brand: Lumora')).toBe('Lumora');
-    expect(cleanByline('by Vantix')).toBe('Vantix');
-    expect(cleanByline('Oriant™')).toBe('Oriant');
+    expect(cleanByline('Visit the Plumbrook Store')).toBe('Plumbrook');
+    expect(cleanByline('Brand: Tessaly')).toBe('Tessaly');
+    expect(cleanByline('by Corvane')).toBe('Corvane');
+    expect(cleanByline('Ondrel™')).toBe('Ondrel');
     expect(cleanByline('  ')).toBeNull();
     expect(cleanByline(null)).toBeNull();
     expect(cleanByline('x'.repeat(80))).toBeNull();
@@ -175,12 +175,12 @@ describe('brand handling', () => {
   });
 
   it('guesses a brand from the first token, with low confidence', () => {
-    expect(heuristicBrand('ZEXMTE Laptop Stand for Desk')).toEqual({
-      brand: 'ZEXMTE',
+    expect(heuristicBrand('PLUMBROOK Laptop Stand for Desk')).toEqual({
+      brand: 'PLUMBROOK',
       confidence: 'heuristic',
     });
-    expect(heuristicBrand('[2024 New] Lumora Laptop Stand')).toEqual({
-      brand: 'Lumora',
+    expect(heuristicBrand('[2024 New] Tessaly Laptop Stand')).toEqual({
+      brand: 'Tessaly',
       confidence: 'heuristic',
     });
     expect(heuristicBrand('laptop stand adjustable')).toEqual({ brand: null, confidence: 'none' });
@@ -190,10 +190,10 @@ describe('brand handling', () => {
   });
 
   it('prefers the byline over the title guess', () => {
-    expect(resolveBrand('Visit the Vantix Store', 'ZEXMTE Laptop Stand')).toEqual({
-      brand: 'Vantix',
+    expect(resolveBrand('Visit the Corvane Store', 'PLUMBROOK Laptop Stand')).toEqual({
+      brand: 'Corvane',
       confidence: 'byline',
     });
-    expect(resolveBrand(null, 'ZEXMTE Laptop Stand')).toEqual({ brand: 'ZEXMTE', confidence: 'heuristic' });
+    expect(resolveBrand(null, 'PLUMBROOK Laptop Stand')).toEqual({ brand: 'PLUMBROOK', confidence: 'heuristic' });
   });
 });

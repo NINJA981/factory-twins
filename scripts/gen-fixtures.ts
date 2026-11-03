@@ -229,7 +229,7 @@ async function writeDemo(): Promise<void> {
     // Twin A's ladder from the demo script, so the recorded numbers are on the page.
     const ladder = [11.99, 13.49, 15.99, 19.99, 34.99];
     const reviews = [3918, 1204, 87, 640, 212];
-    const brands = ['Zexmte', 'Lumora', 'Vantix', 'Oriant', 'ProBrand'];
+    const brands = ['Plumbrook', 'Tessaly', 'Corvane', 'Ondrel', 'ProBrand'];
     (spec.groups[0] as string[]).forEach((id, i) => {
       const l = byId.get(id) as ListingSpec;
       Object.assign(l, {

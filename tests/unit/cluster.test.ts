@@ -26,26 +26,26 @@ describe('UnionFind', () => {
 
 describe('twin edge rule (AC-F3.1)', () => {
   const t = THRESHOLDS.standard;
-  const a = prepare(listing({ id: 'a', title: 'Zexmte Laptop Stand' }), hashes());
+  const a = prepare(listing({ id: 'a', title: 'Plumbrook Laptop Stand' }), hashes());
   it('accepts identical hashes with compatible titles', () => {
-    const b = prepare(listing({ id: 'b', title: 'Lumora Aluminum Laptop Stand' }), hashes());
+    const b = prepare(listing({ id: 'b', title: 'Tessaly Aluminum Laptop Stand' }), hashes());
     expect(twinEdge(a, b, t)).toMatchObject({ twin: true, phash: 0 });
   });
   it('allows pHash 6 and rejects 7', () => {
-    const six = prepare(listing({ id: 'b', title: 'Lumora Laptop Stand' }), hashes([0, 1, 2, 3, 4, 5]));
-    const seven = prepare(listing({ id: 'c', title: 'Lumora Laptop Stand' }), hashes([0, 1, 2, 3, 4, 5, 6]));
+    const six = prepare(listing({ id: 'b', title: 'Tessaly Laptop Stand' }), hashes([0, 1, 2, 3, 4, 5]));
+    const seven = prepare(listing({ id: 'c', title: 'Tessaly Laptop Stand' }), hashes([0, 1, 2, 3, 4, 5, 6]));
     expect(twinEdge(a, six, t).twin).toBe(true);
     expect(twinEdge(a, seven, t)).toEqual({ twin: false, failed: 'phash' });
   });
   it('rejects a dHash distance over 10', () => {
-    const far = prepare(listing({ id: 'b', title: 'Lumora Laptop Stand' }), {
+    const far = prepare(listing({ id: 'b', title: 'Tessaly Laptop Stand' }), {
       ...hashes(),
       dhash: hex64(Array.from({ length: 11 }, (_, i) => i)),
     });
     expect(twinEdge(a, far, t)).toEqual({ twin: false, failed: 'dhash' });
   });
   it('rejects a colour signature that is too different', () => {
-    const red = prepare(listing({ id: 'b', title: 'Lumora Laptop Stand' }), {
+    const red = prepare(listing({ id: 'b', title: 'Tessaly Laptop Stand' }), {
       ...hashes(),
       color: 'ff'.repeat(48),
     });
@@ -56,7 +56,7 @@ describe('twin edge rule (AC-F3.1)', () => {
     expect(twinEdge(a, scale, t)).toEqual({ twin: false, failed: 'title' });
   });
   it('Strict mode tightens pHash to 4', () => {
-    const five = prepare(listing({ id: 'b', title: 'Lumora Laptop Stand' }), hashes([0, 1, 2, 3, 4]));
+    const five = prepare(listing({ id: 'b', title: 'Tessaly Laptop Stand' }), hashes([0, 1, 2, 3, 4]));
     expect(twinEdge(a, five, THRESHOLDS.standard).twin).toBe(true);
     expect(twinEdge(a, five, THRESHOLDS.strict).twin).toBe(false);
   });
@@ -121,8 +121,8 @@ describe('cluster()', () => {
 
   it('collapses variant families before grouping (AC-F3.3)', () => {
     const r = run([
-      stand('a', 1, { position: 0, brand: 'Zexmte', title: 'Zexmte Laptop Stand Adjustable Black' }),
-      stand('b', 1, { position: 1, brand: 'Zexmte', title: 'Zexmte Laptop Stand Adjustable Silver' }),
+      stand('a', 1, { position: 0, brand: 'Plumbrook', title: 'Plumbrook Laptop Stand Adjustable Black' }),
+      stand('b', 1, { position: 1, brand: 'Plumbrook', title: 'Plumbrook Laptop Stand Adjustable Silver' }),
     ]);
     expect(r.groups).toHaveLength(0);
     expect(r.variantFamilies).toEqual([{ leaderId: 'a', memberIds: ['a', 'b'] }]);
@@ -131,9 +131,9 @@ describe('cluster()', () => {
 
   it('keeps one variant leader in a twin group with another brand', () => {
     const r = run([
-      stand('a', 1, { position: 0, brand: 'Zexmte', title: 'Zexmte Laptop Stand Adjustable Black' }),
-      stand('b', 1, { position: 1, brand: 'Zexmte', title: 'Zexmte Laptop Stand Adjustable Silver' }),
-      stand('c', 1, { position: 2, brand: 'Lumora', title: 'Lumora Laptop Stand Foldable' }),
+      stand('a', 1, { position: 0, brand: 'Plumbrook', title: 'Plumbrook Laptop Stand Adjustable Black' }),
+      stand('b', 1, { position: 1, brand: 'Plumbrook', title: 'Plumbrook Laptop Stand Adjustable Silver' }),
+      stand('c', 1, { position: 2, brand: 'Tessaly', title: 'Tessaly Laptop Stand Foldable' }),
     ]);
     expect(r.groups).toHaveLength(1);
     expect(r.groups[0]?.memberIds).toEqual(['a', 'c']);
@@ -309,14 +309,14 @@ describe('letters (AC-F3.4)', () => {
 
 describe('variant families', () => {
   it('needs the same normalised brand', () => {
-    const a = listing({ id: 'a', brand: 'Zexmte', title: 'Zexmte Laptop Stand Foldable Black' });
-    const b = listing({ id: 'b', brand: 'LUMORA', title: 'Zexmte Laptop Stand Foldable Silver' });
+    const a = listing({ id: 'a', brand: 'Plumbrook', title: 'Plumbrook Laptop Stand Foldable Black' });
+    const b = listing({ id: 'b', brand: 'TESSALY', title: 'Plumbrook Laptop Stand Foldable Silver' });
     expect(findVariantFamilies([a, b])).toEqual([]);
   });
   it('needs a title stem Jaccard of 0.8 or more', () => {
-    const a = listing({ id: 'a', brand: 'Zexmte', title: 'Zexmte Laptop Stand Foldable Black' });
-    const b = listing({ id: 'b', brand: 'Zexmte', title: 'Zexmte Laptop Stand Foldable Silver' });
-    const c = listing({ id: 'c', brand: 'Zexmte', title: 'Zexmte Monitor Arm Clamp Mount Gas Spring' });
+    const a = listing({ id: 'a', brand: 'Plumbrook', title: 'Plumbrook Laptop Stand Foldable Black' });
+    const b = listing({ id: 'b', brand: 'Plumbrook', title: 'Plumbrook Laptop Stand Foldable Silver' });
+    const c = listing({ id: 'c', brand: 'Plumbrook', title: 'Plumbrook Monitor Arm Clamp Mount Gas Spring' });
     expect(findVariantFamilies([a, b, c])).toEqual([{ leaderId: 'a', memberIds: ['a', 'b'] }]);
   });
   it('ignores listings with no brand', () => {
@@ -327,15 +327,15 @@ describe('variant families', () => {
   it('leads with the earliest listing', () => {
     const a = listing({
       id: 'a',
-      brand: 'Zexmte',
-      title: 'Zexmte Laptop Stand Foldable Black',
+      brand: 'Plumbrook',
+      title: 'Plumbrook Laptop Stand Foldable Black',
       page: 2,
       position: 1,
     });
     const b = listing({
       id: 'b',
-      brand: 'Zexmte',
-      title: 'Zexmte Laptop Stand Foldable Silver',
+      brand: 'Plumbrook',
+      title: 'Plumbrook Laptop Stand Foldable Silver',
       page: 1,
       position: 9,
     });

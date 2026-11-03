@@ -31,7 +31,7 @@ const LEADING_NOISE = /^(?:\[[^\]]*\]|\([^)]*\)|【[^】]*】)\s*/;
 /**
  * Low-confidence brand from a title: the first token when it looks like a name (starts with a
  * capital or is all caps, is not a number, not a stopword). Many white-label titles lead with the
- * seller's made-up brand ("ZEXMTE Laptop Stand…"), which is exactly the signal we want.
+ * seller's made-up brand ("PLUMBROOK Laptop Stand…"), which is exactly the signal we want.
  */
 export function heuristicBrand(title: string): BrandGuess {
   const trimmed = title.replace(LEADING_NOISE, '').trim();
