@@ -159,7 +159,7 @@
   min-width: 18px;
   height: 18px;
   padding: 0 4px;
-  border-radius: 6px;
+  border-radius: var(--radius-xs);
   background: color-mix(in oklab, var(--bg) 22%, transparent);
   font: inherit;
   font-size: var(--text-micro-size);

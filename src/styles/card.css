@@ -265,7 +265,7 @@
   height: 40px;
   object-fit: contain;
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: var(--radius-xs);
   background: var(--photo-mat);
 }
 
