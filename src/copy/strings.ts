@@ -154,7 +154,7 @@ export const LENS_ONION = 'Onion skin';
 export const LENS_DIFFERENCE = 'Difference';
 export const LENS_SWAP = 'Swap photos';
 export const LENS_METHOD =
-  'Measured on both photos at 256 × 256. A pixel differs when any colour channel changes by more than 24 of 255.';
+  'Measured on both photos at 256 × 256, leaving out white background that both share. A pixel differs when any colour channel changes by more than 24 of 255.';
 export const LENS_IDENTICAL_ALL = 'No pixel differs.';
 export const LENS_DIFFERENT = 'These photos differ in places. Look at the bright areas in Difference mode.';
 export const LENS_ERROR = "Couldn't read one of these photos. The store's image server didn't return it.";
