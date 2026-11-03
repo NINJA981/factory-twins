@@ -55,6 +55,8 @@ export interface ImageHashes {
   /** Decoded source size. */
   w: number;
   h: number;
+  /** Set when the photo is nearly flat (a blank or placeholder); such photos never form twin edges. */
+  lowInfo?: true;
 }
 
 export interface BrandTax {

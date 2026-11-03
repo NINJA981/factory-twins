@@ -238,7 +238,7 @@ describe('pixelDiff (Proof lens readout)', () => {
   });
 
   it('never rounds a difference up to 100%', () => {
-    const a = solid(256, 256, [255, 255, 255, 255]);
+    const a = solid(256, 256, [120, 120, 120, 255]);
     const b = { ...a, data: new Uint8Array(a.data) };
     b.data.set([0, 0, 0, 255], 0); // one pixel out of 65,536
     const r = pixelDiff(a, b);
@@ -256,11 +256,24 @@ describe('pixelDiff (Proof lens readout)', () => {
   });
 
   it('floors the identical share so the two numbers always add up to 100.0', () => {
-    const a = solid(256, 256, [255, 255, 255, 255]);
-    const b = solid(256, 256, [255, 255, 255, 255]);
+    const a = solid(256, 256, [120, 120, 120, 255]);
+    const b = solid(256, 256, [120, 120, 120, 255]);
     for (let p = 0; p < 300; p++) b.data.set([0, 0, 0, 255], p * 4 * 17);
     const r = pixelDiff(a, b);
     expect(r.identicalTenths + r.differingTenths).toBe(1000);
+  });
+
+  it('leaves shared white background out, so two different products on white do not look alike', () => {
+    // Two different small dark objects on a large white sweep: about 94% of pixels are white in both.
+    const object = (x0: number) =>
+      fromFn(256, 256, (x, y) => (x >= x0 && x < x0 + 40 && y >= 100 && y < 140 ? [30, 30, 30] : [255, 255, 255]));
+    const r = pixelDiff(object(40), object(170));
+    expect(r.total).toBe(2 * 40 * 40);
+    expect(r.differing).toBe(2 * 40 * 40);
+    expect(r.identicalTenths).toBe(0);
+    // Two blank photos have nothing that differs.
+    const white = solid(64, 64, [255, 255, 255, 255]);
+    expect(pixelDiff(white, white)).toMatchObject({ total: 0, identicalTenths: 1000 });
   });
 
   it('compares photos of different sizes at 256 by 256', () => {
@@ -281,6 +294,13 @@ describe('hashImage', () => {
 
   it('is deterministic (Node and browser share this code, AC-F2.1)', () => {
     expect(hashImage(checker(77, 53, 7))).toEqual(hashImage(checker(77, 53, 7)));
+  });
+
+  it('flags a flat or blank photo as low information, and a real photo not', () => {
+    expect(hashImage(solid(80, 80, [250, 250, 250, 255])).lowInfo).toBe(true);
+    expect(hashImage(solid(80, 80, [120, 40, 200, 255])).lowInfo).toBe(true);
+    expect(hashImage(scene(80, 80)).lowInfo).toBeUndefined();
+    expect(hashImage(gradient(80, 80)).lowInfo).toBeUndefined();
   });
 
   it('survives JSON, which is how hashes cross messaging and storage', () => {

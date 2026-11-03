@@ -55,6 +55,13 @@ describe('twin edge rule (AC-F3.1)', () => {
     const scale = prepare(listing({ id: 'b', title: 'Torvex Digital Kitchen Scale 0.1g' }), hashes());
     expect(twinEdge(a, scale, t)).toEqual({ twin: false, failed: 'title' });
   });
+  it('never joins a blank or placeholder photo, even with equal hashes and titles', () => {
+    const blank = { ...hashes(), lowInfo: true as const };
+    const x = prepare(listing({ id: 'x', title: 'Tessaly Laptop Stand' }), blank);
+    const y = prepare(listing({ id: 'y', title: 'Tessaly Laptop Stand' }), blank);
+    expect(twinEdge(x, y, t)).toEqual({ twin: false, failed: 'low-info' });
+    expect(twinEdge(a, x, t)).toEqual({ twin: false, failed: 'low-info' });
+  });
   it('Strict mode tightens pHash to 4', () => {
     const five = prepare(listing({ id: 'b', title: 'Tessaly Laptop Stand' }), hashes([0, 1, 2, 3, 4]));
     expect(twinEdge(a, five, THRESHOLDS.standard).twin).toBe(true);

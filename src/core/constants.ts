@@ -35,6 +35,19 @@ export const ESTABLISHED_MIN_REVIEWS = 100;
 /** Proof lens measurement (SPEC AC-F7.4). */
 export const PIXEL_DIFF_SIZE = 256;
 export const PIXEL_DIFF_CHANNEL_THRESHOLD = 24;
+/**
+ * A pixel at or above this in every channel, in both photos, is shared white background (or the
+ * letterbox). It is left out of the count, so two different products on white do not read as
+ * mostly identical.
+ */
+export const PIXEL_DIFF_BACKGROUND_MIN = 245;
+
+/**
+ * A photo whose luma barely varies (a blank, a flat colour, a loading placeholder) hashes the same
+ * as every other such photo, so it says nothing about sameness. Below this standard deviation of
+ * 32 × 32 luma (0 to 255) a photo never forms a twin edge.
+ */
+export const LOW_INFO_LUMA_STD = 3;
 
 /** dHash dead zone in luma units (0 to 255): a bit is 1 only when left exceeds right by more than this. */
 export const DHASH_DEAD_ZONE = 4;

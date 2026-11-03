@@ -11,6 +11,8 @@ export interface Prepared {
   dhash: Bits64;
   color: Uint8Array;
   title: TitleFeatures;
+  /** A blank or flat photo: it can never vouch for sameness. */
+  lowInfo: boolean;
 }
 
 export function prepare(listing: Listing, hashes: ImageHashes): Prepared {
@@ -20,18 +22,20 @@ export function prepare(listing: Listing, hashes: ImageHashes): Prepared {
     dhash: parseHex64(hashes.dhash),
     color: parseColorSignature(hashes.color),
     title: titleFeatures(listing.title, listing.brand),
+    lowInfo: hashes.lowInfo === true,
   };
 }
 
 export type EdgeVerdict =
   | { twin: true; phash: number; dhash: number; color: number }
-  | { twin: false; failed: 'phash' | 'dhash' | 'color' | 'title' };
+  | { twin: false; failed: 'low-info' | 'phash' | 'dhash' | 'color' | 'title' };
 
 /**
  * Twin edge rule (SPEC AC-F3.1): pHash ≤ t.phash AND dHash ≤ t.dhash AND colour distance ≤
  * t.color AND the title sanity check passes. Cheapest test first.
  */
 export function twinEdge(a: Prepared, b: Prepared, t: MatchThresholds): EdgeVerdict {
+  if (a.lowInfo || b.lowInfo) return { twin: false, failed: 'low-info' };
   const p = hammingBits(a.phash, b.phash);
   if (p > t.phash) return { twin: false, failed: 'phash' };
   const d = hammingBits(a.dhash, b.dhash);
