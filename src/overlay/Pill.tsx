@@ -48,7 +48,7 @@ function Shell({ children, live, progress }: { children: ReactNode; live?: boole
 
 const Divider = () => <span className="ft-divider" aria-hidden="true" />;
 
-/** Bolds the first number or amount in a string ("up to $18 brand tax" gives "$18"). */
+/** Bolds the first number or amount in a string ("up to $23 brand tax" gives "$23"). */
 export function emphasize(text: string): ReactNode {
   const m = /(\$?\d[\d,.]*)/.exec(text);
   const found = m?.[1];

@@ -52,7 +52,7 @@ describe('copy lint (AC-X.1, AC-F6.6)', () => {
   it('finds none in anything the copy functions can produce', () => {
     const summary: ScanSummary = {
       listings: 60,
-      products: 37,
+      products: 47,
       twinGroups: 6,
       maxBrandTaxDollars: 18,
       pages: [1, 2],
@@ -84,7 +84,7 @@ describe('copy lint (AC-X.1, AC-F6.6)', () => {
 
   it('never uses a middle dot or an emoji in UI text (DESIGN.md: drawn dividers only)', () => {
     const produced = [
-      ...copy.pillSegments({ listings: 60, products: 37, twinGroups: 6, maxBrandTaxDollars: 18, pages: [1] }),
+      ...copy.pillSegments({ listings: 60, products: 47, twinGroups: 6, maxBrandTaxDollars: 23, pages: [1] }),
       copy.pillNoTwins(3),
       copy.imageReadsLine({ 'a.example': 1, 'b.example': 2 }),
     ].join(' ');
@@ -93,13 +93,13 @@ describe('copy lint (AC-X.1, AC-F6.6)', () => {
   });
 
   it('writes the pill the way SPEC section 3 and AC-F4.1 do', () => {
-    const s: ScanSummary = { listings: 60, products: 37, twinGroups: 6, maxBrandTaxDollars: 18, pages: [1] };
+    const s: ScanSummary = { listings: 60, products: 47, twinGroups: 6, maxBrandTaxDollars: 23, pages: [1] };
     expect(copy.pillSegments(s)).toEqual([
-      '60 listings → 37 products',
+      '60 listings → 47 products',
       '6 twin groups',
-      'up to $18 brand tax',
+      'up to $23 brand tax',
     ]);
-    expect(copy.pillAccessibleName(s)).toBe('60 listings, 37 products, 6 twin groups, up to $18 brand tax');
+    expect(copy.pillAccessibleName(s)).toBe('60 listings, 47 products, 6 twin groups, up to $23 brand tax');
     expect(copy.pillSegments({ ...s, listings: 120, products: 71, twinGroups: 9, pages: [1, 2] })[0]).toBe(
       '120 listings across 2 pages → 71 products',
     );
@@ -107,7 +107,7 @@ describe('copy lint (AC-X.1, AC-F6.6)', () => {
     expect(copy.pillSegments({ ...s, listings: 1, products: 1, twinGroups: 1 })).toEqual([
       '1 listing → 1 product',
       '1 twin group',
-      'up to $18 brand tax',
+      'up to $23 brand tax',
     ]);
   });
 

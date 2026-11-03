@@ -86,17 +86,17 @@ describe('Popup (AC-F9.1 to AC-F9.3)', () => {
         status: 'ready' as const,
         store: 'amazon-us' as const,
         listings: 60,
-        products: 37,
+        products: 47,
         twinGroups: 6,
-        maxBrandTaxDollars: 18,
+        maxBrandTaxDollars: 23,
       }),
     });
     const el = await mount(<Popup api={api} />);
     const counts = el.querySelector('[data-testid="page-counts"]')?.textContent ?? '';
     expect(counts).toContain('Listings60');
-    expect(counts).toContain('Products37');
+    expect(counts).toContain('Products47');
     expect(counts).toContain('Twin groups6');
-    expect(counts).toContain('Largest brand tax$18.00');
+    expect(counts).toContain('Largest brand tax$23.00');
     expect(el.textContent).toContain('On for Amazon');
     expect(el.textContent).not.toContain('Open a search page');
   });
@@ -240,9 +240,9 @@ describe('Options (AC-F10.1)', () => {
 describe('Pill (AC-F4.1, AC-F4.2, AC-F4.4)', () => {
   const summary: ScanSummary = {
     listings: 60,
-    products: 37,
+    products: 47,
     twinGroups: 6,
-    maxBrandTaxDollars: 18,
+    maxBrandTaxDollars: 23,
     pages: [1],
   };
   const actions = () => ({ onToggleRings: vi.fn(), onToggleFold: vi.fn(), onDismiss: vi.fn() });
@@ -253,10 +253,10 @@ describe('Pill (AC-F4.1, AC-F4.2, AC-F4.4)', () => {
     const body = el.querySelector('.ft-pill-body');
     // The spoken name is the visible words with commas (AC-F4.1); the arrow and dividers are drawn.
     expect(body?.getAttribute('aria-label')).toBe(
-      '60 listings, 37 products, 6 twin groups, up to $18 brand tax',
+      '60 listings, 47 products, 6 twin groups, up to $23 brand tax',
     );
     expect(body?.textContent?.replace(/\s+/g, ' ').trim()).toBe(
-      '60 listings 37 products 6 twin groups up to $18 brand tax',
+      '60 listings 47 products 6 twin groups up to $23 brand tax',
     );
     expect(el.querySelectorAll('.ft-divider')).toHaveLength(2);
     expect(el.textContent).not.toContain('·');

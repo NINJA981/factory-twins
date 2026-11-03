@@ -71,7 +71,7 @@ export function ladderOrder(members: readonly Listing[]): string[] {
     .map((m) => m.id);
 }
 
-/** Pill figure: the largest group brand tax, rounded down to whole dollars ("up to $18"). */
+/** Pill figure: the largest group brand tax, rounded down to whole dollars ("up to $23"). */
 export function maxBrandTaxDollars(taxes: readonly (BrandTax | null)[]): number | null {
   let max: number | null = null;
   for (const t of taxes) if (t && (max == null || t.amount > max)) max = t.amount;

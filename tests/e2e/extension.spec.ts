@@ -10,11 +10,12 @@ test.describe('summary pill on the demo results page', () => {
     await expect(resultBody(page)).toBeVisible({ timeout: 20_000 });
     const body = resultBody(page);
     await expect(body).toContainText('60 listings');
+    await expect(body).toContainText('47 products');
     await expect(body).toContainText('6 twin groups');
     await expect(body).toContainText('up to $23 brand tax');
     // The spoken name is the visible words (WCAG 2.5.3) with commas for screen readers (AC-F4.1).
     await expect(body).toHaveAccessibleName(
-      /^60 listings, \d+ products, 6 twin groups, up to \$23 brand tax$/,
+      '60 listings, 47 products, 6 twin groups, up to $23 brand tax',
     );
   });
 

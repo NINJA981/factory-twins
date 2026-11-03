@@ -232,7 +232,7 @@ describe('tab summaries (popup, AC-F9.1)', () => {
       status: 'ready' as const,
       store: 'amazon-us' as const,
       listings: 60,
-      products: 37,
+      products: 47,
       twinGroups: 6,
       maxBrandTaxDollars: 18,
     };
