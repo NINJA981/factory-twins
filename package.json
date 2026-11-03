@@ -31,6 +31,7 @@
     "tokens": "tsx scripts/gen-tokens.ts",
     "fonts": "tsx scripts/subset-fonts.ts",
     "fixtures": "tsx scripts/gen-fixtures.ts",
+    "icons": "node scripts/gen-icons.mjs",
     "size": "size-limit",
     "lint:firefox": "web-ext lint -s .output/firefox-mv3"
   },
