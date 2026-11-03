@@ -1,6 +1,8 @@
 // @vitest-environment happy-dom
 import { describe, expect, it } from 'vitest';
 import { readPage } from '../../src/adapters/read';
+import { extractWalmartTile } from '../../src/adapters/walmart/extract';
+import { parsePrice } from '../../src/core/price/parse';
 import { ADAPTERS } from '../../src/adapters/registry';
 import type { StoreId } from '../../src/core/types';
 import { fixtureDocument, fixtureUrl, loadFixtures } from './helpers/fixtures';
@@ -48,5 +50,30 @@ describe.each(STORES)('%s adapter over the fixture corpus', (store) => {
       const allowed = store === 'amazon-us' ? ['m.media-amazon.com'] : ['i5.walmartimages.com'];
       expect([...hosts].every((h) => allowed.includes(h))).toBe(true);
     });
+  });
+});
+
+describe('Walmart price lookup without the generated class name', () => {
+  const tile = (priceHtml: string) => {
+    const doc = new DOMParser().parseFromString(
+      `<div data-item-id="123456789"><a link-identifier="123456789" href="/ip/x/123456789"><span>Tessaly Laptop Stand</span></a>
+        <img src="https://i5.walmartimages.com/seo/x.jpeg" />
+        <div data-automation-id="product-price">${priceHtml}</div>
+        <span data-automation-id="product-title">Tessaly Laptop Stand</span></div>`,
+      'text/html',
+    );
+    return doc.querySelector('[data-item-id]') as Element;
+  };
+
+  it('prefers itemprop, then screen-reader text, and reads the whole block last', () => {
+    expect(extractWalmartTile(tile('<meta itemprop="price" content="14.97" /><span>$99.00</span>')).priceText).toBe(
+      '$14.97',
+    );
+    expect(
+      extractWalmartTile(tile('<span class="sr-only">current price $14.97</span><span>$14.97 Was $19.99</span>'))
+        .priceText,
+    ).toBe('current price $14.97');
+    const blockOnly = extractWalmartTile(tile('<div aria-hidden="true">Now $9.97 Was $12.97</div>'));
+    expect(parsePrice(blockOnly.priceText)?.amount).toBe(9.97);
   });
 });

@@ -23,6 +23,17 @@ function isSponsored(tile: Element): boolean {
   return false;
 }
 
+/** The price you pay, from the most reliable source the tile has (see WALMART.priceSources). */
+function priceText(tile: Element): string | null {
+  const meta = tile.querySelector('[itemprop="price"]')?.getAttribute('content')?.trim();
+  if (meta && /^\d+(?:\.\d{1,2})?$/.test(meta)) return `$${meta}`;
+  for (const selector of WALMART.priceSources) {
+    const t = textOf(tile, selector);
+    if (t?.includes('$')) return t;
+  }
+  return textOf(tile, WALMART.price);
+}
+
 function reviewCount(tile: Element): string | null {
   const exact = attrOf(tile, WALMART.reviewValue, 'data-value');
   if (exact) return exact;
@@ -57,7 +68,7 @@ export function extractWalmartTile(tile: Element): RawTile {
     imageUrl: img ? displayedImageUrl(img) : null,
     title,
     byline: textOf(tile, WALMART.brand),
-    priceText: textOf(tile, WALMART.priceA11y) ?? textOf(tile, WALMART.price),
+    priceText: priceText(tile),
     ratingText: rating(tile),
     reviewText: reviewCount(tile),
     sponsored: isSponsored(tile),
