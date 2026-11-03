@@ -46,7 +46,16 @@ export function dctLowBlock(signal: Float64Array): Float64Array {
  * excluded from the median and its bit is always 0; every other bit is coefficient > median.
  */
 export function phash(img: RgbaImage): string {
-  const luma = toLuma(resampleSquare(img, PHASH_SIZE, PHASH_SIZE));
+  return phashFromLuma(phashLuma(img));
+}
+
+/** The 32 × 32 luma pHash works on (letterboxed onto white). */
+export function phashLuma(img: RgbaImage): Float64Array {
+  return toLuma(resampleSquare(img, PHASH_SIZE, PHASH_SIZE));
+}
+
+/** pHash of luma already computed by `phashLuma`, so callers can reuse it. */
+export function phashFromLuma(luma: Float64Array): string {
   const block = dctLowBlock(luma);
   const ac = Array.from(block.subarray(1)).sort((a, b) => a - b);
   const mid = ac.length >> 1;

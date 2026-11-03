@@ -1,13 +1,12 @@
 import type { ImageHashes } from '../types';
 import { colorSignature } from './color';
 import { dhash } from './dhash';
-import { phash } from './phash';
 import { LOW_INFO_LUMA_STD } from '../constants';
-import { assertRgba, resampleSquare, toLuma, type RgbaImage } from './resample';
+import { phashFromLuma, phashLuma } from './phash';
+import { assertRgba, type RgbaImage } from './resample';
 
-/** Standard deviation of the photo's 32 × 32 luma (letterboxed onto white like every hash). */
-export function lumaSpread(img: RgbaImage): number {
-  const luma = toLuma(resampleSquare(img, 32, 32));
+/** Standard deviation of a luma signal (0 to 255). */
+function spread(luma: Float64Array): number {
   let sum = 0;
   for (const v of luma) sum += v;
   const mean = sum / luma.length;
@@ -19,13 +18,15 @@ export function lumaSpread(img: RgbaImage): number {
 /** Every hash for one decoded thumbnail. Same pixels in, same hashes out, in Node or a browser. */
 export function hashImage(img: RgbaImage): ImageHashes {
   assertRgba(img);
+  // pHash and the low-information check share one 32 × 32 resample.
+  const luma = phashLuma(img);
   const hashes: ImageHashes = {
     dhash: dhash(img),
-    phash: phash(img),
+    phash: phashFromLuma(luma),
     color: colorSignature(img),
     w: img.width,
     h: img.height,
   };
-  if (lumaSpread(img) < LOW_INFO_LUMA_STD) hashes.lowInfo = true;
+  if (spread(luma) < LOW_INFO_LUMA_STD) hashes.lowInfo = true;
   return hashes;
 }
