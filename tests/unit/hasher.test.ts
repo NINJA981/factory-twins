@@ -113,7 +113,7 @@ describe('manifest (SPEC section 10, AC-F1.5)', () => {
     const ff = manifest('firefox') as {
       browser_specific_settings: { gecko: { id: string; strict_min_version: string } };
     };
-    expect(ff.browser_specific_settings.gecko.strict_min_version).toBe('128.0');
+    expect(ff.browser_specific_settings.gecko.strict_min_version).toBe('140.0');
     expect(ff.browser_specific_settings.gecko.id).toMatch(/@/);
   });
 

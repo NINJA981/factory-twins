@@ -63,7 +63,7 @@ export default defineConfig({
             browser_specific_settings: {
               gecko: {
                 id: 'factory-twins@factory-twins',
-                strict_min_version: '128.0',
+                strict_min_version: '140.0',
                 // No telemetry, no accounts, no servers: declared so AMO shows "none collected".
                 data_collection_permissions: { required: ['none'] },
               },
